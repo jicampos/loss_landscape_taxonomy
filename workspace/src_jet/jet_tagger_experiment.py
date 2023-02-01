@@ -9,10 +9,10 @@ import argparse
     You can also customize the load and temperature by inputing a list of load and temperature values
 """
 customize_range_command = False
-customize_range_command = "--load-range customize --load 02 --temperature-range customize --temperature 128"
+#customize_range_command = "--load-range customize --load 02 --temperature-range customize --temperature 128"
 
 #Quantization Bitwidths
-widths =["6", "7",  "8",  "9",  "10", "11", "32"]
+widths =["32"]#, "6", "7",  "8",  "9",  "10", "11"]
 
 def get_slurm_script(args, info):
     
@@ -59,6 +59,7 @@ def different_metrics(COMMON_COMMANDS, FILE_NAME_SUFFIX, GENERATE_SLURM_SCRIPTS,
     # Training on the RISE machines
     if "train" in args.metrics:
         code = f"{COMMON_COMMANDS} --file-name ./bash_scripts/{FILE_FOLDER}/train_{FILE_NAME_SUFFIX}.sh {TRAINING_PARAMETERS} --check-result no_check --create-folder{GENERATE_SLURM_SCRIPTS}"
+        print(f"executing {code}")
         os.system(code)
     
     # Mode connectivity code
@@ -91,7 +92,7 @@ def different_metrics(COMMON_COMMANDS, FILE_NAME_SUFFIX, GENERATE_SLURM_SCRIPTS,
 def writing_experiments():
 
     # Specific variables for each experiment
-    TRAINING_PARAMETERS="--stop-epoch 150 --training-type lr_decay --lr-standard 0.1 --ignore-incomplete-batch --exp-start 0 --exp-num 5"
+    TRAINING_PARAMETERS="--stop-epoch 150 --training-type lr_decay --lr-standard 0.1 --bs-standard 1024 --ignore-incomplete-batch --exp-start 0 --exp-num 5"
     HESSIAN_PARAMETERS=f"--experiment-type hessian --hessian-batch 1 --early-stop-checkpoint --training-type lr_decay"
     CKA_PARAMETERS="--experiment-type CKA --early-stop-checkpoint --mixup-CKA --mixup-alpha 16 --training-type lr_decay"
     DIST_PARAMETERS="--experiment-type dist --early-stop-checkpoint --training-type lr_decay"
@@ -103,7 +104,8 @@ def writing_experiments():
     
     subsets= ["10"] * len(widths)
     subset_nums= [1.0] * len(widths)
-
+    print(f"Subsets Value: {subsets}")
+    print(f"SubsetNums Value: {subset_nums}")
     for i in range(len(widths)):
 
         if args.generate_slurm_scripts:
@@ -112,11 +114,13 @@ def writing_experiments():
             GENERATE_SLURM_SCRIPTS = ''
 
         WIDTH=widths[i]
-        ACT_WIDTH= str(int(WIDTH)+3)
-        SUBSET=subsets[i]
+        ACT_WIDTH= str(int(WIDTH)+3) # Make sure the activations don't overflow, rule of thumb is weight bits + 3
+        SUBSET=subsets[i] # Dataset si
+        print(f"Subset Value: {SUBSET}")
+        
         ARCH=f"JT_{WIDTH}b"
-        EPOCH_NUM=100#int(10*1.0/subset_nums[i])*5
-        print(f"For width={WIDTH} we use {EPOCH_NUM} epochs")
+        EPOCH_NUM=int(10*1.0/subset_nums[i])*5
+        #print(f"For width={WIDTH} we use {EPOCH_NUM} epochs")
         
         # Here, we change the CURVE_PARAMETERS to different number of epochs, based on the size of data
         CURVE_PARAMETERS=f"--experiment-type curve --save-frequency=100 --num-points 5 --eval-epoch {EPOCH_NUM} --epochs {EPOCH_NUM} --early-stop-checkpoint --training-type lr_decay"
@@ -125,13 +129,13 @@ def writing_experiments():
         # Special attention
         ###################
 
-        FILE_NAME_SUFFIX=f"width_{WIDTH}_lr_decay"
+        FILE_NAME_SUFFIX=f"{WIDTH}b_lr_decay"
         WIDTH_COMMANDS=f"--weight-precision {WIDTH} --bias-precision {WIDTH} --act-precision {ACT_WIDTH}"
         DATA_COMMANDS="--data-type subset"
-        RANGE_COMMANDS=f"--load-range customize --load {SUBSET} --temperature-range Efficient_fine"
+        RANGE_COMMANDS=f"--load-range customize --load {SUBSET} --temperature-type lr --temperature-range coarse"
         RANGE_COMMANDS=customize_range(RANGE_COMMANDS)
         COMMON_COMMANDS=f"python write_script.py {WIDTH_COMMANDS} {DATA_COMMANDS} --arch {ARCH} {RANGE_COMMANDS}"
-
+        
         different_metrics(COMMON_COMMANDS, FILE_NAME_SUFFIX,
                                 GENERATE_SLURM_SCRIPTS,
                                 TRAINING_PARAMETERS, 
@@ -150,7 +154,7 @@ if __name__ == "__main__":
     parser.add_argument('--script-folder-name', type=str, default = 'width_lr_decay', help='experiment name')
     parser.add_argument('--metrics', type=str, nargs='+', default=["train"], choices=["train", "curve", "CKA", "hessian", "dist", "loss_acc"],
                         help='which metrics to evaluate')
-    parser.add_argument('--train-or-test', type=str, default='train', choices=['train', 'test'],
+    parser.add_argument('--train-or-test', type=str, default='test', choices=['train', 'test'],
                         help='Would you like to evaluate the metrics on train or test data?')
     parser.add_argument('--generate-slurm-scripts', default=False, action='store_true',
                         help='Would you like to get the examples of slurm submission files?')

@@ -1,6 +1,9 @@
+import sys
+sys.path.append("..") #so local copy of HAWQ can be imported...
+
 import torch.nn as nn
 import torch.nn.utils.prune as prune
-from ..hawq.utils.quantization_utils.quant_modules import QuantAct, QuantLinear
+from hawq.utils.quantization_utils.quant_modules import QuantAct, QuantLinear
 
 from .jt_three_layer import get_model
 
@@ -195,9 +198,9 @@ def get_quantized_model(args, model=None):
     if model == None:
         model = get_model(args)
     if args.dropout and args.batch_norm:
-        return QThreeLayer_BN_Dropout(model, weight_precision=args.weightprecision, bias_precision=args.biasprecision, act_precision=args.actprecision)
+        return QThreeLayer_BN_Dropout(model, weight_precision=args.weight_precision, bias_precision=args.bias_precision, act_precision=args.act_precision)
     if args.batch_norm:
-        return QThreeLayer_BN(model, weight_precision=args.weightprecision, bias_precision=args.biasprecision, act_precision=args.actprecision)
+        return QThreeLayer_BN(model, weight_precision=args.weight_precision, bias_precision=args.bias_precision, act_precision=args.act_precision)
     if args.dropout:
-        return QThreeLayer_Dropout(model, weight_precision=args.weightprecision, bias_precision=args.biasprecision, act_precision=args.actprecision)
-    return QThreeLayer(model, weight_precision=args.weightprecision, bias_precision=args.biasprecision, act_precision=args.actprecision)
+        return QThreeLayer_Dropout(model, weight_precision=args.weight_precision, bias_precision=args.bias_precision, act_precision=args.act_precision)
+    return QThreeLayer(model, weight_precision=args.weight_precision, bias_precision=args.bias_precision, act_precision=args.act_precision)

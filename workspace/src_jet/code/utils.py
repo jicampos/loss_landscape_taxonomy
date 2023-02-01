@@ -2,24 +2,56 @@ import numpy as np
 import torch
 import torch.nn as nn
 import os
+from sklearn.metrics import accuracy_score
 
+class AverageMeter(object):
+    """Computes and stores the average and current value"""
+
+    def __init__(self, name, fmt=":f"):
+        self.name = name
+        self.fmt = fmt
+        self.reset()
+
+    def reset(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def update(self, val, n=1):
+        self.val = val
+        self.sum += val * n
+        self.count += n
+        self.avg = self.sum / self.count
+
+    def __str__(self):
+        fmtstr = "{name} {val" + self.fmt + "} ({avg" + self.fmt + "})"
+        return fmtstr.format(**self.__dict__)
 
 def test(args, model, test_loader):
     print('Testing')
     model.eval()
-    
+    accuracy = AverageMeter("Acc", ":6.6f")
     correct = 0
     total_num = 0
     for data, target in test_loader:
         data, target = data.cuda(), target.cuda()
         with torch.no_grad():
             output = model(data)
-            pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
-            correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
-            total_num += len(data)
-    
-    print('testing_correct: ', correct / total_num, '\n')
-    return correct / total_num 
+            #pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
+            
+            batch_preds = torch.max(output, 1)[1]
+            batch_labels = torch.max(target, 1)[1]
+            batch_acc = accuracy_score(
+                batch_labels.detach().cpu().numpy(), batch_preds.detach().cpu().numpy()
+            )
+            accuracy.update(batch_acc, data.size(0))
+            
+            #correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
+            #total_num += len(data)
+    print(accuracy)
+    #print(f'testing_acc: {acc:.3f}')
+    return accuracy.avg # correct / total_num 
 
 
 def mixup_data(x, y, alpha=1.0, use_cuda=True):

@@ -1,11 +1,14 @@
 import torch
 from models.jt_q_three_layer import get_quantized_model 
-
+from models.jt_three_layer import get_model 
 
 def get_new_model(args):
     
-    model = get_quantized_model(args).cuda()
-    
+    if args.weight_precision == '32':
+        model = get_model(args).cuda()
+    else:
+        model = get_quantized_model(args).cuda()
+        
     return model
 
 

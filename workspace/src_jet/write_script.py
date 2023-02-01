@@ -186,6 +186,9 @@ def get_command_list(args):
 
     load_list, temperature_list = get_load_temperature(args)
     
+    print(load_list)
+    print(temperature_list)
+    
     home_dir = '../'
     
     for load, load_suffix in load_list:
@@ -392,10 +395,11 @@ def get_command_list(args):
                     command = f"python code/train.py --training-type {args.training_type} " \
                                 + f"--arch {args.arch} --saving-folder {ckpt_folder} --file-prefix exp_{exp_id} " \
                                 + f"--mixup-alpha 16.0 {data_command} " \
-                                + f"--lr {lr} --weight-decay {wd} --train-bs {bs} " \
-                                + f"--weight-precision {weightprecision} --bias-precision {biasprecision} --act-precision {actprecision} " \
-                                + f"{command_suffix} 1>{ckpt_folder}log_{exp_id}.txt 2>{ckpt_folder}err_{exp_id}.txt" 
-
+                                + f"--lr {lr} --weight-decay {wd} --train-bs {bs} --test-bs {bs} " \
+                                + f"--weight-precision {args.weight_precision} --bias-precision {args.bias_precision} --act-precision {args.act_precision} " \
+                                + f"{command_suffix} > >(tee -a {ckpt_folder}log_{exp_id}.txt) 2> >(tee -a {ckpt_folder}err_{exp_id}.txt >&2)" 
+                    # tee output: f"{command_suffix} > >(tee -a {ckpt_folder}log_{exp_id}.txt) 2> >(tee -a {ckpt_folder}err_{exp_id}.txt >&2)"
+                    # og output:  f"{command_suffix} 1>{ckpt_folder}log_{exp_id}.txt 2>{ckpt_folder}err_{exp_id}.txt"
                     BASH_COMMAND_LIST.append((command, result))
                         
             elif args.experiment_type == 'loss_acc':
@@ -507,9 +511,9 @@ if __name__ == "__main__":
     parser.add_argument('--wd-standard', type=float, default = 5e-4, help='standard weight decay')
 
     # (Jet Tagger) Bitwidth parameters
-    parser.add_argument('--weight-precision', dest='weightprecision', type=int, default = 8, help='Quantized Weight Bitwidth')
-    parser.add_argument('--bias-precision', dest='biasprecision', type=int, default = 8, help='Quantized Bias Bitwidth')
-    parser.add_argument('--act-precision', dest='actprecision', type=int, default = 11, help='Quantized Activation Bitwidth') # weight bits + 3 = act bits typ.
+    parser.add_argument('--weight-precision', dest='weight_precision', type=int, default = 8, help='Quantized Weight Bitwidth')
+    parser.add_argument('--bias-precision', dest='bias_precision', type=int, default = 8, help='Quantized Bias Bitwidth')
+    parser.add_argument('--act-precision', dest='act_precision', type=int, default = 11, help='Quantized Activation Bitwidth') # weight bits + 3 = act bits typ.
     
     # parameters for the 2D load-temperature phase plot
     parser.add_argument('--temperature-range', type=str, default = 'coarse', 

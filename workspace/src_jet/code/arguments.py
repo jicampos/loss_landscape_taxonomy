@@ -51,13 +51,13 @@ def get_parser(code_type='training'):
         parser.add_argument('--resnet18-width', dest='resnet18_width', type=int, default = 64, help='Width of resnet18 (Unused for Jet Tagger)')
         
         # (Jet Tagger) Bitwidth parameters
-        parser.add_argument('--weight-precision', dest='weightprecision', type=int, default = 8, help='Quantized Weight Bitwidth')
-        parser.add_argument('--bias-precision', dest='biasprecision', type=int, default = 8, help='Quantized Bias Bitwidth')
-        parser.add_argument('--act-precision', dest='actprecision', type=int, default = 11, help='Quantized Activation Bitwidth') # weight bits + 3 = act bits typ.
+        parser.add_argument('--weight-precision', dest='weight_precision', type=int, default = 8, help='Quantized Weight Bitwidth')
+        parser.add_argument('--bias-precision', dest='bias_precision', type=int, default = 8, help='Quantized Bias Bitwidth')
+        parser.add_argument('--act-precision', dest='act_precision', type=int, default = 11, help='Quantized Activation Bitwidth') # weight bits + 3 = act bits typ.
         
         # (Jet Tagger) Enable/Use Batchnorm or Dropout layers
-        parser.add_argument("--batch-norm", action="store_true", dest='batch-norm' help="Implement with batch normalization.")
-        parser.add_argument( "--dropout", action="store_true", dest='dropout' help="Train with dropout (Default=0.2).")
+        parser.add_argument("--batch-norm", action="store_true", dest='batch_norm', help="Implement with batch normalization.")
+        parser.add_argument( "--dropout", action="store_true", dest='dropout', help="Train with dropout (Default=0.2).")
         
         # how many models are we training
         parser.add_argument('--exp-num', dest='exp_num', type=int, default = 5, help='how many experiments are we performing')
@@ -83,8 +83,8 @@ def get_parser(code_type='training'):
         parser.add_argument('--patience', type=int, default = 0, help='number of epochs to wait if loss does not improve by min_delta')
 
         # (Jet Tagger) Weight Regularization
-        parser.add_argument("--l1", action="store_true", dest='l1-enable' help="Implement L1 regularization.")
-        parser.add_argument("--l2", action="store_true", dest='l2-enable' help="Implement L2 regularization.")
+        parser.add_argument("--l1", action="store_true", dest='l1-enable', help="Implement L1 regularization.")
+        parser.add_argument("--l2", action="store_true", dest='l2-enable', help="Implement L2 regularization.")
         
         # choosing training procedure
         parser.add_argument('--ignore-incomplete-batch', dest='ignore_incomplete_batch', default = False, action='store_true', help='ignore the last incomplete batch during training')

@@ -6,11 +6,60 @@ import torch.optim as optim
 import sys
 sys.path.insert(1, './code/')
 
+from model import get_new_model
+
 from arguments import get_parser
 from utils import *
 from data import get_loader
 
+from sklearn.metrics import accuracy_score
+
 parser = get_parser(code_type='training')
+    
+import logging
+
+# class from https://github.com/Zhen-Dong/HAWQ/blob/main/quant_train.py#L683
+class AverageMeter(object):
+    """Computes and stores the average and current value"""
+
+    def __init__(self, name, fmt=":f"):
+        self.name = name
+        self.fmt = fmt
+        self.reset()
+
+    def reset(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def update(self, val, n=1):
+        self.val = val
+        self.sum += val * n
+        self.count += n
+        self.avg = self.sum / self.count
+
+    def __str__(self):
+        fmtstr = "{name} {val" + self.fmt + "} ({avg" + self.fmt + "})"
+        return fmtstr.format(**self.__dict__)
+
+
+# class from https://github.com/Zhen-Dong/HAWQ/blob/main/quant_train.py#L708
+class ProgressMeter(object):
+    def __init__(self, num_batches, meters, prefix=""):
+        self.batch_fmtstr = self._get_batch_fmtstr(num_batches)
+        self.meters = meters
+        self.prefix = prefix
+
+    def display(self, batch):
+        entries = [self.prefix + self.batch_fmtstr.format(batch)]
+        entries += [str(meter) for meter in self.meters]
+        print("\t".join(entries))
+
+    def _get_batch_fmtstr(self, num_batches):
+        num_digits = len(str(num_batches // 1))
+        fmt = "{:" + str(num_digits) + "d}"
+        return "[" + fmt + "/" + fmt.format(num_batches) + "]"
     
 def update_lr(optimizer, lr):    
     for param_group in optimizer.param_groups:
@@ -45,40 +94,64 @@ def save_early_stop_model(args, model, loss_vals):
 def train(args, model, train_loader, test_loader, optimizer, criterion, epoch):
     model.train()
     
-    print('Current Epoch: ', epoch)
+    losses = AverageMeter("Loss", ":.4e")
+    accuracy = AverageMeter("Acc", ":6.6f")
+    progress = ProgressMeter(
+        len(train_loader),
+        [losses, accuracy],
+        prefix="Epoch: [{}]".format(epoch),
+    )
+    
+    #print('Starting Epoch: ', epoch)
     train_loss = 0.
     total_num = 0
     correct = 0
     
     P = 0 # num samples / batch size
-    for inputs, targets in train_loader:
-
+    for i, (inputs, targets) in enumerate(train_loader):
+        #print(inputs.shape)
         if args.ignore_incomplete_batch:
             if_condition = inputs.shape[0] != args.train_bs
             
             if if_condition:
                 print("Neglect the last epoch so that num samples/batch size = int")
                 break
-        
+                
+        print(inputs[0])
+        print(targets[0])
         P += 1
         # loop over dataset
         inputs, targets = inputs.to("cuda"), targets.to("cuda")
-        optimizer.zero_grad()
+        #optimizer.zero_grad()
 
-        outputs = model(inputs)
-        loss = criterion(outputs, targets)
+        outputs = model(inputs.float())
+        loss = criterion(outputs, targets.float())
         
-        train_loss += loss.item() * targets.size()[0]
-        total_num += targets.size()[0]
-        _, predicted = outputs.max(1)
-        correct += predicted.eq(targets).sum().item()
+        #train_loss += loss.item() * targets.size()[0]
+        #total_num += targets.size()[0]
+        #_, predicted = outputs.max(1)
+        #correct += predicted.eq(targets).sum().item()
         
+        losses.update(loss.item(), inputs.size(0))
+
+        batch_preds = torch.max(outputs, 1)[1]
+        batch_labels = torch.max(targets, 1)[1]
+        batch_acc = accuracy_score(
+            batch_labels.detach().cpu().numpy(), batch_preds.detach().cpu().numpy()
+        )
+        # update progress meter
+        accuracy.update(batch_acc, inputs.size(0))
+        
+        if i % 50 == 0: # print every 50 batches
+            progress.display(i)
+        
+        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
             
     acc = test(args, model, test_loader)
-    train_loss /= total_num
-    print(f"Training Loss of Epoch {epoch}: {train_loss}")
+    #train_loss /= total_num
+    print(f"Training Loss of Epoch {epoch}: {losses.avg}")
     print(f"Testing of Epoch {epoch}: {acc}")  
     
     return train_loss
@@ -103,9 +176,9 @@ def main():
 
     criterion = nn.BCELoss().to("cuda")
     
-    from models.resnet_width import jt_q_three_layer as jt_quant 
+    #from models.jt_q_three_layer import jt_quant 
 
-    model = jt_quant.get_quantized_model(args)
+    model = get_new_model(args)
     
     if args.resume:
         

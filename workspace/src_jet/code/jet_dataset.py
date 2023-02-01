@@ -1,5 +1,5 @@
 import os
-import h5py
+import h5pickle as h5py
 import numpy as np
 from tqdm import tqdm
 
@@ -9,7 +9,7 @@ from sklearn import preprocessing
 
 
 class JetTaggingDataset(Dataset):
-    def __init__(self, path, features, preprocess):
+    def __init__(self, path, features, preprocess=None):
         """
         Args:
             path (str): Path to dataset.
@@ -30,10 +30,18 @@ class JetTaggingDataset(Dataset):
         if preprocess == "standardize":
             scaler = preprocessing.StandardScaler().fit(self.data)
             self.data = scaler.transform(self.data)
+            self.processor = scaler
         elif preprocess == "normalize":
             normalizer = preprocessing.Normalizer().fit(self.data)
             self.data = normalizer.transform(self.data)
-
+            self.processor = normalizer
+        elif preprocess != None:
+            try:
+                self.data = preprocess.transform(self.data)
+                self.processor = preprocess
+            except:
+                print("No valid preprocessing set! Please pass a valid string or sklearn preprocessor.")
+                
     def __len__(self):
         return len(self.data)
 
