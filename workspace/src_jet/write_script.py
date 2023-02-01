@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import os
 
@@ -52,8 +53,22 @@ def get_load_temperature(args):
     elif args.load_range == 'constant_small':
         load = [(0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01'), 
                (0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01')]
+    elif args.load_range == 'bits_6_11':
+        load = [(6, '06'), (7, '07'), (8, '08'), (9, '09'), (10, '01'), (11, '11'), (32, '32')]
     elif args.load_range == 'customize':
-        load_map = {'0': (0.0, '0'), '0025': (0.025, '0025'), '005': (0.05, '005'), '0075': (0.075, '0075'), '01': (0.1, '01'), '0125': (0.125, '0125'), '015': (0.15, '015'), '0175': (0.175, '0175'), '02': (0.2, '02'), '025': (0.25, '025'), '03': (0.3, '03'), '035': (0.35, '035'), '04': (0.4, '04'), '045': (0.45, '045'), '05': (0.5, '05'), '055': (0.55, '055'), '06': (0.6, '06'), '065': (0.65, '065'), '07': (0.7, '07'), '075': (0.75, '075'), '08': (0.8, '08'), '085': (0.85, '085'), '09': (0.9, '09'), '095': (0.95, '095'), '10': (1.0, '10')}
+        load_map = {'0': (0.0, '0'), '0025': (0.025, '0025'), '005': (0.05, '005'), '0075': (0.075, '0075'), '01': (0.1, '01'), '0125': (0.125, '0125'), 
+                    '015': (0.15, '015'), '0175': (0.175, '0175'), '02': (0.2, '02'), '025': (0.25, '025'), '03': (0.3, '03'), '035': (0.35, '035'), 
+                    '04': (0.4, '04'), '045': (0.45, '045'), '05': (0.5, '05'), '055': (0.55, '055'), '06': (0.6, '06'), '065': (0.65, '065'), 
+                    '07': (0.7, '07'), '075': (0.75, '075'), '08': (0.8, '08'), '085': (0.85, '085'), '09': (0.9, '09'), '095': (0.95, '095'), '10': (1.0, '10')}
+        
+        # this is prolly the dumb way of doing it, but eh, it works
+        bits_load_map = { '1':  (1, '01'),   '2':  (2, '02'),   '3':  (3, '03'),  '4':  (4, '04'),  '5':  (5, '05'),  '6':  (6, '06'), 
+                     '7':  (7, '07'),   '8':  (8, '08'),   '9':  (9, '09'), '10': (10, '10'), '11': (11, '11'), '12': (12, '12'), 
+                    '13': (13, '13'),  '14': (14, '14'),  '15': (15, '15'), '16': (16, '16'), '17': (17, '17'), '18': (18, '18'), 
+                    '19': (19, '19'),  '20': (20, '20'),  '21': (21, '21'), '22': (22, '22'), '23': (23, '23'), '24': (24, '24'), 
+                    '25': (25, '25'),  '26': (26, '26'),  '27': (27, '27'), '28': (28, '28'), '29': (29, '29'), '30': (30, '30'), 
+                    '31': (31, '27'),  '32': (32, '32')}
+        
         
         load = [load_map[load] for load in args.load]
     
@@ -378,6 +393,7 @@ def get_command_list(args):
                                 + f"--arch {args.arch} --saving-folder {ckpt_folder} --file-prefix exp_{exp_id} " \
                                 + f"--mixup-alpha 16.0 {data_command} " \
                                 + f"--lr {lr} --weight-decay {wd} --train-bs {bs} " \
+                                + f"--weight-precision {weightprecision} --bias-precision {biasprecision} --act-precision {actprecision} " \
                                 + f"{command_suffix} 1>{ckpt_folder}log_{exp_id}.txt 2>{ckpt_folder}err_{exp_id}.txt" 
 
                     BASH_COMMAND_LIST.append((command, result))
@@ -489,6 +505,11 @@ if __name__ == "__main__":
     parser.add_argument('--lr-standard', type=float, default = 0.05, help='standard learning rate')
     parser.add_argument('--bs-standard', type=int, default = 128, help='standard batch size')
     parser.add_argument('--wd-standard', type=float, default = 5e-4, help='standard weight decay')
+
+    # (Jet Tagger) Bitwidth parameters
+    parser.add_argument('--weight-precision', dest='weightprecision', type=int, default = 8, help='Quantized Weight Bitwidth')
+    parser.add_argument('--bias-precision', dest='biasprecision', type=int, default = 8, help='Quantized Bias Bitwidth')
+    parser.add_argument('--act-precision', dest='actprecision', type=int, default = 11, help='Quantized Activation Bitwidth') # weight bits + 3 = act bits typ.
     
     # parameters for the 2D load-temperature phase plot
     parser.add_argument('--temperature-range', type=str, default = 'coarse', 
