@@ -116,16 +116,18 @@ def train(args, model, train_loader, test_loader, optimizer, criterion, epoch):
             if if_condition:
                 print("Neglect the last epoch so that num samples/batch size = int")
                 break
-                
-        print(inputs[0])
-        print(targets[0])
+                  
         P += 1
         # loop over dataset
         inputs, targets = inputs.to("cuda"), targets.to("cuda")
-        #optimizer.zero_grad()
+        optimizer.zero_grad()
 
         outputs = model(inputs.float())
         loss = criterion(outputs, targets.float())
+        
+        #print(inputs[0])
+        #print(targets[0])
+        #print(outputs[0])
         
         #train_loss += loss.item() * targets.size()[0]
         #total_num += targets.size()[0]
@@ -144,15 +146,20 @@ def train(args, model, train_loader, test_loader, optimizer, criterion, epoch):
         
         if i % 50 == 0: # print every 50 batches
             progress.display(i)
+            #print(targets[0])
+            #print(outputs[0])
+            print(batch_preds)
+            print(batch_labels)
         
-        optimizer.zero_grad()
+        
         loss.backward()
         optimizer.step()
             
     acc = test(args, model, test_loader)
     #train_loss /= total_num
     print(f"Training Loss of Epoch {epoch}: {losses.avg}")
-    print(f"Testing of Epoch {epoch}: {acc}")  
+    print(f"Training Acc of Epoch {epoch}: {accuracy.avg}")
+    print(f"Testing Acc of Epoch {epoch}: {acc}")  
     
     return train_loss
 
@@ -174,11 +181,18 @@ def main():
     print("Experiement: {0} training for {1}".format(args.training_type, args.arch))
     print("------------------------------------------------------")
 
+
     criterion = nn.BCELoss().to("cuda")
     
     #from models.jt_q_three_layer import jt_quant 
 
     model = get_new_model(args)
+    
+    #from torchsummary import summary
+    #summary(model, input_size=(1, 16))
+    print("---------------------- Model -------------------------")
+    print(model)
+    print("------------------------------------------------------")
     
     if args.resume:
         

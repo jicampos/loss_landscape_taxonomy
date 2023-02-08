@@ -3,10 +3,11 @@ from models.jt_q_three_layer import get_quantized_model
 from models.jt_three_layer import get_model 
 
 def get_new_model(args):
-    
-    if args.weight_precision == '32':
+    if args.weight_precision is 32:
+        print("using FP32 model")
         model = get_model(args).cuda()
     else:
+        print("using quant model")
         model = get_quantized_model(args).cuda()
         
     return model

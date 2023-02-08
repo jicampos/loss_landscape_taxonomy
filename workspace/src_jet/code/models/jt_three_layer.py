@@ -20,7 +20,6 @@ class ThreeLayerMLP(nn.Module):
         x = self.act(self.dense_3(x))
         return self.softmax(self.dense_4(x))
 
-
 class ThreeLayer_BN(nn.Module):
     def __init__(self):
         super(ThreeLayer_BN, self).__init__()
