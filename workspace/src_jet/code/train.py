@@ -114,7 +114,7 @@ def train(args, model, train_loader, test_loader, optimizer, criterion, epoch):
             if_condition = inputs.shape[0] != args.train_bs
             
             if if_condition:
-                print("Neglect the last epoch so that num samples/batch size = int")
+                print("Neglect the last batch so that num samples/batch size = int")
                 break
                   
         P += 1
@@ -144,19 +144,19 @@ def train(args, model, train_loader, test_loader, optimizer, criterion, epoch):
         # update progress meter
         accuracy.update(batch_acc, inputs.size(0))
         
-        if i % 50 == 0: # print every 50 batches
+        if i % 300 == 0: # print every 50 batches
             progress.display(i)
             #print(targets[0])
             #print(outputs[0])
-            print(batch_preds)
-            print(batch_labels)
+            #print(batch_preds)
+            #print(batch_labels)
         
         
         loss.backward()
         optimizer.step()
             
     acc = test(args, model, test_loader)
-    #train_loss /= total_num
+    train_loss = losses.avg
     print(f"Training Loss of Epoch {epoch}: {losses.avg}")
     print(f"Training Acc of Epoch {epoch}: {accuracy.avg}")
     print(f"Testing Acc of Epoch {epoch}: {acc}")  

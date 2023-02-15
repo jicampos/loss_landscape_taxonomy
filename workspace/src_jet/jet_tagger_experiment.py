@@ -12,7 +12,7 @@ customize_range_command = False
 #customize_range_command = "--load-range customize --load 02 --temperature-range customize --temperature 128"
 
 #Quantization Bitwidths
-widths =["32"]#, "6", "7",  "8",  "9",  "10", "11"]
+widths =["32", "6", "7",  "8",  "9",  "10", "11"]
 
 def get_slurm_script(args, info):
     

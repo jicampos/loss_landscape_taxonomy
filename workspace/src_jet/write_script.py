@@ -77,7 +77,7 @@ def get_load_temperature(args):
         temperature = args.temperature
         return load, temperature
     elif args.temperature_range == 'coarse':
-        lr_list = [0.4, 0.2, 0.1, 0.05, 0.025, 0.0125, 0.00625, 0.003125, 0.0015625]
+        lr_list = [0.1, 0.05, 0.025, 0.0125, 0.00625, 0.003125, 0.0015625] #0.4, 0.2,
         bs_list = [16, 32, 64, 128, 256, 512, 1024]
         wd_list = [3.2e-3, 1.6e-3, 8e-4, 4e-4, 2e-4, 1e-4, 5e-5, 2.5e-5, 1.25e-5]
     elif args.temperature_range == 'fine':

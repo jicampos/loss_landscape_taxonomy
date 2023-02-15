@@ -131,11 +131,12 @@ def test_acc_loss(test_loader, model, criterion, regularizer=None, **kwargs):
     loss_sum = 0.0
     nll_sum = 0.0
     correct = 0.0
-
+    accuracy = AverageMeter("Acc", ":6.6f")
+    
     model.eval()
 
-    for input, target in test_loader:
-        input = input.cuda(non_blocking=True)
+    for data, target in test_loader:
+        data = data.cuda(non_blocking=True)
         target = target.cuda(non_blocking=True)
 
         output = model(input, **kwargs)
@@ -146,17 +147,31 @@ def test_acc_loss(test_loader, model, criterion, regularizer=None, **kwargs):
 
         nll_sum += nll.item() * input.size(0)
         loss_sum += loss.item() * input.size(0)
-        pred = output.data.argmax(1, keepdim=True)
-        correct += pred.eq(target.data.view_as(pred)).sum().item()
+        
+        batch_preds = torch.max(output, 1)[1]
+        batch_labels = torch.max(target, 1)[1]
+        batch_acc = accuracy_score(
+            batch_labels.detach().cpu().numpy(), batch_preds.detach().cpu().numpy()
+        )
+        accuracy.update(batch_acc, data.size(0))
+            
+        #correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
+        #total_num += len(data)
+        
+        #print(f'testing_acc: {acc:.3f}')
+        # correct / total_num 
+        #pred = output.data.argmax(1, keepdim=True)
+        #correct += pred.eq(target.data.view_as(pred)).sum().item()
+        
 
     return {
-        'nll': nll_sum / len(test_loader.dataset),
-        'loss': loss_sum / len(test_loader.dataset),
-        'accuracy': correct * 100.0 / len(test_loader.dataset),
+        'nll': nll_sum / len(test_loader),
+        'loss': loss_sum / len(test_loader),
+        'accuracy': accuracy.avg,
     }
 
 
-def test_ensemble_average(models, test_loader, weights =None):
+def test_ensemble_average(models, test_loader, weights =None): # Not supprorted for JT yet
     
     smx=nn.Softmax()
     
@@ -167,7 +182,8 @@ def test_ensemble_average(models, test_loader, weights =None):
     num_models = len(models)
     if weights == None:
         weights = [1.0]*num_models
-    
+
+    accuracy = AverageMeter("Acc", ":6.6f")    
     correct = 0
     total_num = 0
     for data, target in test_loader:
@@ -177,8 +193,7 @@ def test_ensemble_average(models, test_loader, weights =None):
                 if ind == 0:
                     output = smx(models[ind](data)) * weights[ind]
                 else:
-                    output += smx(models[ind](data)) * weights[ind]
-            
+                    output += smx(models[ind](data)) * weights[ind]            
             pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
             total_num += len(data)

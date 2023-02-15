@@ -49,22 +49,22 @@ class QThreeLayer(BaseModel):
         self.softmax = nn.Softmax(dim=1)#1
 
     def forward(self, x):
-        print(f"Input: {x[0]}")
+        #print(f"Input: {x[0]}")
         x, act_scaling_factor = self.quant_input(x)
-        print(f"Quant Input: {x[0]}")
+        #print(f"Quant Input: {x[0]}")
         x = self.act(self.dense_1(x, act_scaling_factor))
         x, act_scaling_factor = self.quant_act_1(x, act_scaling_factor)
-        print(f"Dense 1 Out: {x[0]}")
+        #print(f"Dense 1 Out: {x[0]}")
         x = self.act(self.dense_2(x, act_scaling_factor))
         x, act_scaling_factor = self.quant_act_2(x, act_scaling_factor)
-        print(f"Dense2 Out: {x[0]}")
+        #print(f"Dense2 Out: {x[0]}")
         x = self.act(self.dense_3(x, act_scaling_factor))
         x, act_scaling_factor = self.quant_act_3(x, act_scaling_factor)
-        print(f"Dense 3 Out: {x[0]}")
+        #print(f"Dense 3 Out: {x[0]}")
         x = self.dense_4(x, act_scaling_factor)
-        print(f"Dense 4 Out: {x[0]}")
+        #print(f"Dense 4 Out: {x[0]}")
         x = self.softmax(x)
-        print(f"Softmax Out: {x[0]}")
+        #print(f"Softmax Out: {x[0]}")
         #raise Exception("Stopping for copy paste")
         return x
 

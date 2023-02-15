@@ -25,6 +25,8 @@ import pickle
 from utils import *
 from tqdm import tqdm, trange
 from pyhessian import hessian
+from model import load_checkpoint
+
 
 import logging
 import os
@@ -51,12 +53,9 @@ if args.train_or_test == 'train':
 elif args.train_or_test == 'test':
     eval_loader = test_loader
 
-def return_model(file_name, arch_kwargs={}):
+def return_model(file_name, args):
 
-    checkpoint = torch.load(file_name)
-    
-    model = ResNet18(**arch_kwargs).cuda()
-    model.load_state_dict(checkpoint)
+    model = load_checkpoint(args, file_name)
     
     return model
 
@@ -101,7 +100,7 @@ for exp_id in range(args.exp_num):
         
     print(f'********** start the experiment on model {file_name} **********')
         
-    model = return_model(file_name, arch_kwargs = arch_kwargs)
+    model = return_model(file_name, args)
     model.eval()
     if batch_num == 1:
         hessian_comp = hessian(model,
