@@ -1,0 +1,138 @@
+  File "code/train.py", line 108
+    from models.jt_q_three_layer as jt_quant 
+                                 ^
+SyntaxError: invalid syntax
+  File "code/train.py", line 108
+    from models.jt_q_three_layer import as jt_quant 
+                                        ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "code/train.py", line 9, in <module>
+    from model import get_new_model
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/model.py", line 2, in <module>
+    from models.jt_q_three_layer import get_quantized_model 
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/models/jt_q_three_layer.py", line 3, in <module>
+    from ..hawq.utils.quantization_utils.quant_modules import QuantAct, QuantLinear
+ValueError: attempted relative import beyond top-level package
+Traceback (most recent call last):
+  File "code/train.py", line 2, in <module>
+    import torch
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/__init__.py", line 196, in <module>
+    _load_global_deps()
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/__init__.py", line 149, in _load_global_deps
+    ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/ctypes/__init__.py", line 373, in __init__
+    self._handle = _dlopen(self._name, mode)
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "code/train.py", line 2, in <module>
+    import torch
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/__init__.py", line 197, in <module>
+    from torch._C import *  # noqa: F403
+RuntimeError: KeyboardInterrupt: 
+Traceback (most recent call last):
+  File "code/train.py", line 2, in <module>
+    import torch
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/__init__.py", line 197, in <module>
+    from torch._C import *  # noqa: F403
+RuntimeError: KeyboardInterrupt: 
+Traceback (most recent call last):
+  File "code/train.py", line 13, in <module>
+    from data import get_loader
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/data.py", line 17
+    trainset = JetTaggingDataset(path="../../data/train", features, preprocess="standarize")
+                                                          ^
+SyntaxError: positional argument follows keyword argument
+Traceback (most recent call last):
+  File "code/train.py", line 13, in <module>
+    from data import get_loader
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/data.py", line 3, in <module>
+    from jet_dataset import JetTaggingDataset
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/jet_dataset.py", line 38
+    elif preprocess != None
+                          ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "code/train.py", line 13, in <module>
+    from data import get_loader
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/data.py", line 3, in <module>
+    from jet_dataset import JetTaggingDataset
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/jet_dataset.py", line 8, in <module>
+    from sklearn import preprocessing
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/__init__.py", line 82, in <module>
+    from .base import clone
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/base.py", line 17, in <module>
+    from .utils import _IS_32BIT
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/utils/__init__.py", line 25, in <module>
+    from . import _joblib
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/utils/_joblib.py", line 7, in <module>
+    import joblib
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/joblib/__init__.py", line 113, in <module>
+    from .memory import Memory, MemorizedResult, register_store_backend
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/joblib/memory.py", line 32, in <module>
+    from ._store_backends import StoreBackendBase, FileSystemStoreBackend
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/joblib/_store_backends.py", line 17, in <module>
+    from . import numpy_pickle
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/joblib/numpy_pickle.py", line 13, in <module>
+    from .compressor import lz4, LZ4_NOT_INSTALLED_ERROR
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/joblib/compressor.py", line 549, in <module>
+    class BinaryGzipFile(BinaryZlibFile):
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/abc.py", line 85, in __new__
+    cls = super().__new__(mcls, name, bases, namespace, **kwargs)
+KeyboardInterrupt
+<frozen importlib._bootstrap>:219: RuntimeWarning: scipy._lib.messagestream.MessageStream size changed, may indicate binary incompatibility. Expected 56 from C header, got 64 from PyObject
+Traceback (most recent call last):
+  File "code/train.py", line 13, in <module>
+    from data import get_loader
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/data.py", line 3, in <module>
+    from jet_dataset import JetTaggingDataset
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/jet_dataset.py", line 8, in <module>
+    from sklearn import preprocessing
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/__init__.py", line 82, in <module>
+    from .base import clone
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/base.py", line 17, in <module>
+    from .utils import _IS_32BIT
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/utils/__init__.py", line 28, in <module>
+    from .fixes import np_version, parse_version
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/utils/fixes.py", line 20, in <module>
+    import scipy.stats
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/stats/__init__.py", line 453, in <module>
+    from ._stats_py import *
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/stats/_stats_py.py", line 39, in <module>
+    from scipy.ndimage import _measurements
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/ndimage/__init__.py", line 154, in <module>
+    from ._measurements import *  # noqa: F401 F403
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/ndimage/_measurements.py", line 34, in <module>
+    from . import _ni_label
+  File "<frozen importlib._bootstrap>", line 389, in parent
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "code/train.py", line 12, in <module>
+    from utils import *
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/utils.py", line 54
+    return acuracy.avg c# correct / total_num 
+                       ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "code/train.py", line 2, in <module>
+    import torch
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/__init__.py", line 643, in <module>
+    from .functional import *  # noqa: F403
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/functional.py", line 6, in <module>
+    import torch.nn.functional as F
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/nn/__init__.py", line 3, in <module>
+    from .parallel import DataParallel
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/nn/parallel/__init__.py", line 2, in <module>
+    from .replicate import replicate
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/nn/parallel/replicate.py", line 1, in <module>
+    from . import comm
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/nn/parallel/comm.py", line 3, in <module>
+    from torch.cuda import nccl
+  File "<frozen importlib._bootstrap>", line 991, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 975, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 671, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 839, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 928, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1072, in path_stats
+  File "<frozen importlib._bootstrap_external>", line 142, in _path_stat
+KeyboardInterrupt

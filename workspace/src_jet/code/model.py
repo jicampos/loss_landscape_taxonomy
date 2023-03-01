@@ -43,7 +43,7 @@ def load_checkpoint(args, file_name):
     
     checkpoint = torch.load(file_name, map_location=torch.device("cpu"))
     
-    if "fp32" in file_name:
+    if quant is 32:
         model.load_state_dict(checkpoint["state_dict"])
         #model.train()
         return

@@ -139,14 +139,14 @@ def test_acc_loss(test_loader, model, criterion, regularizer=None, **kwargs):
         data = data.cuda(non_blocking=True)
         target = target.cuda(non_blocking=True)
 
-        output = model(input, **kwargs)
+        output = model(data, **kwargs)
         nll = criterion(output, target)
         loss = nll.clone()
         if regularizer is not None:
             loss += regularizer(model)
 
-        nll_sum += nll.item() * input.size(0)
-        loss_sum += loss.item() * input.size(0)
+        nll_sum += nll.item() * data.size(0)
+        loss_sum += loss.item() * data.size(0)
         
         batch_preds = torch.max(output, 1)[1]
         batch_labels = torch.max(target, 1)[1]

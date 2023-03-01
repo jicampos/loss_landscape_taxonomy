@@ -1,0 +1,79 @@
+  File "code/train.py", line 108
+    from models.jt_q_three_layer as jt_quant 
+                                 ^
+SyntaxError: invalid syntax
+  File "code/train.py", line 108
+    from models.jt_q_three_layer import as jt_quant 
+                                        ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "code/train.py", line 2, in <module>
+    import torch
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/__init__.py", line 197, in <module>
+    from torch._C import *  # noqa: F403
+RuntimeError: KeyboardInterrupt: 
+Traceback (most recent call last):
+  File "code/train.py", line 11, in <module>
+    from arguments import get_parser
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/arguments.py", line 59
+    parser.add_argument("--batch-norm", action="store_true", dest='batch-norm' help="Implement with batch normalization.")
+                                                                               ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "code/train.py", line 2, in <module>
+    import torch
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/__init__.py", line 29, in <module>
+    from .torch_version import __version__ as __version__
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/torch_version.py", line 3, in <module>
+    from pkg_resources import packaging  # type: ignore[attr-defined]
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/pkg_resources/__init__.py", line 83, in <module>
+    __import__('pkg_resources.extern.packaging.specifiers')
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/pkg_resources/_vendor/packaging/specifiers.py", line 299, in <module>
+    class Specifier(_IndividualSpecifier):
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/pkg_resources/_vendor/packaging/specifiers.py", line 394, in Specifier
+    _regex = re.compile(r"^\s*" + _regex_str + r"\s*$", re.VERBOSE | re.IGNORECASE)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/re.py", line 252, in compile
+    return _compile(pattern, flags)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/re.py", line 304, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/sre_compile.py", line 768, in compile
+    code = _code(p, flags)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/sre_compile.py", line 607, in _code
+    _compile(code, p.data, flags)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/sre_compile.py", line 168, in _compile
+    _compile(code, p, _combine_flags(flags, add_flags, del_flags))
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/sre_compile.py", line 209, in _compile
+    _compile(code, av, flags)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/sre_compile.py", line 156, in _compile
+    _compile(code, av[2], flags)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/sre_compile.py", line 209, in _compile
+    _compile(code, av, flags)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/sre_compile.py", line 156, in _compile
+    _compile(code, av[2], flags)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/sre_compile.py", line 148, in _compile
+    _compile(code, av[2], flags)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/sre_compile.py", line 120, in _compile
+    charset, hascased = _optimize_charset(av, iscased, tolower, fixes)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/sre_compile.py", line 399, in _optimize_charset
+    mapping[i // 256] = comps[chunk] = block
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "code/train.py", line 2, in <module>
+    import torch
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/__init__.py", line 720, in <module>
+    from torch import quantization as quantization
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/quantization/__init__.py", line 1, in <module>
+    from .quantize import *  # noqa: F403
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/quantization/quantize.py", line 10, in <module>
+    from torch.ao.quantization.quantize import _convert
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/ao/quantization/__init__.py", line 4, in <module>
+    from .quantize import *  # noqa: F403
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/ao/quantization/quantize.py", line 10, in <module>
+    from torch.quantization.quantization_mappings import (
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/quantization/quantization_mappings.py", line 9, in <module>
+    from torch.ao.quantization.quantization_mappings import (
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/ao/quantization/quantization_mappings.py", line 119, in <module>
+    F.elu: torch._ops.ops.quantized.elu,
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/_ops.py", line 63, in __getattr__
+    op = torch._C._jit_get_operation(qualified_op_name)
+KeyboardInterrupt

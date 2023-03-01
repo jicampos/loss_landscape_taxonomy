@@ -1,0 +1,20 @@
+  File "code/train.py", line 108
+    from models.jt_q_three_layer as jt_quant 
+                                 ^
+SyntaxError: invalid syntax
+  File "code/train.py", line 108
+    from models.jt_q_three_layer import as jt_quant 
+                                        ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "code/train.py", line 2, in <module>
+    import torch
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/__init__.py", line 721, in <module>
+    import torch.utils.data
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/utils/data/__init__.py", line 30, in <module>
+    from torch.utils.data._decorator import (
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/utils/data/_decorator.py", line 63, in <module>
+    class non_deterministic(object):
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/torch/utils/data/_decorator.py", line 85, in non_deterministic
+    def __call__(self, *args, **kwargs):
+KeyboardInterrupt

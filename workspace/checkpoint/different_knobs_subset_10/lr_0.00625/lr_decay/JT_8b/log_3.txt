@@ -1,0 +1,1404 @@
+train_bs 1024
+test_bs 1024
+training_type lr_decay
+presplit_train False
+train_data_path ../../data/jet_data/train.h5
+val_data_bath ../../data/jet_data/val.h5
+test_data_bath ../../data/jet_data/test.h5
+random_labels False
+shuffle_random_data False
+num_classes 10
+label_corrupt_prob 1.0
+random_label_path ../../data/random_labels/random_label.pkl
+random_label_path_test ../../data/random_labels/random_label_test.pkl
+test_on_noise False
+data_subset True
+subset 1.0
+subset_noisy False
+arch JT_8b
+different_width False
+resnet18_width 64
+weight_precision 8
+bias_precision 8
+act_precision 11
+batch_norm False
+dropout False
+exp_num 5
+lr 0.00625
+epochs 100
+weight_decay 0.0005
+no_lr_decay False
+one_lr_decay True
+stop_epoch 100
+resume None
+lr_decay_epoch [100, 150]
+save_early_stop False
+min_delta 0
+patience 0
+l1-enable False
+l2-enable False
+ignore_incomplete_batch True
+only_exploration False
+save_final False
+save_middle False
+save_best True
+save_frequency 10
+saving_folder ../checkpoint/different_knobs_subset_10/lr_0.00625/lr_decay/JT_8b/
+file_prefix exp_3
+mixup_alpha 16.0
+------------------------------------------------------
+Experiement: lr_decay training for JT_8b
+------------------------------------------------------
+using quant model
+---------------------- Model -------------------------
+QThreeLayer(
+  (quant_input): QuantAct(activation_bit=11, full_precision_flag=False, quant_mode=symmetric, Act_min: 0.00, Act_max: 0.00)
+  (dense_1): (QuantLinear() weight_bit=8, full_precision_flag=False, quantize_fn=symmetric)
+  (quant_act_1): QuantAct(activation_bit=11, full_precision_flag=False, quant_mode=symmetric, Act_min: 0.00, Act_max: 0.00)
+  (dense_2): (QuantLinear() weight_bit=8, full_precision_flag=False, quantize_fn=symmetric)
+  (quant_act_2): QuantAct(activation_bit=11, full_precision_flag=False, quant_mode=symmetric, Act_min: 0.00, Act_max: 0.00)
+  (dense_3): (QuantLinear() weight_bit=8, full_precision_flag=False, quantize_fn=symmetric)
+  (quant_act_3): QuantAct(activation_bit=11, full_precision_flag=False, quant_mode=symmetric, Act_min: 0.00, Act_max: 0.00)
+  (dense_4): (QuantLinear() weight_bit=8, full_precision_flag=False, quantize_fn=symmetric)
+  (act): ReLU()
+  (softmax): Softmax(dim=1)
+)
+------------------------------------------------------
+Loading Datasets
+Could not load file: ../../data/train/jetImage_7_100p_0_10000.h5
+Could not load file: ../../data/test/jetImage_7_100p_50000_60000.h5
+
+Dataset loading complete!
+The base learning rate is 0.00625
+---------------------
+Start epoch 0
+---------------------
+Epoch: [0][  0/616]	Loss 4.9918e-01 (4.9918e-01)	Acc 0.166016 (0.166016)
+Epoch: [0][300/616]	Loss 2.3925e-01 (2.8215e-01)	Acc 0.749023 (0.703482)
+Epoch: [0][600/616]	Loss 2.3343e-01 (2.6286e-01)	Acc 0.754883 (0.724003)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.750478)
+Training Loss of Epoch 0: 0.2623686234398586
+Training Acc of Epoch 0: 0.7244553480691057
+Testing Acc of Epoch 0: 0.7504782608695653
+Model with the best training loss saved! The loss is 0.2623686234398586
+Early stopping not satisfied.
+---------------------
+Start epoch 1
+---------------------
+Epoch: [1][  0/616]	Loss 2.3938e-01 (2.3938e-01)	Acc 0.752930 (0.752930)
+Epoch: [1][300/616]	Loss 2.2853e-01 (2.3849e-01)	Acc 0.761719 (0.749004)
+Epoch: [1][600/616]	Loss 2.2422e-01 (2.3746e-01)	Acc 0.767578 (0.750299)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.738782 (0.754209)
+Training Loss of Epoch 1: 0.23737869861164712
+Training Acc of Epoch 1: 0.7503096417682927
+Testing Acc of Epoch 1: 0.754208695652174
+Model with the best training loss saved! The loss is 0.23737869861164712
+Early stopping not satisfied.
+---------------------
+Start epoch 2
+---------------------
+Epoch: [2][  0/616]	Loss 2.2509e-01 (2.2509e-01)	Acc 0.761719 (0.761719)
+Epoch: [2][300/616]	Loss 2.4074e-01 (2.3458e-01)	Acc 0.760742 (0.752988)
+Epoch: [2][600/616]	Loss 2.3802e-01 (2.3453e-01)	Acc 0.736328 (0.752707)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.753791)
+Training Loss of Epoch 2: 0.2346015295362085
+Training Acc of Epoch 2: 0.7526375127032521
+Testing Acc of Epoch 2: 0.753791304347826
+Model with the best training loss saved! The loss is 0.2346015295362085
+Early stopping not satisfied.
+---------------------
+Start epoch 3
+---------------------
+Epoch: [3][  0/616]	Loss 2.2075e-01 (2.2075e-01)	Acc 0.762695 (0.762695)
+Epoch: [3][300/616]	Loss 2.3907e-01 (2.3398e-01)	Acc 0.747070 (0.752910)
+Epoch: [3][600/616]	Loss 2.2284e-01 (2.3394e-01)	Acc 0.762695 (0.753193)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.737179 (0.754296)
+Training Loss of Epoch 3: 0.23395282781221033
+Training Acc of Epoch 3: 0.7531948678861788
+Testing Acc of Epoch 3: 0.754295652173913
+Model with the best training loss saved! The loss is 0.23395282781221033
+Early stopping not satisfied.
+---------------------
+Start epoch 4
+---------------------
+Epoch: [4][  0/616]	Loss 2.3352e-01 (2.3352e-01)	Acc 0.748047 (0.748047)
+Epoch: [4][300/616]	Loss 2.3072e-01 (2.3358e-01)	Acc 0.760742 (0.753601)
+Epoch: [4][600/616]	Loss 2.2367e-01 (2.3333e-01)	Acc 0.762695 (0.753874)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.756091)
+Training Loss of Epoch 4: 0.23332829351832227
+Training Acc of Epoch 4: 0.7538617886178862
+Testing Acc of Epoch 4: 0.7560913043478261
+Model with the best training loss saved! The loss is 0.23332829351832227
+Early stopping not satisfied.
+---------------------
+Start epoch 5
+---------------------
+Epoch: [5][  0/616]	Loss 2.4083e-01 (2.4083e-01)	Acc 0.739258 (0.739258)
+Epoch: [5][300/616]	Loss 2.4679e-01 (2.3244e-01)	Acc 0.731445 (0.755256)
+Epoch: [5][600/616]	Loss 2.3717e-01 (2.3301e-01)	Acc 0.745117 (0.754130)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.737179 (0.754909)
+Training Loss of Epoch 5: 0.23300871064023274
+Training Acc of Epoch 5: 0.7541015625
+Testing Acc of Epoch 5: 0.7549086956521739
+Model with the best training loss saved! The loss is 0.23300871064023274
+Early stopping not satisfied.
+---------------------
+Start epoch 6
+---------------------
+Epoch: [6][  0/616]	Loss 2.4728e-01 (2.4728e-01)	Acc 0.729492 (0.729492)
+Epoch: [6][300/616]	Loss 2.3853e-01 (2.3204e-01)	Acc 0.736328 (0.754691)
+Epoch: [6][600/616]	Loss 2.3148e-01 (2.3263e-01)	Acc 0.756836 (0.754226)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.735577 (0.755278)
+Training Loss of Epoch 6: 0.23262029811134183
+Training Acc of Epoch 6: 0.7542603531504065
+Testing Acc of Epoch 6: 0.7552782608695652
+Model with the best training loss saved! The loss is 0.23262029811134183
+Early stopping not satisfied.
+---------------------
+Start epoch 7
+---------------------
+Epoch: [7][  0/616]	Loss 2.3806e-01 (2.3806e-01)	Acc 0.743164 (0.743164)
+Epoch: [7][300/616]	Loss 2.1502e-01 (2.3235e-01)	Acc 0.779297 (0.754828)
+Epoch: [7][600/616]	Loss 2.2472e-01 (2.3271e-01)	Acc 0.760742 (0.754529)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.754648)
+Training Loss of Epoch 7: 0.23270850608019325
+Training Acc of Epoch 7: 0.7545033028455285
+Testing Acc of Epoch 7: 0.7546478260869566
+Early stopping not satisfied.
+---------------------
+Start epoch 8
+---------------------
+Epoch: [8][  0/616]	Loss 2.3291e-01 (2.3291e-01)	Acc 0.744141 (0.744141)
+Epoch: [8][300/616]	Loss 2.3138e-01 (2.3340e-01)	Acc 0.751953 (0.753715)
+Epoch: [8][600/616]	Loss 2.2721e-01 (2.3248e-01)	Acc 0.749023 (0.754649)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.740385 (0.756452)
+Training Loss of Epoch 8: 0.23247352334542004
+Training Acc of Epoch 8: 0.7546033409552846
+Testing Acc of Epoch 8: 0.7564521739130434
+Model with the best training loss saved! The loss is 0.23247352334542004
+Early stopping not satisfied.
+---------------------
+Start epoch 9
+---------------------
+Epoch: [9][  0/616]	Loss 2.3929e-01 (2.3929e-01)	Acc 0.741211 (0.741211)
+Epoch: [9][300/616]	Loss 2.3502e-01 (2.3217e-01)	Acc 0.750000 (0.754192)
+Epoch: [9][600/616]	Loss 2.2637e-01 (2.3228e-01)	Acc 0.766602 (0.754621)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.750000 (0.754683)
+Training Loss of Epoch 9: 0.2322706061892393
+Training Acc of Epoch 9: 0.7545954014227643
+Testing Acc of Epoch 9: 0.7546826086956522
+Model with the best training loss saved! The loss is 0.2322706061892393
+Early stopping not satisfied.
+---------------------
+Start epoch 10
+---------------------
+Epoch: [10][  0/616]	Loss 2.4740e-01 (2.4740e-01)	Acc 0.742188 (0.742188)
+Epoch: [10][300/616]	Loss 2.4050e-01 (2.3268e-01)	Acc 0.737305 (0.754805)
+Epoch: [10][600/616]	Loss 2.4190e-01 (2.3233e-01)	Acc 0.738281 (0.754787)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.754713)
+Training Loss of Epoch 10: 0.23226759336828215
+Training Acc of Epoch 10: 0.754809768800813
+Testing Acc of Epoch 10: 0.7547130434782608
+Model with the best training loss saved! The loss is 0.23226759336828215
+Early stopping not satisfied.
+---------------------
+Start epoch 11
+---------------------
+Epoch: [11][  0/616]	Loss 2.2056e-01 (2.2056e-01)	Acc 0.762695 (0.762695)
+Epoch: [11][300/616]	Loss 2.2832e-01 (2.3194e-01)	Acc 0.765625 (0.756005)
+Epoch: [11][600/616]	Loss 2.3451e-01 (2.3236e-01)	Acc 0.750000 (0.754665)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.740385 (0.754017)
+Training Loss of Epoch 11: 0.232310232956235
+Training Acc of Epoch 11: 0.7547494283536585
+Testing Acc of Epoch 11: 0.7540173913043479
+Early stopping not satisfied.
+---------------------
+Start epoch 12
+---------------------
+Epoch: [12][  0/616]	Loss 2.3766e-01 (2.3766e-01)	Acc 0.750000 (0.750000)
+Epoch: [12][300/616]	Loss 2.3098e-01 (2.3223e-01)	Acc 0.757812 (0.754451)
+Epoch: [12][600/616]	Loss 2.3945e-01 (2.3244e-01)	Acc 0.745117 (0.754564)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.737179 (0.753648)
+Training Loss of Epoch 12: 0.23248354174741884
+Training Acc of Epoch 12: 0.7545826981707318
+Testing Acc of Epoch 12: 0.7536478260869566
+Early stopping not satisfied.
+---------------------
+Start epoch 13
+---------------------
+Epoch: [13][  0/616]	Loss 2.4291e-01 (2.4291e-01)	Acc 0.742188 (0.742188)
+Epoch: [13][300/616]	Loss 2.3282e-01 (2.3119e-01)	Acc 0.742188 (0.756657)
+Epoch: [13][600/616]	Loss 2.5271e-01 (2.3205e-01)	Acc 0.725586 (0.755286)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.756552)
+Training Loss of Epoch 13: 0.2320677135775729
+Training Acc of Epoch 13: 0.755249618902439
+Testing Acc of Epoch 13: 0.7565521739130435
+Model with the best training loss saved! The loss is 0.2320677135775729
+Early stopping not satisfied.
+---------------------
+Start epoch 14
+---------------------
+Epoch: [14][  0/616]	Loss 2.3093e-01 (2.3093e-01)	Acc 0.745117 (0.745117)
+Epoch: [14][300/616]	Loss 2.4557e-01 (2.3140e-01)	Acc 0.730469 (0.756035)
+Epoch: [14][600/616]	Loss 2.4716e-01 (2.3220e-01)	Acc 0.728516 (0.754806)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.750000 (0.753600)
+Training Loss of Epoch 14: 0.2321537768210822
+Training Acc of Epoch 14: 0.7548859883130081
+Testing Acc of Epoch 14: 0.7536
+Early stopping not satisfied.
+---------------------
+Start epoch 15
+---------------------
+Epoch: [15][  0/616]	Loss 2.3730e-01 (2.3730e-01)	Acc 0.744141 (0.744141)
+Epoch: [15][300/616]	Loss 2.4651e-01 (2.3209e-01)	Acc 0.733398 (0.755655)
+Epoch: [15][600/616]	Loss 2.3484e-01 (2.3213e-01)	Acc 0.763672 (0.755123)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.755787)
+Training Loss of Epoch 15: 0.23211113982568912
+Training Acc of Epoch 15: 0.755054306402439
+Testing Acc of Epoch 15: 0.7557869565217391
+Early stopping not satisfied.
+---------------------
+Start epoch 16
+---------------------
+Epoch: [16][  0/616]	Loss 2.2303e-01 (2.2303e-01)	Acc 0.779297 (0.779297)
+Epoch: [16][300/616]	Loss 2.2105e-01 (2.3227e-01)	Acc 0.764648 (0.755068)
+Epoch: [16][600/616]	Loss 2.3975e-01 (2.3201e-01)	Acc 0.731445 (0.755128)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.756691)
+Training Loss of Epoch 16: 0.23207155231053267
+Training Acc of Epoch 16: 0.7550400152439024
+Testing Acc of Epoch 16: 0.756691304347826
+Early stopping not satisfied.
+---------------------
+Start epoch 17
+---------------------
+Epoch: [17][  0/616]	Loss 2.2586e-01 (2.2586e-01)	Acc 0.755859 (0.755859)
+Epoch: [17][300/616]	Loss 2.2142e-01 (2.3163e-01)	Acc 0.779297 (0.755457)
+Epoch: [17][600/616]	Loss 2.3442e-01 (2.3202e-01)	Acc 0.750977 (0.755078)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.755557)
+Training Loss of Epoch 17: 0.23202283220077918
+Training Acc of Epoch 17: 0.7551067073170732
+Testing Acc of Epoch 17: 0.7555565217391305
+Model with the best training loss saved! The loss is 0.23202283220077918
+Early stopping not satisfied.
+---------------------
+Start epoch 18
+---------------------
+Epoch: [18][  0/616]	Loss 2.4168e-01 (2.4168e-01)	Acc 0.745117 (0.745117)
+Epoch: [18][300/616]	Loss 2.1999e-01 (2.3185e-01)	Acc 0.780273 (0.755223)
+Epoch: [18][600/616]	Loss 2.2820e-01 (2.3165e-01)	Acc 0.755859 (0.755372)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.754587)
+Training Loss of Epoch 18: 0.23171837213562757
+Training Acc of Epoch 18: 0.755178163109756
+Testing Acc of Epoch 18: 0.7545869565217391
+Model with the best training loss saved! The loss is 0.23171837213562757
+Early stopping not satisfied.
+---------------------
+Start epoch 19
+---------------------
+Epoch: [19][  0/616]	Loss 2.3349e-01 (2.3349e-01)	Acc 0.745117 (0.745117)
+Epoch: [19][300/616]	Loss 2.2973e-01 (2.3168e-01)	Acc 0.750977 (0.755684)
+Epoch: [19][600/616]	Loss 2.4663e-01 (2.3209e-01)	Acc 0.732422 (0.755136)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.738782 (0.756313)
+Training Loss of Epoch 19: 0.23206103218764793
+Training Acc of Epoch 19: 0.7551035315040651
+Testing Acc of Epoch 19: 0.7563130434782609
+Early stopping not satisfied.
+---------------------
+Start epoch 20
+---------------------
+Epoch: [20][  0/616]	Loss 2.2782e-01 (2.2782e-01)	Acc 0.758789 (0.758789)
+Epoch: [20][300/616]	Loss 2.4493e-01 (2.3155e-01)	Acc 0.732422 (0.755496)
+Epoch: [20][600/616]	Loss 2.3089e-01 (2.3222e-01)	Acc 0.761719 (0.754961)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.758313)
+Training Loss of Epoch 20: 0.23219694456433862
+Training Acc of Epoch 20: 0.7549225101626016
+Testing Acc of Epoch 20: 0.7583130434782609
+Early stopping not satisfied.
+---------------------
+Start epoch 21
+---------------------
+Epoch: [21][  0/616]	Loss 2.2370e-01 (2.2370e-01)	Acc 0.774414 (0.774414)
+Epoch: [21][300/616]	Loss 2.3114e-01 (2.3119e-01)	Acc 0.763672 (0.755600)
+Epoch: [21][600/616]	Loss 2.2978e-01 (2.3183e-01)	Acc 0.761719 (0.755169)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.750000 (0.755461)
+Training Loss of Epoch 21: 0.2318564327751718
+Training Acc of Epoch 21: 0.7551352896341463
+Testing Acc of Epoch 21: 0.7554608695652174
+Early stopping not satisfied.
+---------------------
+Start epoch 22
+---------------------
+Epoch: [22][  0/616]	Loss 2.3095e-01 (2.3095e-01)	Acc 0.758789 (0.758789)
+Epoch: [22][300/616]	Loss 2.3345e-01 (2.3123e-01)	Acc 0.753906 (0.755652)
+Epoch: [22][600/616]	Loss 2.2578e-01 (2.3159e-01)	Acc 0.772461 (0.755201)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.755952)
+Training Loss of Epoch 22: 0.23155219072733468
+Training Acc of Epoch 22: 0.7552305640243903
+Testing Acc of Epoch 22: 0.7559521739130435
+Model with the best training loss saved! The loss is 0.23155219072733468
+Early stopping not satisfied.
+---------------------
+Start epoch 23
+---------------------
+Epoch: [23][  0/616]	Loss 2.2549e-01 (2.2549e-01)	Acc 0.767578 (0.767578)
+Epoch: [23][300/616]	Loss 2.3919e-01 (2.3180e-01)	Acc 0.738281 (0.754646)
+Epoch: [23][600/616]	Loss 2.3321e-01 (2.3198e-01)	Acc 0.757812 (0.754795)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.748397 (0.755265)
+Training Loss of Epoch 23: 0.2319964935866798
+Training Acc of Epoch 23: 0.7547732469512195
+Testing Acc of Epoch 23: 0.7552652173913044
+Early stopping not satisfied.
+---------------------
+Start epoch 24
+---------------------
+Epoch: [24][  0/616]	Loss 2.4733e-01 (2.4733e-01)	Acc 0.742188 (0.742188)
+Epoch: [24][300/616]	Loss 2.3610e-01 (2.3116e-01)	Acc 0.756836 (0.756168)
+Epoch: [24][600/616]	Loss 2.3253e-01 (2.3196e-01)	Acc 0.753906 (0.755206)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.755717)
+Training Loss of Epoch 24: 0.23198953186108814
+Training Acc of Epoch 24: 0.7551622840447154
+Testing Acc of Epoch 24: 0.7557173913043478
+Early stopping not satisfied.
+---------------------
+Start epoch 25
+---------------------
+Epoch: [25][  0/616]	Loss 2.2365e-01 (2.2365e-01)	Acc 0.766602 (0.766602)
+Epoch: [25][300/616]	Loss 2.2002e-01 (2.3178e-01)	Acc 0.773438 (0.755736)
+Epoch: [25][600/616]	Loss 2.4252e-01 (2.3157e-01)	Acc 0.751953 (0.755523)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.748397 (0.755809)
+Training Loss of Epoch 25: 0.2316000252719817
+Training Acc of Epoch 25: 0.755395706300813
+Testing Acc of Epoch 25: 0.7558086956521739
+Early stopping not satisfied.
+---------------------
+Start epoch 26
+---------------------
+Epoch: [26][  0/616]	Loss 2.3185e-01 (2.3185e-01)	Acc 0.751953 (0.751953)
+Epoch: [26][300/616]	Loss 2.2742e-01 (2.3155e-01)	Acc 0.766602 (0.755305)
+Epoch: [26][600/616]	Loss 2.1391e-01 (2.3191e-01)	Acc 0.770508 (0.755260)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.751603 (0.756030)
+Training Loss of Epoch 26: 0.2318511830597389
+Training Acc of Epoch 26: 0.7553290142276423
+Testing Acc of Epoch 26: 0.7560304347826087
+Early stopping not satisfied.
+---------------------
+Start epoch 27
+---------------------
+Epoch: [27][  0/616]	Loss 2.1866e-01 (2.1866e-01)	Acc 0.763672 (0.763672)
+Epoch: [27][300/616]	Loss 2.5600e-01 (2.3181e-01)	Acc 0.718750 (0.755548)
+Epoch: [27][600/616]	Loss 2.2621e-01 (2.3166e-01)	Acc 0.762695 (0.755495)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.754808 (0.755052)
+Training Loss of Epoch 27: 0.23163866725394397
+Training Acc of Epoch 27: 0.7555449695121951
+Testing Acc of Epoch 27: 0.7550521739130435
+Early stopping not satisfied.
+---------------------
+Start epoch 28
+---------------------
+Epoch: [28][  0/616]	Loss 2.2604e-01 (2.2604e-01)	Acc 0.772461 (0.772461)
+Epoch: [28][300/616]	Loss 2.4580e-01 (2.3135e-01)	Acc 0.743164 (0.755120)
+Epoch: [28][600/616]	Loss 2.2425e-01 (2.3151e-01)	Acc 0.769531 (0.755317)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.753022)
+Training Loss of Epoch 28: 0.23162159175892186
+Training Acc of Epoch 28: 0.7552226244918699
+Testing Acc of Epoch 28: 0.7530217391304348
+Early stopping not satisfied.
+---------------------
+Start epoch 29
+---------------------
+Epoch: [29][  0/616]	Loss 2.2092e-01 (2.2092e-01)	Acc 0.770508 (0.770508)
+Epoch: [29][300/616]	Loss 2.2663e-01 (2.3157e-01)	Acc 0.765625 (0.754837)
+Epoch: [29][600/616]	Loss 2.3619e-01 (2.3214e-01)	Acc 0.753906 (0.754660)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.754617)
+Training Loss of Epoch 29: 0.23208588795448706
+Training Acc of Epoch 29: 0.7547176702235773
+Testing Acc of Epoch 29: 0.7546173913043478
+Early stopping not satisfied.
+---------------------
+Start epoch 30
+---------------------
+Epoch: [30][  0/616]	Loss 2.3307e-01 (2.3307e-01)	Acc 0.742188 (0.742188)
+Epoch: [30][300/616]	Loss 2.2239e-01 (2.3213e-01)	Acc 0.769531 (0.754237)
+Epoch: [30][600/616]	Loss 2.4577e-01 (2.3172e-01)	Acc 0.735352 (0.755162)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.754896)
+Training Loss of Epoch 30: 0.2317262278339727
+Training Acc of Epoch 30: 0.7551622840447154
+Testing Acc of Epoch 30: 0.7548956521739131
+Early stopping not satisfied.
+---------------------
+Start epoch 31
+---------------------
+Epoch: [31][  0/616]	Loss 2.3301e-01 (2.3301e-01)	Acc 0.741211 (0.741211)
+Epoch: [31][300/616]	Loss 2.3799e-01 (2.3243e-01)	Acc 0.748047 (0.754335)
+Epoch: [31][600/616]	Loss 2.4156e-01 (2.3188e-01)	Acc 0.747070 (0.754975)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.750000 (0.755778)
+Training Loss of Epoch 31: 0.23190533732011065
+Training Acc of Epoch 31: 0.7549352134146341
+Testing Acc of Epoch 31: 0.7557782608695652
+Early stopping not satisfied.
+---------------------
+Start epoch 32
+---------------------
+Epoch: [32][  0/616]	Loss 2.3265e-01 (2.3265e-01)	Acc 0.763672 (0.763672)
+Epoch: [32][300/616]	Loss 2.2878e-01 (2.3161e-01)	Acc 0.767578 (0.755567)
+Epoch: [32][600/616]	Loss 2.3517e-01 (2.3175e-01)	Acc 0.741211 (0.754984)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.755891)
+Training Loss of Epoch 32: 0.23175421546145183
+Training Acc of Epoch 32: 0.7550447789634146
+Testing Acc of Epoch 32: 0.755891304347826
+Early stopping not satisfied.
+---------------------
+Start epoch 33
+---------------------
+Epoch: [33][  0/616]	Loss 2.3708e-01 (2.3708e-01)	Acc 0.753906 (0.753906)
+Epoch: [33][300/616]	Loss 2.3710e-01 (2.3144e-01)	Acc 0.741211 (0.754951)
+Epoch: [33][600/616]	Loss 2.1943e-01 (2.3152e-01)	Acc 0.770508 (0.755218)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.751603 (0.755865)
+Training Loss of Epoch 33: 0.23156106740963167
+Training Acc of Epoch 33: 0.7551114710365854
+Testing Acc of Epoch 33: 0.7558652173913043
+Early stopping not satisfied.
+---------------------
+Start epoch 34
+---------------------
+Epoch: [34][  0/616]	Loss 2.3368e-01 (2.3368e-01)	Acc 0.746094 (0.746094)
+Epoch: [34][300/616]	Loss 2.1340e-01 (2.3236e-01)	Acc 0.792969 (0.754698)
+Epoch: [34][600/616]	Loss 2.4160e-01 (2.3172e-01)	Acc 0.721680 (0.755203)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.748397 (0.757035)
+Training Loss of Epoch 34: 0.23163609715496622
+Training Acc of Epoch 34: 0.7552527947154472
+Testing Acc of Epoch 34: 0.7570347826086956
+Early stopping not satisfied.
+---------------------
+Start epoch 35
+---------------------
+Epoch: [35][  0/616]	Loss 2.3597e-01 (2.3597e-01)	Acc 0.751953 (0.751953)
+Epoch: [35][300/616]	Loss 2.2334e-01 (2.3125e-01)	Acc 0.750977 (0.755590)
+Epoch: [35][600/616]	Loss 2.4112e-01 (2.3173e-01)	Acc 0.740234 (0.755156)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.740385 (0.757222)
+Training Loss of Epoch 35: 0.2317019687920082
+Training Acc of Epoch 35: 0.7551495807926829
+Testing Acc of Epoch 35: 0.7572217391304348
+Early stopping not satisfied.
+---------------------
+Start epoch 36
+---------------------
+Epoch: [36][  0/616]	Loss 2.3370e-01 (2.3370e-01)	Acc 0.753906 (0.753906)
+Epoch: [36][300/616]	Loss 2.2387e-01 (2.3150e-01)	Acc 0.745117 (0.755029)
+Epoch: [36][600/616]	Loss 2.1333e-01 (2.3161e-01)	Acc 0.781250 (0.755092)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.755600)
+Training Loss of Epoch 36: 0.23160083066157208
+Training Acc of Epoch 36: 0.7551209984756098
+Testing Acc of Epoch 36: 0.7556
+Early stopping not satisfied.
+---------------------
+Start epoch 37
+---------------------
+Epoch: [37][  0/616]	Loss 2.3040e-01 (2.3040e-01)	Acc 0.758789 (0.758789)
+Epoch: [37][300/616]	Loss 2.3233e-01 (2.3193e-01)	Acc 0.750977 (0.754792)
+Epoch: [37][600/616]	Loss 2.3143e-01 (2.3153e-01)	Acc 0.744141 (0.755297)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.756096)
+Training Loss of Epoch 37: 0.23161495279490463
+Training Acc of Epoch 37: 0.7551416412601626
+Testing Acc of Epoch 37: 0.7560956521739131
+Early stopping not satisfied.
+---------------------
+Start epoch 38
+---------------------
+Epoch: [38][  0/616]	Loss 2.2487e-01 (2.2487e-01)	Acc 0.764648 (0.764648)
+Epoch: [38][300/616]	Loss 2.2860e-01 (2.3225e-01)	Acc 0.760742 (0.754461)
+Epoch: [38][600/616]	Loss 2.2483e-01 (2.3181e-01)	Acc 0.765625 (0.754854)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.748397 (0.755687)
+Training Loss of Epoch 38: 0.2317255360808799
+Training Acc of Epoch 38: 0.7549955538617886
+Testing Acc of Epoch 38: 0.7556869565217391
+Early stopping not satisfied.
+---------------------
+Start epoch 39
+---------------------
+Epoch: [39][  0/616]	Loss 2.1460e-01 (2.1460e-01)	Acc 0.776367 (0.776367)
+Epoch: [39][300/616]	Loss 2.3504e-01 (2.3134e-01)	Acc 0.754883 (0.754513)
+Epoch: [39][600/616]	Loss 2.2633e-01 (2.3147e-01)	Acc 0.764648 (0.755229)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.750000 (0.754704)
+Training Loss of Epoch 39: 0.231451309211855
+Training Acc of Epoch 39: 0.7552861407520325
+Testing Acc of Epoch 39: 0.754704347826087
+Model with the best training loss saved! The loss is 0.231451309211855
+Early stopping not satisfied.
+---------------------
+Start epoch 40
+---------------------
+Epoch: [40][  0/616]	Loss 2.2251e-01 (2.2251e-01)	Acc 0.764648 (0.764648)
+Epoch: [40][300/616]	Loss 2.3677e-01 (2.3139e-01)	Acc 0.753906 (0.755464)
+Epoch: [40][600/616]	Loss 2.5492e-01 (2.3168e-01)	Acc 0.726562 (0.754823)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.754826)
+Training Loss of Epoch 40: 0.2316873281709547
+Training Acc of Epoch 40: 0.7548478785569106
+Testing Acc of Epoch 40: 0.7548260869565218
+Early stopping not satisfied.
+---------------------
+Start epoch 41
+---------------------
+Epoch: [41][  0/616]	Loss 2.3431e-01 (2.3431e-01)	Acc 0.750977 (0.750977)
+Epoch: [41][300/616]	Loss 2.2527e-01 (2.3172e-01)	Acc 0.772461 (0.754880)
+Epoch: [41][600/616]	Loss 2.2387e-01 (2.3178e-01)	Acc 0.779297 (0.755044)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.755470)
+Training Loss of Epoch 41: 0.23179106906177552
+Training Acc of Epoch 41: 0.7549622078252033
+Testing Acc of Epoch 41: 0.7554695652173913
+Early stopping not satisfied.
+---------------------
+Start epoch 42
+---------------------
+Epoch: [42][  0/616]	Loss 2.2364e-01 (2.2364e-01)	Acc 0.753906 (0.753906)
+Epoch: [42][300/616]	Loss 2.3727e-01 (2.3160e-01)	Acc 0.741211 (0.755415)
+Epoch: [42][600/616]	Loss 2.1952e-01 (2.3150e-01)	Acc 0.778320 (0.755255)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.737179 (0.756100)
+Training Loss of Epoch 42: 0.23151825259371503
+Training Acc of Epoch 42: 0.7552162728658537
+Testing Acc of Epoch 42: 0.7561
+Early stopping not satisfied.
+---------------------
+Start epoch 43
+---------------------
+Epoch: [43][  0/616]	Loss 2.2011e-01 (2.2011e-01)	Acc 0.776367 (0.776367)
+Epoch: [43][300/616]	Loss 2.0931e-01 (2.3225e-01)	Acc 0.781250 (0.754451)
+Epoch: [43][600/616]	Loss 2.3281e-01 (2.3170e-01)	Acc 0.754883 (0.755031)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.750000 (0.756357)
+Training Loss of Epoch 43: 0.23165501591151322
+Training Acc of Epoch 43: 0.7550431910569105
+Testing Acc of Epoch 43: 0.7563565217391305
+Early stopping not satisfied.
+---------------------
+Start epoch 44
+---------------------
+Epoch: [44][  0/616]	Loss 2.1986e-01 (2.1986e-01)	Acc 0.764648 (0.764648)
+Epoch: [44][300/616]	Loss 2.4263e-01 (2.3127e-01)	Acc 0.739258 (0.755451)
+Epoch: [44][600/616]	Loss 2.2682e-01 (2.3163e-01)	Acc 0.750977 (0.754992)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.750000 (0.756313)
+Training Loss of Epoch 44: 0.23160949346980428
+Training Acc of Epoch 44: 0.7550034933943089
+Testing Acc of Epoch 44: 0.7563130434782609
+Early stopping not satisfied.
+---------------------
+Start epoch 45
+---------------------
+Epoch: [45][  0/616]	Loss 2.2715e-01 (2.2715e-01)	Acc 0.750977 (0.750977)
+Epoch: [45][300/616]	Loss 2.1523e-01 (2.3144e-01)	Acc 0.780273 (0.755610)
+Epoch: [45][600/616]	Loss 2.2260e-01 (2.3148e-01)	Acc 0.763672 (0.755422)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.755065)
+Training Loss of Epoch 45: 0.23144381075370601
+Training Acc of Epoch 45: 0.755421112804878
+Testing Acc of Epoch 45: 0.7550652173913044
+Model with the best training loss saved! The loss is 0.23144381075370601
+Early stopping not satisfied.
+---------------------
+Start epoch 46
+---------------------
+Epoch: [46][  0/616]	Loss 2.3476e-01 (2.3476e-01)	Acc 0.750000 (0.750000)
+Epoch: [46][300/616]	Loss 2.2641e-01 (2.3172e-01)	Acc 0.765625 (0.755369)
+Epoch: [46][600/616]	Loss 2.1721e-01 (2.3142e-01)	Acc 0.776367 (0.755435)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.756757)
+Training Loss of Epoch 46: 0.23140265100855167
+Training Acc of Epoch 46: 0.7554592225609756
+Testing Acc of Epoch 46: 0.7567565217391304
+Model with the best training loss saved! The loss is 0.23140265100855167
+Early stopping not satisfied.
+---------------------
+Start epoch 47
+---------------------
+Epoch: [47][  0/616]	Loss 2.0914e-01 (2.0914e-01)	Acc 0.785156 (0.785156)
+Epoch: [47][300/616]	Loss 2.3046e-01 (2.3139e-01)	Acc 0.761719 (0.755493)
+Epoch: [47][600/616]	Loss 2.3070e-01 (2.3173e-01)	Acc 0.759766 (0.755307)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.756152)
+Training Loss of Epoch 47: 0.2317130524695404
+Training Acc of Epoch 47: 0.7553051956300812
+Testing Acc of Epoch 47: 0.7561521739130435
+Early stopping not satisfied.
+---------------------
+Start epoch 48
+---------------------
+Epoch: [48][  0/616]	Loss 2.2496e-01 (2.2496e-01)	Acc 0.758789 (0.758789)
+Epoch: [48][300/616]	Loss 2.4021e-01 (2.3122e-01)	Acc 0.735352 (0.755431)
+Epoch: [48][600/616]	Loss 2.1858e-01 (2.3144e-01)	Acc 0.771484 (0.755292)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.748397 (0.755230)
+Training Loss of Epoch 48: 0.231398512241317
+Training Acc of Epoch 48: 0.7553671239837398
+Testing Acc of Epoch 48: 0.7552304347826087
+Model with the best training loss saved! The loss is 0.231398512241317
+Early stopping not satisfied.
+---------------------
+Start epoch 49
+---------------------
+Epoch: [49][  0/616]	Loss 2.3793e-01 (2.3793e-01)	Acc 0.750977 (0.750977)
+Epoch: [49][300/616]	Loss 2.2818e-01 (2.3099e-01)	Acc 0.763672 (0.756022)
+Epoch: [49][600/616]	Loss 2.2474e-01 (2.3154e-01)	Acc 0.761719 (0.755278)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.757178)
+Training Loss of Epoch 49: 0.23160758755071376
+Training Acc of Epoch 49: 0.7551956300813009
+Testing Acc of Epoch 49: 0.7571782608695652
+Early stopping not satisfied.
+---------------------
+Start epoch 50
+---------------------
+Epoch: [50][  0/616]	Loss 2.3029e-01 (2.3029e-01)	Acc 0.757812 (0.757812)
+Epoch: [50][300/616]	Loss 2.1877e-01 (2.3104e-01)	Acc 0.766602 (0.756210)
+Epoch: [50][600/616]	Loss 2.2321e-01 (2.3139e-01)	Acc 0.780273 (0.755720)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.756487)
+Training Loss of Epoch 50: 0.23138429391674878
+Training Acc of Epoch 50: 0.7556624745934959
+Testing Acc of Epoch 50: 0.7564869565217391
+Model with the best training loss saved! The loss is 0.23138429391674878
+Early stopping not satisfied.
+---------------------
+Start epoch 51
+---------------------
+Epoch: [51][  0/616]	Loss 2.3456e-01 (2.3456e-01)	Acc 0.750977 (0.750977)
+Epoch: [51][300/616]	Loss 2.3441e-01 (2.3166e-01)	Acc 0.757812 (0.755493)
+Epoch: [51][600/616]	Loss 2.3640e-01 (2.3137e-01)	Acc 0.750000 (0.755344)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.755148)
+Training Loss of Epoch 51: 0.23138056089723014
+Training Acc of Epoch 51: 0.7553115472560976
+Testing Acc of Epoch 51: 0.7551478260869565
+Model with the best training loss saved! The loss is 0.23138056089723014
+Early stopping not satisfied.
+---------------------
+Start epoch 52
+---------------------
+Epoch: [52][  0/616]	Loss 2.3554e-01 (2.3554e-01)	Acc 0.751953 (0.751953)
+Epoch: [52][300/616]	Loss 2.1876e-01 (2.3156e-01)	Acc 0.750000 (0.755535)
+Epoch: [52][600/616]	Loss 2.3009e-01 (2.3186e-01)	Acc 0.759766 (0.754800)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.756126)
+Training Loss of Epoch 52: 0.23181277329359598
+Training Acc of Epoch 52: 0.7549002794715447
+Testing Acc of Epoch 52: 0.7561260869565217
+Early stopping not satisfied.
+---------------------
+Start epoch 53
+---------------------
+Epoch: [53][  0/616]	Loss 2.4523e-01 (2.4523e-01)	Acc 0.731445 (0.731445)
+Epoch: [53][300/616]	Loss 2.2390e-01 (2.3172e-01)	Acc 0.779297 (0.755639)
+Epoch: [53][600/616]	Loss 2.2598e-01 (2.3155e-01)	Acc 0.757812 (0.755385)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.748397 (0.756326)
+Training Loss of Epoch 53: 0.23158942708155003
+Training Acc of Epoch 53: 0.7553020198170731
+Testing Acc of Epoch 53: 0.7563260869565217
+Early stopping not satisfied.
+---------------------
+Start epoch 54
+---------------------
+Epoch: [54][  0/616]	Loss 2.4805e-01 (2.4805e-01)	Acc 0.726562 (0.726562)
+Epoch: [54][300/616]	Loss 2.4825e-01 (2.3235e-01)	Acc 0.744141 (0.753115)
+Epoch: [54][600/616]	Loss 2.0968e-01 (2.3151e-01)	Acc 0.798828 (0.754891)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.753617)
+Training Loss of Epoch 54: 0.23144017838365663
+Training Acc of Epoch 54: 0.7550527184959349
+Testing Acc of Epoch 54: 0.7536173913043478
+Early stopping not satisfied.
+---------------------
+Start epoch 55
+---------------------
+Epoch: [55][  0/616]	Loss 2.1976e-01 (2.1976e-01)	Acc 0.771484 (0.771484)
+Epoch: [55][300/616]	Loss 2.1591e-01 (2.3155e-01)	Acc 0.780273 (0.755720)
+Epoch: [55][600/616]	Loss 2.3348e-01 (2.3153e-01)	Acc 0.755859 (0.755495)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.740385 (0.754913)
+Training Loss of Epoch 55: 0.23151528450047099
+Training Acc of Epoch 55: 0.7554878048780488
+Testing Acc of Epoch 55: 0.7549130434782608
+Early stopping not satisfied.
+---------------------
+Start epoch 56
+---------------------
+Epoch: [56][  0/616]	Loss 2.3096e-01 (2.3096e-01)	Acc 0.757812 (0.757812)
+Epoch: [56][300/616]	Loss 2.2952e-01 (2.3142e-01)	Acc 0.753906 (0.755327)
+Epoch: [56][600/616]	Loss 2.3569e-01 (2.3150e-01)	Acc 0.749023 (0.755245)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.754278)
+Training Loss of Epoch 56: 0.23157773936182502
+Training Acc of Epoch 56: 0.7551146468495935
+Testing Acc of Epoch 56: 0.7542782608695652
+Early stopping not satisfied.
+---------------------
+Start epoch 57
+---------------------
+Epoch: [57][  0/616]	Loss 2.3514e-01 (2.3514e-01)	Acc 0.747070 (0.747070)
+Epoch: [57][300/616]	Loss 2.1305e-01 (2.3100e-01)	Acc 0.785156 (0.755561)
+Epoch: [57][600/616]	Loss 2.1301e-01 (2.3135e-01)	Acc 0.780273 (0.755266)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.751603 (0.756178)
+Training Loss of Epoch 57: 0.2314355200868312
+Training Acc of Epoch 57: 0.7551575203252032
+Testing Acc of Epoch 57: 0.7561782608695652
+Early stopping not satisfied.
+---------------------
+Start epoch 58
+---------------------
+Epoch: [58][  0/616]	Loss 2.3595e-01 (2.3595e-01)	Acc 0.757812 (0.757812)
+Epoch: [58][300/616]	Loss 2.2944e-01 (2.3201e-01)	Acc 0.751953 (0.754581)
+Epoch: [58][600/616]	Loss 2.3745e-01 (2.3153e-01)	Acc 0.746094 (0.755219)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.738782 (0.754870)
+Training Loss of Epoch 58: 0.2315884534663301
+Training Acc of Epoch 58: 0.7550844766260163
+Testing Acc of Epoch 58: 0.7548695652173913
+Early stopping not satisfied.
+---------------------
+Start epoch 59
+---------------------
+Epoch: [59][  0/616]	Loss 2.2436e-01 (2.2436e-01)	Acc 0.779297 (0.779297)
+Epoch: [59][300/616]	Loss 2.2010e-01 (2.3234e-01)	Acc 0.773438 (0.754179)
+Epoch: [59][600/616]	Loss 2.3394e-01 (2.3140e-01)	Acc 0.757812 (0.755222)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.756813)
+Training Loss of Epoch 59: 0.23146942231228682
+Training Acc of Epoch 59: 0.7551591082317073
+Testing Acc of Epoch 59: 0.7568130434782608
+Early stopping not satisfied.
+---------------------
+Start epoch 60
+---------------------
+Epoch: [60][  0/616]	Loss 2.1517e-01 (2.1517e-01)	Acc 0.765625 (0.765625)
+Epoch: [60][300/616]	Loss 2.2462e-01 (2.3135e-01)	Acc 0.757812 (0.755558)
+Epoch: [60][600/616]	Loss 2.3901e-01 (2.3145e-01)	Acc 0.752930 (0.755432)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.755204)
+Training Loss of Epoch 60: 0.23148838373703684
+Training Acc of Epoch 60: 0.7554099974593496
+Testing Acc of Epoch 60: 0.7552043478260869
+Early stopping not satisfied.
+---------------------
+Start epoch 61
+---------------------
+Epoch: [61][  0/616]	Loss 2.4374e-01 (2.4374e-01)	Acc 0.750000 (0.750000)
+Epoch: [61][300/616]	Loss 2.2703e-01 (2.3181e-01)	Acc 0.761719 (0.755090)
+Epoch: [61][600/616]	Loss 2.1660e-01 (2.3164e-01)	Acc 0.765625 (0.754886)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.754778)
+Training Loss of Epoch 61: 0.23151022295157114
+Training Acc of Epoch 61: 0.7550606580284552
+Testing Acc of Epoch 61: 0.7547782608695652
+Early stopping not satisfied.
+---------------------
+Start epoch 62
+---------------------
+Epoch: [62][  0/616]	Loss 2.3477e-01 (2.3477e-01)	Acc 0.746094 (0.746094)
+Epoch: [62][300/616]	Loss 2.2064e-01 (2.3172e-01)	Acc 0.763672 (0.755035)
+Epoch: [62][600/616]	Loss 2.3549e-01 (2.3177e-01)	Acc 0.749023 (0.755110)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.757048)
+Training Loss of Epoch 62: 0.23170536599023556
+Training Acc of Epoch 62: 0.7551892784552846
+Testing Acc of Epoch 62: 0.7570478260869565
+Early stopping not satisfied.
+---------------------
+Start epoch 63
+---------------------
+Epoch: [63][  0/616]	Loss 2.3126e-01 (2.3126e-01)	Acc 0.774414 (0.774414)
+Epoch: [63][300/616]	Loss 2.3246e-01 (2.3164e-01)	Acc 0.756836 (0.755379)
+Epoch: [63][600/616]	Loss 2.3287e-01 (2.3156e-01)	Acc 0.758789 (0.755403)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.755122)
+Training Loss of Epoch 63: 0.23152856497260613
+Training Acc of Epoch 63: 0.7554481072154472
+Testing Acc of Epoch 63: 0.7551217391304348
+Early stopping not satisfied.
+---------------------
+Start epoch 64
+---------------------
+Epoch: [64][  0/616]	Loss 2.3341e-01 (2.3341e-01)	Acc 0.746094 (0.746094)
+Epoch: [64][300/616]	Loss 2.3290e-01 (2.3145e-01)	Acc 0.753906 (0.755243)
+Epoch: [64][600/616]	Loss 2.3146e-01 (2.3156e-01)	Acc 0.748047 (0.755055)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.753317)
+Training Loss of Epoch 64: 0.2314902001522421
+Training Acc of Epoch 64: 0.7550971798780488
+Testing Acc of Epoch 64: 0.7533173913043478
+Early stopping not satisfied.
+---------------------
+Start epoch 65
+---------------------
+Epoch: [65][  0/616]	Loss 2.4210e-01 (2.4210e-01)	Acc 0.748047 (0.748047)
+Epoch: [65][300/616]	Loss 2.3239e-01 (2.3130e-01)	Acc 0.751953 (0.755736)
+Epoch: [65][600/616]	Loss 2.2374e-01 (2.3178e-01)	Acc 0.780273 (0.754884)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.755930)
+Training Loss of Epoch 65: 0.23176419584731744
+Training Acc of Epoch 65: 0.7548780487804878
+Testing Acc of Epoch 65: 0.7559304347826087
+Early stopping not satisfied.
+---------------------
+Start epoch 66
+---------------------
+Epoch: [66][  0/616]	Loss 2.2458e-01 (2.2458e-01)	Acc 0.772461 (0.772461)
+Epoch: [66][300/616]	Loss 2.3696e-01 (2.3205e-01)	Acc 0.744141 (0.754633)
+Epoch: [66][600/616]	Loss 2.3303e-01 (2.3171e-01)	Acc 0.751953 (0.754975)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.755357)
+Training Loss of Epoch 66: 0.2316581815481186
+Training Acc of Epoch 66: 0.7551289380081301
+Testing Acc of Epoch 66: 0.7553565217391305
+Early stopping not satisfied.
+---------------------
+Start epoch 67
+---------------------
+Epoch: [67][  0/616]	Loss 2.2992e-01 (2.2992e-01)	Acc 0.744141 (0.744141)
+Epoch: [67][300/616]	Loss 2.3694e-01 (2.3184e-01)	Acc 0.752930 (0.754562)
+Epoch: [67][600/616]	Loss 2.3612e-01 (2.3150e-01)	Acc 0.752930 (0.755291)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.754261)
+Training Loss of Epoch 67: 0.23149995076947097
+Training Acc of Epoch 67: 0.7553290142276423
+Testing Acc of Epoch 67: 0.7542608695652174
+Early stopping not satisfied.
+---------------------
+Start epoch 68
+---------------------
+Epoch: [68][  0/616]	Loss 2.2817e-01 (2.2817e-01)	Acc 0.758789 (0.758789)
+Epoch: [68][300/616]	Loss 2.3242e-01 (2.3224e-01)	Acc 0.750977 (0.754526)
+Epoch: [68][600/616]	Loss 2.2426e-01 (2.3171e-01)	Acc 0.762695 (0.755070)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.756200)
+Training Loss of Epoch 68: 0.2317069487843087
+Training Acc of Epoch 68: 0.7551241742886179
+Testing Acc of Epoch 68: 0.7562
+Early stopping not satisfied.
+---------------------
+Start epoch 69
+---------------------
+Epoch: [69][  0/616]	Loss 2.4371e-01 (2.4371e-01)	Acc 0.737305 (0.737305)
+Epoch: [69][300/616]	Loss 2.4083e-01 (2.3164e-01)	Acc 0.741211 (0.755207)
+Epoch: [69][600/616]	Loss 2.3380e-01 (2.3148e-01)	Acc 0.759766 (0.755250)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.756661)
+Training Loss of Epoch 69: 0.2314259128599632
+Training Acc of Epoch 69: 0.7553861788617886
+Testing Acc of Epoch 69: 0.7566608695652174
+Early stopping not satisfied.
+---------------------
+Start epoch 70
+---------------------
+Epoch: [70][  0/616]	Loss 2.1380e-01 (2.1380e-01)	Acc 0.778320 (0.778320)
+Epoch: [70][300/616]	Loss 2.3847e-01 (2.3204e-01)	Acc 0.733398 (0.754098)
+Epoch: [70][600/616]	Loss 2.2294e-01 (2.3162e-01)	Acc 0.773438 (0.755003)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.750000 (0.756765)
+Training Loss of Epoch 70: 0.2316395996547327
+Training Acc of Epoch 70: 0.7549240980691057
+Testing Acc of Epoch 70: 0.7567652173913043
+Early stopping not satisfied.
+---------------------
+Start epoch 71
+---------------------
+Epoch: [71][  0/616]	Loss 2.1278e-01 (2.1278e-01)	Acc 0.777344 (0.777344)
+Epoch: [71][300/616]	Loss 2.1864e-01 (2.3141e-01)	Acc 0.781250 (0.756278)
+Epoch: [71][600/616]	Loss 2.3918e-01 (2.3176e-01)	Acc 0.746094 (0.755167)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.748397 (0.754843)
+Training Loss of Epoch 71: 0.23172788828369079
+Training Acc of Epoch 71: 0.7551305259146341
+Testing Acc of Epoch 71: 0.7548434782608696
+Early stopping not satisfied.
+---------------------
+Start epoch 72
+---------------------
+Epoch: [72][  0/616]	Loss 2.4026e-01 (2.4026e-01)	Acc 0.742188 (0.742188)
+Epoch: [72][300/616]	Loss 2.2808e-01 (2.3209e-01)	Acc 0.759766 (0.754610)
+Epoch: [72][600/616]	Loss 2.3252e-01 (2.3156e-01)	Acc 0.756836 (0.755575)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.754483)
+Training Loss of Epoch 72: 0.23158012740011139
+Training Acc of Epoch 72: 0.7555386178861788
+Testing Acc of Epoch 72: 0.7544826086956522
+Early stopping not satisfied.
+---------------------
+Start epoch 73
+---------------------
+Epoch: [73][  0/616]	Loss 2.2191e-01 (2.2191e-01)	Acc 0.778320 (0.778320)
+Epoch: [73][300/616]	Loss 2.5041e-01 (2.3108e-01)	Acc 0.728516 (0.755275)
+Epoch: [73][600/616]	Loss 2.2311e-01 (2.3132e-01)	Acc 0.763672 (0.755250)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.740385 (0.757191)
+Training Loss of Epoch 73: 0.23132589447304486
+Training Acc of Epoch 73: 0.7552893165650406
+Testing Acc of Epoch 73: 0.7571913043478261
+Model with the best training loss saved! The loss is 0.23132589447304486
+Early stopping not satisfied.
+---------------------
+Start epoch 74
+---------------------
+Epoch: [74][  0/616]	Loss 2.3818e-01 (2.3818e-01)	Acc 0.761719 (0.761719)
+Epoch: [74][300/616]	Loss 2.1957e-01 (2.3173e-01)	Acc 0.762695 (0.755687)
+Epoch: [74][600/616]	Loss 2.3414e-01 (2.3162e-01)	Acc 0.743164 (0.755557)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.757326)
+Training Loss of Epoch 74: 0.23161160788400387
+Training Acc of Epoch 74: 0.7554957444105691
+Testing Acc of Epoch 74: 0.7573260869565217
+Early stopping not satisfied.
+---------------------
+Start epoch 75
+---------------------
+Epoch: [75][  0/616]	Loss 2.3395e-01 (2.3395e-01)	Acc 0.746094 (0.746094)
+Epoch: [75][300/616]	Loss 2.4045e-01 (2.2875e-01)	Acc 0.739258 (0.757070)
+Epoch: [75][600/616]	Loss 2.3657e-01 (2.2880e-01)	Acc 0.749023 (0.757488)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.757857)
+Training Loss of Epoch 75: 0.2287770919925798
+Training Acc of Epoch 75: 0.7575076219512196
+Testing Acc of Epoch 75: 0.7578565217391304
+Model with the best training loss saved! The loss is 0.2287770919925798
+Early stopping not satisfied.
+---------------------
+Start epoch 76
+---------------------
+Epoch: [76][  0/616]	Loss 2.2475e-01 (2.2475e-01)	Acc 0.760742 (0.760742)
+Epoch: [76][300/616]	Loss 2.3450e-01 (2.2866e-01)	Acc 0.740234 (0.757822)
+Epoch: [76][600/616]	Loss 2.2276e-01 (2.2853e-01)	Acc 0.759766 (0.758048)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.758191)
+Training Loss of Epoch 76: 0.22861911465482013
+Training Acc of Epoch 76: 0.7578760162601627
+Testing Acc of Epoch 76: 0.7581913043478261
+Model with the best training loss saved! The loss is 0.22861911465482013
+Early stopping not satisfied.
+---------------------
+Start epoch 77
+---------------------
+Epoch: [77][  0/616]	Loss 2.3399e-01 (2.3399e-01)	Acc 0.748047 (0.748047)
+Epoch: [77][300/616]	Loss 2.1614e-01 (2.2873e-01)	Acc 0.783203 (0.757764)
+Epoch: [77][600/616]	Loss 2.2346e-01 (2.2871e-01)	Acc 0.761719 (0.757653)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.740385 (0.758252)
+Training Loss of Epoch 77: 0.22864010525428183
+Training Acc of Epoch 77: 0.7576695884146342
+Testing Acc of Epoch 77: 0.7582521739130434
+Early stopping not satisfied.
+---------------------
+Start epoch 78
+---------------------
+Epoch: [78][  0/616]	Loss 2.3691e-01 (2.3691e-01)	Acc 0.754883 (0.754883)
+Epoch: [78][300/616]	Loss 2.3007e-01 (2.2939e-01)	Acc 0.754883 (0.757550)
+Epoch: [78][600/616]	Loss 2.2252e-01 (2.2864e-01)	Acc 0.751953 (0.757650)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.758557)
+Training Loss of Epoch 78: 0.2286018650221631
+Training Acc of Epoch 78: 0.7576822916666667
+Testing Acc of Epoch 78: 0.7585565217391305
+Model with the best training loss saved! The loss is 0.2286018650221631
+Early stopping not satisfied.
+---------------------
+Start epoch 79
+---------------------
+Epoch: [79][  0/616]	Loss 2.3229e-01 (2.3229e-01)	Acc 0.735352 (0.735352)
+Epoch: [79][300/616]	Loss 2.3580e-01 (2.2863e-01)	Acc 0.747070 (0.758322)
+Epoch: [79][600/616]	Loss 2.2226e-01 (2.2856e-01)	Acc 0.780273 (0.757949)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.758604)
+Training Loss of Epoch 79: 0.22854008950838228
+Training Acc of Epoch 79: 0.7580236915650407
+Testing Acc of Epoch 79: 0.758604347826087
+Model with the best training loss saved! The loss is 0.22854008950838228
+Early stopping not satisfied.
+---------------------
+Start epoch 80
+---------------------
+Epoch: [80][  0/616]	Loss 2.2387e-01 (2.2387e-01)	Acc 0.768555 (0.768555)
+Epoch: [80][300/616]	Loss 2.3079e-01 (2.2834e-01)	Acc 0.754883 (0.757800)
+Epoch: [80][600/616]	Loss 2.4354e-01 (2.2847e-01)	Acc 0.741211 (0.757902)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.759000)
+Training Loss of Epoch 80: 0.2284638091316068
+Training Acc of Epoch 80: 0.7578394944105691
+Testing Acc of Epoch 80: 0.759
+Model with the best training loss saved! The loss is 0.2284638091316068
+Early stopping not satisfied.
+---------------------
+Start epoch 81
+---------------------
+Epoch: [81][  0/616]	Loss 2.2370e-01 (2.2370e-01)	Acc 0.757812 (0.757812)
+Epoch: [81][300/616]	Loss 2.3822e-01 (2.2921e-01)	Acc 0.743164 (0.756534)
+Epoch: [81][600/616]	Loss 2.3397e-01 (2.2837e-01)	Acc 0.750000 (0.758183)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.758622)
+Training Loss of Epoch 81: 0.22843027427429105
+Training Acc of Epoch 81: 0.7580729166666667
+Testing Acc of Epoch 81: 0.7586217391304347
+Model with the best training loss saved! The loss is 0.22843027427429105
+Early stopping not satisfied.
+---------------------
+Start epoch 82
+---------------------
+Epoch: [82][  0/616]	Loss 2.2142e-01 (2.2142e-01)	Acc 0.752930 (0.752930)
+Epoch: [82][300/616]	Loss 2.2425e-01 (2.2839e-01)	Acc 0.782227 (0.757673)
+Epoch: [82][600/616]	Loss 2.3422e-01 (2.2844e-01)	Acc 0.748047 (0.757869)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.757357)
+Training Loss of Epoch 82: 0.22841267069665397
+Training Acc of Epoch 82: 0.7579331808943089
+Testing Acc of Epoch 82: 0.7573565217391305
+Model with the best training loss saved! The loss is 0.22841267069665397
+Early stopping not satisfied.
+---------------------
+Start epoch 83
+---------------------
+Epoch: [83][  0/616]	Loss 2.3043e-01 (2.3043e-01)	Acc 0.755859 (0.755859)
+Epoch: [83][300/616]	Loss 2.4537e-01 (2.2853e-01)	Acc 0.748047 (0.757676)
+Epoch: [83][600/616]	Loss 2.3066e-01 (2.2835e-01)	Acc 0.758789 (0.758064)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.758083)
+Training Loss of Epoch 83: 0.22844623450825854
+Training Acc of Epoch 83: 0.7579157139227642
+Testing Acc of Epoch 83: 0.7580826086956521
+Early stopping not satisfied.
+---------------------
+Start epoch 84
+---------------------
+Epoch: [84][  0/616]	Loss 2.0967e-01 (2.0967e-01)	Acc 0.779297 (0.779297)
+Epoch: [84][300/616]	Loss 2.3384e-01 (2.2859e-01)	Acc 0.746094 (0.757825)
+Epoch: [84][600/616]	Loss 2.4248e-01 (2.2850e-01)	Acc 0.752930 (0.757941)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.758509)
+Training Loss of Epoch 84: 0.22849648168416528
+Training Acc of Epoch 84: 0.7579204776422764
+Testing Acc of Epoch 84: 0.7585086956521739
+Early stopping not satisfied.
+---------------------
+Start epoch 85
+---------------------
+Epoch: [85][  0/616]	Loss 2.4466e-01 (2.4466e-01)	Acc 0.735352 (0.735352)
+Epoch: [85][300/616]	Loss 2.2572e-01 (2.2909e-01)	Acc 0.763672 (0.757400)
+Epoch: [85][600/616]	Loss 2.4595e-01 (2.2848e-01)	Acc 0.732422 (0.757929)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.740385 (0.757717)
+Training Loss of Epoch 85: 0.22848131632417198
+Training Acc of Epoch 85: 0.7579697027439024
+Testing Acc of Epoch 85: 0.7577173913043478
+Early stopping not satisfied.
+---------------------
+Start epoch 86
+---------------------
+Epoch: [86][  0/616]	Loss 2.1695e-01 (2.1695e-01)	Acc 0.766602 (0.766602)
+Epoch: [86][300/616]	Loss 2.4207e-01 (2.2824e-01)	Acc 0.742188 (0.758267)
+Epoch: [86][600/616]	Loss 2.0733e-01 (2.2829e-01)	Acc 0.791992 (0.758011)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.758196)
+Training Loss of Epoch 86: 0.2283901399228631
+Training Acc of Epoch 86: 0.7579458841463415
+Testing Acc of Epoch 86: 0.758195652173913
+Model with the best training loss saved! The loss is 0.2283901399228631
+Early stopping not satisfied.
+---------------------
+Start epoch 87
+---------------------
+Epoch: [87][  0/616]	Loss 2.2437e-01 (2.2437e-01)	Acc 0.754883 (0.754883)
+Epoch: [87][300/616]	Loss 2.4019e-01 (2.2783e-01)	Acc 0.753906 (0.758507)
+Epoch: [87][600/616]	Loss 2.3044e-01 (2.2831e-01)	Acc 0.760742 (0.758105)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.758878)
+Training Loss of Epoch 87: 0.22837856717225982
+Training Acc of Epoch 87: 0.7579871697154471
+Testing Acc of Epoch 87: 0.7588782608695652
+Model with the best training loss saved! The loss is 0.22837856717225982
+Early stopping not satisfied.
+---------------------
+Start epoch 88
+---------------------
+Epoch: [88][  0/616]	Loss 2.2403e-01 (2.2403e-01)	Acc 0.770508 (0.770508)
+Epoch: [88][300/616]	Loss 2.2860e-01 (2.2807e-01)	Acc 0.747070 (0.758267)
+Epoch: [88][600/616]	Loss 2.3521e-01 (2.2851e-01)	Acc 0.748047 (0.757916)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.748397 (0.757748)
+Training Loss of Epoch 88: 0.2285308701720664
+Training Acc of Epoch 88: 0.7579395325203252
+Testing Acc of Epoch 88: 0.7577478260869566
+Early stopping not satisfied.
+---------------------
+Start epoch 89
+---------------------
+Epoch: [89][  0/616]	Loss 2.2782e-01 (2.2782e-01)	Acc 0.775391 (0.775391)
+Epoch: [89][300/616]	Loss 2.3148e-01 (2.2833e-01)	Acc 0.745117 (0.757926)
+Epoch: [89][600/616]	Loss 2.2708e-01 (2.2830e-01)	Acc 0.759766 (0.758128)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.758604)
+Training Loss of Epoch 89: 0.22845132913046737
+Training Acc of Epoch 89: 0.7579903455284552
+Testing Acc of Epoch 89: 0.758604347826087
+Early stopping not satisfied.
+---------------------
+Start epoch 90
+---------------------
+Epoch: [90][  0/616]	Loss 2.3667e-01 (2.3667e-01)	Acc 0.757812 (0.757812)
+Epoch: [90][300/616]	Loss 2.3431e-01 (2.2756e-01)	Acc 0.756836 (0.759091)
+Epoch: [90][600/616]	Loss 2.1493e-01 (2.2834e-01)	Acc 0.783203 (0.758048)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.743590 (0.758091)
+Training Loss of Epoch 90: 0.228354165224525
+Training Acc of Epoch 90: 0.7580014608739838
+Testing Acc of Epoch 90: 0.7580913043478261
+Model with the best training loss saved! The loss is 0.228354165224525
+Early stopping not satisfied.
+---------------------
+Start epoch 91
+---------------------
+Epoch: [91][  0/616]	Loss 2.4224e-01 (2.4224e-01)	Acc 0.738281 (0.738281)
+Epoch: [91][300/616]	Loss 2.1907e-01 (2.2819e-01)	Acc 0.770508 (0.758095)
+Epoch: [91][600/616]	Loss 2.2945e-01 (2.2829e-01)	Acc 0.753906 (0.757871)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.746795 (0.758078)
+Training Loss of Epoch 91: 0.22830354680375356
+Training Acc of Epoch 91: 0.7579204776422764
+Testing Acc of Epoch 91: 0.7580782608695652
+Model with the best training loss saved! The loss is 0.22830354680375356
+Early stopping not satisfied.
+---------------------
+Start epoch 92
+---------------------
+Epoch: [92][  0/616]	Loss 2.3466e-01 (2.3466e-01)	Acc 0.749023 (0.749023)
+Epoch: [92][300/616]	Loss 2.3007e-01 (2.2711e-01)	Acc 0.751953 (0.759795)
+Epoch: [92][600/616]	Loss 2.3500e-01 (2.2829e-01)	Acc 0.751953 (0.758318)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.750000 (0.757622)
+Training Loss of Epoch 92: 0.22833666486468743
+Training Acc of Epoch 92: 0.7582714049796748
+Testing Acc of Epoch 92: 0.7576217391304347
+Early stopping not satisfied.
+---------------------
+Start epoch 93
+---------------------
+Epoch: [93][  0/616]	Loss 2.2749e-01 (2.2749e-01)	Acc 0.753906 (0.753906)
+Epoch: [93][300/616]	Loss 2.3430e-01 (2.2866e-01)	Acc 0.749023 (0.757774)
+Epoch: [93][600/616]	Loss 2.2445e-01 (2.2839e-01)	Acc 0.755859 (0.758001)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.740385 (0.758661)
+Training Loss of Epoch 93: 0.22840561660809244
+Training Acc of Epoch 93: 0.7579569994918699
+Testing Acc of Epoch 93: 0.7586608695652174
+Early stopping not satisfied.
+---------------------
+Start epoch 94
+---------------------
+Epoch: [94][  0/616]	Loss 2.2603e-01 (2.2603e-01)	Acc 0.752930 (0.752930)
+Epoch: [94][300/616]	Loss 2.1961e-01 (2.2775e-01)	Acc 0.772461 (0.759357)
+Epoch: [94][600/616]	Loss 2.4599e-01 (2.2854e-01)	Acc 0.730469 (0.758118)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.740385 (0.759022)
+Training Loss of Epoch 94: 0.22844399739571702
+Training Acc of Epoch 94: 0.7582237677845528
+Testing Acc of Epoch 94: 0.7590217391304348
+Early stopping not satisfied.
+---------------------
+Start epoch 95
+---------------------
+Epoch: [95][  0/616]	Loss 2.1421e-01 (2.1421e-01)	Acc 0.771484 (0.771484)
+Epoch: [95][300/616]	Loss 2.2530e-01 (2.2783e-01)	Acc 0.770508 (0.758942)
+Epoch: [95][600/616]	Loss 2.2506e-01 (2.2836e-01)	Acc 0.762695 (0.758146)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.758117)
+Training Loss of Epoch 95: 0.22837337764298044
+Training Acc of Epoch 95: 0.758080856199187
+Testing Acc of Epoch 95: 0.7581173913043479
+Early stopping not satisfied.
+---------------------
+Start epoch 96
+---------------------
+Epoch: [96][  0/616]	Loss 2.3586e-01 (2.3586e-01)	Acc 0.755859 (0.755859)
+Epoch: [96][300/616]	Loss 2.3345e-01 (2.2818e-01)	Acc 0.751953 (0.758257)
+Epoch: [96][600/616]	Loss 2.2877e-01 (2.2834e-01)	Acc 0.753906 (0.758233)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.758391)
+Training Loss of Epoch 96: 0.22832790121314972
+Training Acc of Epoch 96: 0.7582332952235772
+Testing Acc of Epoch 96: 0.7583913043478261
+Early stopping not satisfied.
+---------------------
+Start epoch 97
+---------------------
+Epoch: [97][  0/616]	Loss 2.3621e-01 (2.3621e-01)	Acc 0.744141 (0.744141)
+Epoch: [97][300/616]	Loss 2.3889e-01 (2.2884e-01)	Acc 0.749023 (0.757229)
+Epoch: [97][600/616]	Loss 2.1809e-01 (2.2835e-01)	Acc 0.784180 (0.758058)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.741987 (0.758639)
+Training Loss of Epoch 97: 0.22838077155070577
+Training Acc of Epoch 97: 0.7580348069105691
+Testing Acc of Epoch 97: 0.7586391304347826
+Early stopping not satisfied.
+---------------------
+Start epoch 98
+---------------------
+Epoch: [98][  0/616]	Loss 2.1669e-01 (2.1669e-01)	Acc 0.771484 (0.771484)
+Epoch: [98][300/616]	Loss 2.2910e-01 (2.2837e-01)	Acc 0.755859 (0.757939)
+Epoch: [98][600/616]	Loss 2.2643e-01 (2.2842e-01)	Acc 0.761719 (0.757895)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.740385 (0.757943)
+Training Loss of Epoch 98: 0.22840993133017687
+Training Acc of Epoch 98: 0.7578982469512195
+Testing Acc of Epoch 98: 0.7579434782608696
+Early stopping not satisfied.
+---------------------
+Start epoch 99
+---------------------
+Epoch: [99][  0/616]	Loss 2.3302e-01 (2.3302e-01)	Acc 0.756836 (0.756836)
+Epoch: [99][300/616]	Loss 2.1595e-01 (2.2829e-01)	Acc 0.773438 (0.757774)
+Epoch: [99][600/616]	Loss 2.3715e-01 (2.2831e-01)	Acc 0.758789 (0.758105)
+Neglect the last batch so that num samples/batch size = int
+Testing
+Acc 0.745192 (0.758496)
+Training Loss of Epoch 99: 0.2283157455000451
+Training Acc of Epoch 99: 0.7580713287601626
+Testing Acc of Epoch 99: 0.758495652173913
+Early stopping not satisfied.

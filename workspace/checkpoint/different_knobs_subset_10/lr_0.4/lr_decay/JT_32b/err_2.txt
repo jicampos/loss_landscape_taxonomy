@@ -1,0 +1,37 @@
+  File "code/train.py", line 108
+    from models.jt_q_three_layer as jt_quant 
+                                 ^
+SyntaxError: invalid syntax
+<frozen importlib._bootstrap>:219: RuntimeWarning: scipy._lib.messagestream.MessageStream size changed, may indicate binary incompatibility. Expected 56 from C header, got 64 from PyObject
+Traceback (most recent call last):
+  File "code/train.py", line 12, in <module>
+    from utils import *
+  File "/home/bhawks/loss_landscape/loss_landscape_taxonomy/workspace/src_jet/code/utils.py", line 5, in <module>
+    from sklearn.metrics import accuracy_score
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/__init__.py", line 82, in <module>
+    from .base import clone
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/base.py", line 17, in <module>
+    from .utils import _IS_32BIT
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/utils/__init__.py", line 28, in <module>
+    from .fixes import np_version, parse_version
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/sklearn/utils/fixes.py", line 20, in <module>
+    import scipy.stats
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/stats/__init__.py", line 453, in <module>
+    from ._stats_py import *
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/stats/_stats_py.py", line 44, in <module>
+    from . import distributions
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/stats/distributions.py", line 8, in <module>
+    from ._distn_infrastructure import (rv_discrete, rv_continuous, rv_frozen)
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/stats/_distn_infrastructure.py", line 24, in <module>
+    from scipy import optimize
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/optimize/__init__.py", line 399, in <module>
+    from ._optimize import *
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/optimize/_optimize.py", line 33, in <module>
+    from scipy.sparse.linalg import LinearOperator
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/sparse/linalg/__init__.py", line 121, in <module>
+    from ._dsolve import *
+  File "/home/bhawks/.conda/envs/loss_landscape/lib/python3.8/site-packages/scipy/sparse/linalg/_dsolve/__init__.py", line 60, in <module>
+    from . import _add_newdocs
+  File "<frozen importlib._bootstrap>", line 202, in _lock_unlock_module
+  File "<frozen importlib._bootstrap>", line 84, in acquire
+KeyboardInterrupt
