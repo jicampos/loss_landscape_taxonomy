@@ -15,9 +15,16 @@ from utils import *
 def get_params(model): 
     # wrt data at the current step
     res = []
-    for p in model.parameters():
-        if p.requires_grad:
-            res.append(p.data.view(-1))
+    for _, module in model.named_modules():
+        module_type = module.__class__.__name__
+        if module_type == 'QuantLinear':
+            res.append(module.weight_integer.data.view(-1))
+            if hasattr(module, 'bias_integer'):
+                res.append(module.bias_integer.data.view(-1))
+        elif module_type == 'Linear':
+            res.append(module.weight.data.view(-1))
+            if hasattr(module, 'bias_integer'):
+                res.append(module.bias.data.view(-1))
     weight_flat = torch.cat(res)
     return weight_flat
 
