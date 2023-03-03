@@ -60,7 +60,7 @@ def return_model(file_name, args):
     return model
 
 
-criterion = nn.CrossEntropyLoss()  # label loss
+criterion = nn.BCELoss()  # label loss
 
 ######################################################
 # Begin the computation

@@ -149,7 +149,6 @@ def get_parser(code_type='training'):
         # hessian parameters
         parser.add_argument('--mini-hessian-batch-size', type=int, default=200)
         parser.add_argument('--hessian-batch-size', type=int, default=2000, help='input batch size for hessian (default: 200)')
-        parser.add_argument('--batch-norm', action='store_false', help='do we need batch norm or not')
         parser.add_argument('--residual', action='store_false', help='do we need residual connect or not')
         parser.add_argument('--cuda', action='store_false', help='do we use gpu or not')
 
