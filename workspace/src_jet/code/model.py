@@ -38,7 +38,7 @@ def load_checkpoint(args, file_name):
     
     result = re.search('JT_(.*)b', args.arch)
     quant = int(result.group(1))
-    fake = ArgFake(w=quant,b=quant,a=quant)
+    fake = ArgFake(w=quant,b=quant,a=quant+3)
     
     
     checkpoint = torch.load(file_name, map_location=torch.device("cpu"))
