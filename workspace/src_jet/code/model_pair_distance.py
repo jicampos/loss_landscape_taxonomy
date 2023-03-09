@@ -23,7 +23,7 @@ def get_params(model):
                 res.append(module.bias_integer.data.view(-1))
         elif module_type == 'Linear':
             res.append(module.weight.data.view(-1))
-            if hasattr(module, 'bias_integer'):
+            if if hasattr(module, 'bias'):
                 res.append(module.bias.data.view(-1))
     weight_flat = torch.cat(res)
     return weight_flat

@@ -256,8 +256,9 @@ def get_command_list(args):
 
                 command = f"python ./code/model_pair_distance.py --arch {args.arch}{command_suffix} " \
                           + f"--checkpoint-folder {ckpt_folder} --result-location {result_name} " \
-                          + f"1>{result_folder_name}/model_dist.log " \
-                          + f"2>{result_folder_name}/model_dist.err"
+                          + f"> >(tee -a {result_folder_name}/model_dist.log) 2> >(tee -a {result_folder_name}/model_dist.err >&2)" 
+                          #+ f"1>{result_folder_name}/model_dist.log " \
+                          #+ f"2>{result_folder_name}/model_dist.err"
                 
                 BASH_COMMAND_LIST.append((command, result_name))
             
@@ -287,8 +288,9 @@ def get_command_list(args):
                           + f"--arch {args.arch} " \
                           + f"{data_command} --checkpoint-folder {ckpt_folder}{command_suffix} " \
                           + f"--result-location {result_name} " \
-                          + f"1>{result_folder_name}/CKA{train_or_test_suffix}.log " \
-                          + f"2>{result_folder_name}/CKA{train_or_test_suffix}.err"
+                          + f"> >(tee -a {result_folder_name}/CKA{train_or_test_suffix}.log) 2> >(tee -a {result_folder_name}/CKA{train_or_test_suffix}.err >&2)" 
+                          #+ f"1>{result_folder_name}/CKA{train_or_test_suffix}.log " \
+                          #+ f"2>{result_folder_name}/CKA{train_or_test_suffix}.err"
 
                 BASH_COMMAND_LIST.append((command, result_name))
                                 
@@ -310,8 +312,9 @@ def get_command_list(args):
                          + f"--hessian-batch-size {hessian_batch_size} " \
                          + f"--mini-hessian-batch-size {args.mini_hessian_batch_size} " \
                          + f"--checkpoint-folder {ckpt_folder}{command_suffix} --result-location {result_name} " \
-                         + f"1>{result_folder_name}/hessian{train_or_test_suffix}.log " \
-                         + f"2>{result_folder_name}/hessian{train_or_test_suffix}.err"
+                         + f"> >(tee -a {result_folder_name}/hessian{train_or_test_suffix}.log) 2> >(tee -a {result_folder_name}/hessian{train_or_test_suffix}.err >&2)" 
+                         #+ f"1>{result_folder_name}/hessian{train_or_test_suffix}.log " \
+                         #+ f"2>{result_folder_name}/hessian{train_or_test_suffix}.err"
                 
                 BASH_COMMAND_LIST.append((command, result_name))
                 
@@ -348,7 +351,8 @@ def get_command_list(args):
                             + f"--dir={curve_folder} --curve=Bezier --num_bends={args.num_bends} --result-suffix={args.result_suffix} "\
                             + f"--init_start={checkpoint1} --init_end={checkpoint2} --fix_start --fix_end{command_suffix} " \
                             + f"--result-location {result_name} " \
-                            + f"1>{log_name}.log 2>{log_name}.err"
+                            + f"> >(tee -a {log_name}.log) 2> >(tee -a {log_name}.err >&2)" 
+                            #+ f"1>{log_name}.log 2>{log_name}.err"
 
                     BASH_COMMAND_LIST.append((command, result_name))
                 
@@ -363,7 +367,7 @@ def get_command_list(args):
                     stop_epoch = 50
 
                 # This early stopping schedule follows from Charles and Michael's paper
-                early_stopping_suffix = f' --save-early-stop --min-delta 0.0001 --patience 5'
+                early_stopping_suffix = f' --save-early-stop --min-delta 0.0001 --patience 5 --min-epoch 10'
                 if args.training_type == 'normal':
                     command_suffix += f' --no-lr-decay --stop-epoch {stop_epoch}{early_stopping_suffix} --save-best'
                 elif args.training_type == 'small_wd':
@@ -413,8 +417,9 @@ def get_command_list(args):
                           + f"--arch {args.arch} " \
                           + f"{data_command} --checkpoint-folder {ckpt_folder}{command_suffix} " \
                           + f"--result-location {result_name} " \
-                          + f"1>{result_folder_name}/loss_acc{train_or_test_suffix}.log " \
-                          + f"2>{result_folder_name}/loss_acc{train_or_test_suffix}.err"
+                          + f"> >(tee -a {result_folder_name}/loss_acc{train_or_test_suffix}.log) 2> >(tee -a {result_folder_name}/loss_acc{train_or_test_suffix}.err >&2)" 
+                          #+ f"1>{result_folder_name}/loss_acc{train_or_test_suffix}.log " \
+                          #+ f"2>{result_folder_name}/loss_acc{train_or_test_suffix}.err"
 
                 BASH_COMMAND_LIST.append((command, result_name))
                                 

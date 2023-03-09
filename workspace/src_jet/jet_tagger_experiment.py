@@ -92,7 +92,7 @@ def different_metrics(COMMON_COMMANDS, FILE_NAME_SUFFIX, GENERATE_SLURM_SCRIPTS,
 def writing_experiments():
 
     # Specific variables for each experiment
-    TRAINING_PARAMETERS="--stop-epoch 150 --training-type lr_decay --lr-standard 0.1 --bs-standard 1024 --ignore-incomplete-batch --exp-start 0 --exp-num 5"
+    TRAINING_PARAMETERS="--stop-epoch 150 --training-type lr_decay --lr-standard 0.1 --bs-standard 1024 --ignore-incomplete-batch --exp-start 0 --exp-num 5 --early-stop-checkpoint"
     HESSIAN_PARAMETERS=f"--experiment-type hessian --hessian-batch 1 --early-stop-checkpoint --training-type lr_decay"
     CKA_PARAMETERS="--experiment-type CKA --early-stop-checkpoint --mixup-CKA --mixup-alpha 16 --training-type lr_decay"
     DIST_PARAMETERS="--experiment-type dist --early-stop-checkpoint --training-type lr_decay"

@@ -81,6 +81,7 @@ def get_parser(code_type='training'):
         parser.add_argument('--save-early-stop', dest='save_early_stop', default = False, action='store_true', help='save a checkpoint if the loss does not improve by an amount of delta')
         parser.add_argument('--min-delta', type=float, default = 0, help='amount improvement')
         parser.add_argument('--patience', type=int, default = 0, help='number of epochs to wait if loss does not improve by min_delta')
+        parser.add_argument('--min-epochs', type=int, default = 10, help='minimum number of epochs to train before early stopping')
 
         # (Jet Tagger) Weight Regularization
         parser.add_argument("--l1", action="store_true", dest='l1-enable', help="Implement L1 regularization.")

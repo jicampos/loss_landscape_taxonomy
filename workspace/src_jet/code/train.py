@@ -68,7 +68,7 @@ def update_lr(optimizer, lr):
 
 def save_early_stop_model(args, model, loss_vals):
     
-    if not args.save_early_stop or len(loss_vals)<30:
+    if not args.save_early_stop or len(loss_vals)<args.min_epochs:
         
         print("Early stopping not satisfied.")
         
