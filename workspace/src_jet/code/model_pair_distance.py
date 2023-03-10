@@ -23,17 +23,27 @@ def get_params(model):
                 res.append(module.bias_integer.data.view(-1))
         elif module_type == 'Linear':
             res.append(module.weight.data.view(-1))
-            if if hasattr(module, 'bias'):
+            if hasattr(module, 'bias'):
                 res.append(module.bias.data.view(-1))
     weight_flat = torch.cat(res)
     return weight_flat
 
+
+def rescale_params(params1, params2, scale='min-max'):
+    if scale == 'min-max':
+        # scale to range [0,1]
+        p_min = min(params1.min(), params2.min())
+        p_max = max(params1.max(), params2.max())
+        params1 = (params1-p_min)/(p_max-p_min)
+        params2 = (params2-p_min)/(p_max-p_min)
+    return params1, params2
+
+
 def compute_distance(model1, model2):
-    
     params1 = get_params(model1)
     params2 = get_params(model2)
+    params1, params2 = rescale_params(params1, params2, scale='min-max')
     dist = (params1-params2).norm().item()
-    
     return dist
 
 
