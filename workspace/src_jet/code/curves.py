@@ -7,10 +7,13 @@ https://github.com/timgaripov/dnn-mode-connectivity
 import numpy as np
 import math
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Module, Parameter
 from torch.nn.modules.utils import _pair
 from scipy.special import binom
+
+from hawq.utils.quantization_utils.quant_modules import QuantLinear
 
 class Coeffs_T:
     value = 0
@@ -102,6 +105,48 @@ class Linear(CurveModule):
         coeffs_t = Coeffs_T.value
         weight_t, bias_t = self.compute_weights_t(coeffs_t)
         return F.linear(x, weight_t, bias_t)
+    
+
+class QLinear(CurveModule):
+
+    def __init__(self, in_features, out_features, fix_points, bias=True, weight_bit=6, bias_bit=6):
+        super(QLinear, self).__init__(fix_points, ('weight', 'bias'))
+        self.in_features = in_features
+        self.out_features = out_features
+
+        self.q_layer = QuantLinear(weight_bit=weight_bit, bias_bit=bias_bit)
+        self.q_layer.set_param(nn.Linear(self.in_features, self.out_features, bias=bias))
+
+        self.l2 = 0.0
+        for i, fixed in enumerate(self.fix_points):
+            self.register_parameter(
+                'weight_%d' % i,
+                Parameter(torch.Tensor(out_features, in_features), requires_grad=not fixed)
+            )
+        for i, fixed in enumerate(self.fix_points):
+            if bias:
+                self.register_parameter(
+                    'bias_%d' % i,
+                    Parameter(torch.Tensor(out_features), requires_grad=not fixed)
+                )
+            else:
+                self.register_parameter('bias_%d' % i, None)
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        stdv = 1. / math.sqrt(self.in_features)
+        for i in range(self.num_bends):
+            getattr(self, 'weight_%d' % i).data.uniform_(-stdv, stdv)
+            bias = getattr(self, 'bias_%d' % i)
+            if bias is not None:
+                bias.data.uniform_(-stdv, stdv)
+
+    def forward(self, x, prev_act_scaling_factor=None):
+        coeffs_t = Coeffs_T.value
+        weight_t, bias_t = self.compute_weights_t(coeffs_t)
+        self.q_layer.weight.data = weight_t
+        self.q_layer.bias.data = bias_t
+        return self.q_layer(x, prev_act_scaling_factor)
 
 
 class Conv2d(CurveModule):
@@ -276,7 +321,7 @@ class CurveNet(Module):
 
         self.l2 = 0.0
         self.coeff_layer = self.curve(self.num_bends)
-        self.net = self.architecture(num_classes, fix_points=self.fix_points, **architecture_kwargs)
+        self.net = self.architecture(fix_points=self.fix_points)
         self.curve_modules = []
         for module in self.net.modules():
             if issubclass(module.__class__, CurveModule):
@@ -284,13 +329,15 @@ class CurveNet(Module):
 
     def import_base_parameters(self, base_model, index):
         parameters = list(self.net.named_parameters())[index::self.num_bends]
-        base_parameters = base_model.named_parameters()
+        base_parameters = list(base_model.named_parameters())
         param_dict = {}
         for name, param in parameters:
             param_dict[name[:-2]] = {'param': param}
         for name, param in base_parameters:
             param_dict[name]['base_param'] = param
         for param_name, param_obj in param_dict.items():
+            if 'q_layer' in param_name:
+                continue
             param_obj['param'].data.copy_(param_obj['base_param'].data)
             
     def import_base_buffers(self, base_model):

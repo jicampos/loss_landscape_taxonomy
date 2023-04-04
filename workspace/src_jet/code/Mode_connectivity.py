@@ -11,10 +11,17 @@ import torch
 import torch.nn.functional as F
 import time
 import tabulate
+import re
 
 import sys
 sys.path.insert(1, './code/')
 
+from models.jt_three_layer import ThreeLayerMLP
+from models.jt_three_layer_curves import ThreeLayerMLPCurve
+from models.jt_q_three_layer import QThreeLayer
+from models.jt_q_three_layer_curves import QThreeLayerCurves
+
+from model import load_checkpoint, load_state
 from arguments import get_parser
 from data import get_loader
 from utils import *
@@ -61,8 +68,8 @@ def train(train_loader, model, optimizer, criterion, regularizer=None, lr_schedu
         if lr_schedule is not None:
             lr = lr_schedule(iter / num_iters)
             adjust_learning_rate(optimizer, lr)
-        input = input.cuda(non_blocking=True)
-        target = target.cuda(non_blocking=True)
+        # input = input.cuda(non_blocking=True)
+        # target = target.cuda(non_blocking=True)
 
         output = model(input)
         loss = criterion(output, target)
@@ -74,6 +81,7 @@ def train(train_loader, model, optimizer, criterion, regularizer=None, lr_schedu
 
         loss_sum += loss.item() * input.size(0)
         pred = output.data.argmax(1, keepdim=True)
+        target = target.data.argmax(1, keepdim=True)
         correct += pred.eq(target.data.view_as(pred)).sum().item()
 
     return {
@@ -148,6 +156,15 @@ def stats(values, dl):
     return min, max, avg, int
 
 
+def get_archs(args):
+    result = re.search('JT_(.*)b', args.arch)
+    quant = int(result.group(1))
+    if quant == 32:
+        return ThreeLayerMLP, ThreeLayerMLPCurve
+    else:
+        return QThreeLayer, QThreeLayerCurves
+
+
 args = parser.parse_args()
 
 from models.resnet_width import ResNet18
@@ -155,8 +172,7 @@ from models.resnet_width_curves import ResNet18Curve
 
 arch_kwargs = {'width': args.resnet18_width}
 
-arch = ResNet18
-curve_arch = ResNet18Curve
+arch, curve_arch = get_archs(args)
 curve = getattr(curves, args.curve)
 train_loader, test_loader= get_loader(args)
 
@@ -176,34 +192,34 @@ if not args.only_eval:
     base_model = None
     for path, k in [(args.init_start, 0), (args.init_end, args.num_bends - 1)]:    
         if path:
-            checkpoint = torch.load(path)
-            checkpoint = clean_state_dict(checkpoint)
+            checkpoint = torch.load(path, map_location=torch.device('cpu'))
+            # checkpoint = clean_state_dict(checkpoint)
             print('Loading %s as point #%d' % (path, k))
             if base_model is None:
-                base_model = arch(**arch_kwargs).to(device)
-            base_model.load_state_dict(checkpoint)
+                base_model = load_checkpoint(args, path).to(device)
+            load_state(base_model, checkpoint)
             model.import_base_parameters(base_model, k)
     model = model.to(device)
     print(model.parameters())
-    criterion = F.cross_entropy
+    criterion = nn.BCELoss()
     regularizer = None if args.curve is None else curves.l2_regularizer(args.weight_decay)
-    optimizer = torch.optim.SGD(
-        filter(lambda param: param.requires_grad, model.parameters()),
+    optimizer= torch.optim.Adam(
+        params=filter(lambda param: param.requires_grad, model.parameters()),
         lr=args.lr,
-        momentum=args.momentum,
-        weight_decay=args.wd if args.curve is None else 0.0
+        betas=(args.momentum, 0.999),
+        weight_decay=args.weight_decay if args.curve is None else 0.0
     )
     start_epoch = 1
     if args.resume is not None:
         print('Resume training from %s' % args.resume)
-        checkpoint = torch.load(args.resume)
+        checkpoint = torch.load(args.resume, map_location=torch.device('cpu'))
         start_epoch = checkpoint['epoch'] + 1
         model.load_state_dict(checkpoint['model_state'])
         optimizer.load_state_dict(checkpoint['optimizer_state'])
 
     columns = ['ep', 'lr', 'tr_loss', 'tr_acc', 'te_nll', 'te_acc', 'time']
     start = time.time()
-    train_loader, test_loader = get_loader(args)
+    # train_loader, test_loader = get_loader(args)
     has_bn = check_bn(model)
     test_res = {'loss': None, 'accuracy': None, 'nll': None}
     for epoch in range(start_epoch, args.epochs + 1):
@@ -244,6 +260,7 @@ if not args.only_eval:
             optimizer_state=optimizer.state_dict()
         )
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = curves.CurveNet(
     args.num_classes,
     curve,
@@ -254,11 +271,11 @@ model = curves.CurveNet(
     architecture_kwargs=arch_kwargs,
 )
 
-model.cuda()
-checkpoint = torch.load(args.to_eval)
+model.to(device)
+checkpoint = torch.load(args.to_eval, map_location=torch.device('cpu'))
 model.load_state_dict(checkpoint['model_state'])
 
-criterion = F.cross_entropy
+criterion = nn.BCELoss()
 regularizer = curves.l2_regularizer(args.weight_decay)
 
 T = args.num_points
@@ -277,7 +294,7 @@ previous_weights = None
 
 columns = ['t', 'Train loss', 'Train nll', 'Train error (%)', 'Test nll', 'Test error (%)']
 
-t = torch.FloatTensor([0.0]).cuda()
+t = torch.FloatTensor([0.0]).to(device)
 for i, t_value in enumerate(ts):
     t.data.fill_(t_value)
     weights = model.weights(t)
