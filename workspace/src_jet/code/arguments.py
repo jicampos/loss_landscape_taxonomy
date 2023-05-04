@@ -10,7 +10,7 @@ def get_parser(code_type='training'):
     # data loader
     #######################
     
-    if code_type in ['training', 'CKA', 'hessian', 'curve', 'loss_acc', 'ntk']:
+    if code_type in ['training', 'CKA', 'hessian', 'curve', 'loss_acc', 'ntk', 'neural_eff', 'fisher']:
         
         parser.add_argument('--train-bs', type=int, default = 128, help='The training batch size')
         parser.add_argument('--test-bs', type=int, default = 128, help='The testing batch size')
@@ -42,7 +42,7 @@ def get_parser(code_type='training'):
     # network architecture
     #######################
     
-    if code_type in ['training', 'CKA', 'hessian', 'model_dist', 'curve', 'loss_acc', 'ntk']:
+    if code_type in ['training', 'CKA', 'hessian', 'model_dist', 'curve', 'loss_acc', 'ntk', 'neural_eff', 'fisher']:
     
         parser.add_argument('--arch', type=str, default = 'jets_3_layer', help='Model architecture')
 
@@ -107,7 +107,7 @@ def get_parser(code_type='training'):
         
         parser.add_argument('--file-prefix', type=str, default = "", help='store file prefix')
         
-    if code_type in ['CKA', 'hessian', 'model_dist', 'curve', 'loss_acc', 'ntk']:
+    if code_type in ['CKA', 'hessian', 'model_dist', 'curve', 'loss_acc', 'ntk', 'neural_eff', 'fisher']:
         
         parser.add_argument('--early-stopping', dest='early_stopping', default = False, action='store_true', 
                     help='use early stopped checkpoints')
