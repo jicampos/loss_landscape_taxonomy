@@ -22,4 +22,4 @@ jobs:
     with:
         in_model: jt
         in_model_name: hls4ml Jet Tagger
-        in_base_img: nvcr.io/nvidia/pytorch:21.11-py3
+        in_base_image: nvcr.io/nvidia/pytorch:21.11-py3
