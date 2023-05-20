@@ -1,0 +1,30 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub recommends pinning actions to a commit SHA.
+# To get a newer version, you will need to update the SHA.
+# You can also reference a tag or branch, but the action may change without warning.
+
+name: Create and publish a Docker image - hls4ml Jet Tagger Training Image
+
+on:
+  push:
+    paths:
+      - workspace/docker/**.sh
+      - workspace/docker/**jt**
+  workflow_dispatch:
+
+env:
+  MODEL: jt
+  MODEL_NAME: hls4ml Jet Tagger
+  BASE_IMG: nvcr.io/nvidia/pytorch:21.11-py3
+  
+jobs:
+  call-build-container-workflow:
+    uses: ./.github/workflows/build-train-container.yml
+    with:
+        in_model: ${{ env.MODEL }}
+        in_model_name: ${{ env.MODEL_NAME }}
+        in_base_img: ${{ env.BASE_IMG }}

@@ -1,0 +1,110 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This is the base action to build a docker container/image for training a given model in as part of a Loss Landscape study. 
+# It is assumed that for a given model, a Conda environment file named `environment-{model tag}.yml` exists within the workspace/docker/ directory
+# Additionally, the base image used is, by default, a PyTorch container from Nvidia running Python 3.8 & PyTorch 1.11.0 (nvcr.io/nvidia/pytorch:21.11-py3)
+#   * The base image can be modified via an input to this action, either called by another action or manually triggered. 
+#
+# This Dockerfile will update the base conda environment of the base image, and add a startup script to activate the base conda environment upon starting. (assuming it's an NVidia image)
+# 
+# NOTE: The built image does _not_ contain the actual model code/repo contents, just the correct environment to run a given model. 
+# This is partially due to multiple models, generally requiring different environments, existing within the same repo, 
+# and partially due to the intended use being with Apptainer, which (functionally) runs the container with the host's filesystem mounted, therefor not requiring the repo to be included already.
+# 
+
+name: Create and publish a Docker image for Model Training
+
+on:
+  workflow_call:
+      inputs:
+          in_model:
+            description: 'Model Tag (short string used in filenames, e.g. `jt` or `econ`)'
+            required: true 
+            type: string
+          in_model_name:
+            description: 'Model Name/Description'
+            required: true
+            type: string
+          in_base_image:
+            description: 'Base Container/Image to build off of'
+            required: true
+            default: 'nvcr.io/nvidia/pytorch:21.11-py3'
+            type: string  
+  workflow_dispatch:
+      inputs:
+          in_model:
+            description: 'Model Tag (short string used in filenames, e.g. `jt` or `econ`)'
+            required: true 
+            type: string
+          in_model_name:
+            description: 'Model Name/Description'
+            required: true
+            type: string
+          in_base_image:
+            description: 'Base Container/Image to build off of'
+            required: true
+            default: 'nvcr.io/nvidia/pytorch:21.11-py3'
+            type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  MODEL: ${{ inputs.in_model }} 
+  MODEL_NAME: ${{ inputs.in_model_name }}
+  BASE_IMG: ${{ inputs.in_base_image }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - run: |
+          echo "Building training image for model: $MODEL"
+          echo "Model Description: $MODEL_NAME"    
+    
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Docker Setup Buildx
+        uses: docker/setup-buildx-action@v2.5.0
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4.4.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ env.MODEL }}
+            type=schedule,pattern={{date 'YYYYMMDD-hhmmss' tz='America/Chicago'}},prefix=${{ env.MODEL }}-
+          labels: |
+            org.opencontainers.image.title=Loss Landscape Training - ${{ env.MODEL_NAME }}
+            org.opencontainers.image.description=Pytorch Container to run Loss Landscape Studies - Training Container for ${{ env.MODEL_NAME }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.licenses=MIT
+            
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v4.0.0
+        with:
+          context: ./workspace/docker
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=min
+          build-args: | 
+            BASE_IMG=${{ env.BASE_IMG }}
+            CACHE_EPOCH=${{ github.event.repository.updated_at }}
+            MODEL=${{ env.MODEL }}
