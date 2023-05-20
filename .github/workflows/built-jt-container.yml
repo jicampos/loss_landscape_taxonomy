@@ -16,15 +16,10 @@ on:
       - workspace/docker/**jt**
   workflow_dispatch:
 
-env:
-  MODEL: jt
-  MODEL_NAME: hls4ml Jet Tagger
-  BASE_IMG: nvcr.io/nvidia/pytorch:21.11-py3
-  
 jobs:
   call-build-container-workflow:
     uses: ./.github/workflows/build-train-container.yml
     with:
-        in_model: ${{ env.MODEL }}
-        in_model_name: ${{ env.MODEL_NAME }}
-        in_base_img: ${{ env.BASE_IMG }}
+        in_model: jt
+        in_model_name: hls4ml Jet Tagger
+        in_base_img: nvcr.io/nvidia/pytorch:21.11-py3
