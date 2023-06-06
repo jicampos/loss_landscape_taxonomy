@@ -1,0 +1,6 @@
+[submodule "workspace/src/utils/hawq"]
+	path = workspace/src/utils/hawq
+	url = https://github.com/Zhen-Dong/HAWQ.git
+[submodule "workspace/src/utils/pyhessian"]
+	path = workspace/src/utils/pyhessian
+	url = https://github.com/amirgholami/PyHessian.git
