@@ -121,8 +121,8 @@ def train(args, model, train_loader, test_loader, optimizer, criterion, epoch):
         # inputs, targets = inputs.to("cuda"), targets.to("cuda")
         optimizer.zero_grad()
 
-        outputs = model(inputs.float())
-        loss = criterion(outputs, targets.float())
+        outputs = model(inputs)
+        loss = criterion(outputs, targets)
         
         #print(inputs[0])
         #print(targets[0])
@@ -136,8 +136,6 @@ def train(args, model, train_loader, test_loader, optimizer, criterion, epoch):
         losses.update(loss.item(), inputs.size(0))
 
         batch_preds = torch.max(outputs, 1)[1]
-        if len(targets.shape) > 1:
-            targets = torch.max(targets, 1)[1]  # target labels
         batch_acc = accuracy_score(
             targets.detach().cpu().numpy(), batch_preds.detach().cpu().numpy()
         )
@@ -182,10 +180,7 @@ def main():
     print("Experiement: {0} training for {1}".format(args.training_type, args.arch))
     print("------------------------------------------------------")
 
-    criterion = nn.BCELoss()
-    # criterion = nn.BCELoss().to("cuda")    
-    #from models.jt_q_three_layer import jt_quant 
-
+    criterion = nn.CrossEntropyLoss()
     model = get_new_model(args)
     
     #from torchsummary import summary
@@ -212,7 +207,8 @@ def main():
     elif args.training_type == 'no_decay':
         optimizer = optim.Adam(model.parameters(), lr=base_lr,  weight_decay=0)
     else:
-        optimizer = optim.Adam(model.parameters(), lr=base_lr,  weight_decay=args.weight_decay)
+        optimizer = optim.Adam(model.parameters(), lr=base_lr,  weight_decay=0)
+        # optimizer = optim.Adam(model.parameters(), lr=base_lr,  weight_decay=args.weight_decay)
 
     loss_vals = []
     best_train_loss = 1000000
@@ -222,13 +218,6 @@ def main():
         print("---------------------")
         print("Start epoch {0}".format(epoch))
         print("---------------------")
-
-        if epoch >= args.epochs*0.75:
-            lr = base_lr * 0.01    
-        elif epoch >= args.epochs*0.5:
-            lr = base_lr * 0.1
-        else:
-            lr = base_lr
             
         if args.no_lr_decay:
             lr = base_lr
@@ -242,7 +231,7 @@ def main():
                 lr = base_lr
         
         update_lr(optimizer, lr)        
-        
+
         train_loss = train(args, model, train_loader, test_loader, optimizer, criterion, epoch)
         
         loss_vals.append(train_loss)
@@ -258,7 +247,6 @@ def main():
         
         if save_early_stop_model(args, model, loss_vals):
             torch.save(model.state_dict(), f'{args.saving_folder}net_{args.file_prefix}_early_stopped_model.pkl')
-            break
             
         if args.no_lr_decay and epoch==args.stop_epoch:
             torch.save(model.state_dict(), f'{args.saving_folder}net_{args.file_prefix}.pkl')
@@ -278,3 +266,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# For debugging only 
+# python code/train_rn07.py --training-type lr_decay --arch RN07_32b --saving-folder ../checkpoint/different_knobs_subset_10/lr_0.1/lr_decay/RN07_32b/ --file-prefix exp_0 --mixup-alpha 16.0 --data-subset --subset 1.0 --data-path ../../data/RN07 --lr 0.1 --weight-decay 0.0005 --train-bs 1024 --test-bs 1024 --weight-precision 32 --bias-precision 32 --act-precision 35  --one-lr-decay --epochs 100 --save-best --ignore-incomplete-batch > >(tee -a ../checkpoint/different_knobs_subset_10/lr_0.1/lr_decay/RN07_32b/log_0.txt) 2> >(tee -a ../checkpoint/different_knobs_subset_10/lr_0.1/lr_decay/RN07_32b/err_0.txt >&2) --experiment-model RN07
+# python code/train_rn07.py --training-type lr_decay --arch RN07_6b --saving-folder ../checkpoint/different_knobs_subset_10/lr_0.1/lr_decay/RN07_6b/ --file-prefix exp_0 --mixup-alpha 16.0 --data-subset --subset 1.0 --data-path ../../data/RN07 --lr 0.1 --weight-decay 0.0005 --train-bs 1024 --test-bs 1024 --weight-precision 6 --bias-precision 6 --act-precision 9  --one-lr-decay --epochs 100 --save-best --ignore-incomplete-batch > >(tee -a ../checkpoint/different_knobs_subset_10/lr_0.1/lr_decay/RN07_6b/log_0.txt) 2> >(tee -a ../checkpoint/different_knobs_subset_10/lr_0.1/lr_decay/RN07_6b/err_0.txt >&2) 

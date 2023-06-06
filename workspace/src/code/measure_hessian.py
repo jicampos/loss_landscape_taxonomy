@@ -17,14 +17,18 @@ import torch.optim.lr_scheduler as lr_scheduler
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 
+import os 
 import sys
-sys.path.insert(1, './code/')
+sys.path.append(os.path.join(sys.path[0], "../utils/pyhessian/")) 
 from data import get_loader
 from arguments import get_parser
 import pickle
 from utils import *
 from tqdm import tqdm, trange
+import pyhessian
 from pyhessian import hessian
+from model import load_checkpoint
+
 
 import logging
 import os
@@ -36,8 +40,8 @@ args = parser.parse_args()
 for arg in vars(args):
     print(arg, getattr(args, arg))
 
-from models.resnet_width import ResNet18
-arch_kwargs = {'width': args.resnet18_width}
+# from models.resnet_width import ResNet18
+# arch_kwargs = {'width': args.resnet18_width}
 
 # Get data
 
@@ -51,12 +55,9 @@ if args.train_or_test == 'train':
 elif args.train_or_test == 'test':
     eval_loader = test_loader
 
-def return_model(file_name, arch_kwargs={}):
+def return_model(file_name, args):
 
-    checkpoint = torch.load(file_name)
-    
-    model = ResNet18(**arch_kwargs).cuda()
-    model.load_state_dict(checkpoint)
+    model = load_checkpoint(args, file_name)
     
     return model
 
@@ -75,7 +76,7 @@ for exp_id in range(args.exp_num):
     # Hessian prepare steps
     
     assert (args.hessian_batch_size % args.mini_hessian_batch_size == 0)
-    assert (50000 % args.hessian_batch_size == 0)
+    # assert (50000 % args.hessian_batch_size == 0)
     batch_num = args.hessian_batch_size // args.mini_hessian_batch_size
 
     if batch_num == 1:
@@ -101,7 +102,7 @@ for exp_id in range(args.exp_num):
         
     print(f'********** start the experiment on model {file_name} **********')
         
-    model = return_model(file_name, arch_kwargs = arch_kwargs)
+    model = return_model(file_name, args)
     model.eval()
     if batch_num == 1:
         hessian_comp = hessian(model,
@@ -130,3 +131,6 @@ f.close()
     
 print("Save results complete!!!")
 
+# For debugging
+# python measure_hessian.py --hessian-batch-size 64 --mini-hessian-batch-size 64 --train-bs 64 --test-bs 64 --train-or-test test --checkpoint-folder /data1/jcampos/loss_landscape/workspace/checkpoint/different_knobs_subset_10/lr_0.1/lr_decay/JT_8b/ --batch-norm --data-path /data1/jcampos/loss_landscape/data/JT --arch JT_8b  --early-stopping --cuda
+# python measure_hessian.py --hessian-batch-size 64 --mini-hessian-batch-size 64 --train-bs 64 --test-bs 64 --train-or-test test --checkpoint-folder /data1/jcampos/loss_landscape/workspace/checkpoint/different_knobs_subset_10/lr_0.1/lr_decay/JT_32b/ --batch-norm --data-path /data1/jcampos/loss_landscape/data/JT --arch JT_32b  --early-stopping --cuda --weight-precision 32 --result-location /data1/jcampos/loss_landscape/workspace/checkpoint/different_knobs_subset_10/lr_0.1/lr_decay/JT_32b/metrics

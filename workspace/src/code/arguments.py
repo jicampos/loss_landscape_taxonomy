@@ -15,6 +15,13 @@ def get_parser(code_type='training'):
         parser.add_argument('--train-bs', type=int, default = 128, help='The training batch size')
         parser.add_argument('--test-bs', type=int, default = 128, help='The testing batch size')
         parser.add_argument('--training-type', type=str, default = 'normal', help='training type')
+        
+        # (Jet Tagger) for use with pre split/processed data
+        parser.add_argument('--presplit-train', dest='presplit_train', default = False, action='store_true', help='Enable loading/use of a pre-split data file for training (and validation + test) data')
+        parser.add_argument('--train-data-path', type=str, default='../../data/jet_data/train.h5')
+        parser.add_argument('--val-data-bath', type=str, default='../../data/jet_data/val.h5')
+        parser.add_argument('--test-data-bath', type=str, default='../../data/jet_data/test.h5')
+        parser.add_argument('--data-path', type=str, help='Path to dataset')
 
         # for training with random labels
         parser.add_argument('--random-labels', dest='random_labels', default = False, action='store_true', help='train using random labels')
@@ -37,11 +44,20 @@ def get_parser(code_type='training'):
     
     if code_type in ['training', 'CKA', 'hessian', 'model_dist', 'curve', 'loss_acc', 'ntk']:
     
-        parser.add_argument('--arch', type=str, default = 'resnet110', help='Model architecture')
+        parser.add_argument('--arch', type=str, default = 'jets_3_layer', help='Model architecture')
 
         # training with different width
-        parser.add_argument('--different-width', dest='different_width', default = False, action='store_true', help='training with resnet18 of different width')
-        parser.add_argument('--resnet18-width', dest='resnet18_width', type=int, default = 64, help='Width of resnet18')
+        parser.add_argument('--different-width', dest='different_width', default = False, action='store_true', help='training with resnet18 of different width (Unused for Jet Tagger)')
+        parser.add_argument('--resnet18-width', dest='resnet18_width', type=int, default = 64, help='Width of resnet18 (Unused for Jet Tagger)')
+        
+        # (Jet Tagger) Bitwidth parameters
+        parser.add_argument('--weight-precision', dest='weight_precision', type=int, default = 8, help='Quantized Weight Bitwidth')
+        parser.add_argument('--bias-precision', dest='bias_precision', type=int, default = 8, help='Quantized Bias Bitwidth')
+        parser.add_argument('--act-precision', dest='act_precision', type=int, default = 11, help='Quantized Activation Bitwidth') # weight bits + 3 = act bits typ.
+        
+        # (Jet Tagger) Enable/Use Batchnorm or Dropout layers
+        parser.add_argument("--batch-norm", action="store_true", dest='batch_norm', help="Implement with batch normalization.")
+        parser.add_argument( "--dropout", action="store_true", dest='dropout', help="Train with dropout (Default=0.2).")
         
         # how many models are we training
         parser.add_argument('--exp-num', dest='exp_num', type=int, default = 5, help='how many experiments are we performing')
@@ -63,9 +79,13 @@ def get_parser(code_type='training'):
 
         # for early stop
         parser.add_argument('--save-early-stop', dest='save_early_stop', default = False, action='store_true', help='save a checkpoint if the loss does not improve by an amount of delta')
-        parser.add_argument('--min-delta', type=float, default = 0, help='amount improvement')
-        parser.add_argument('--patience', type=int, default = 0, help='number of epochs to wait if loss does not improve by min_delta')
+        parser.add_argument('--min-delta', type=float, default = 0.001, help='amount improvement')
+        parser.add_argument('--patience', type=int, default = 10, help='number of epochs to wait if loss does not improve by min_delta')
 
+        # (Jet Tagger) Weight Regularization
+        parser.add_argument("--l1", action="store_true", dest='l1-enable', help="Implement L1 regularization.")
+        parser.add_argument("--l2", action="store_true", dest='l2-enable', help="Implement L2 regularization.")
+        
         # choosing training procedure
         parser.add_argument('--ignore-incomplete-batch', dest='ignore_incomplete_batch', default = False, action='store_true', help='ignore the last incomplete batch during training')
         parser.add_argument('--only-exploration', dest='only_exploration', default = False, action='store_true', help='train only before lr decay')
@@ -75,6 +95,7 @@ def get_parser(code_type='training'):
         parser.add_argument('--save-frequency', default=10, type=int, help='which epochs to save')
 
         parser.add_argument('--saving-folder', dest='saving_folder', type=str, default = "", help='folder to store models')
+
     
         
     #########################
@@ -84,6 +105,7 @@ def get_parser(code_type='training'):
     if code_type in ['training']:
         
         parser.add_argument('--file-prefix', type=str, default = "", help='store file prefix')
+        parser.add_argument('--experiment-model', type=str, choices=['JT', 'ECON', 'RN07'], default=['JT'], help='Model architecture')
         
     if code_type in ['CKA', 'hessian', 'model_dist', 'curve', 'loss_acc', 'ntk']:
         
@@ -165,5 +187,8 @@ def get_parser(code_type='training'):
 
     if code_type in ['loss_acc']:
         parser.add_argument('--ensemble-average-acc', action='store_true')
+        parser.add_argument('--noise', action='store_true', default=False)
+        parser.add_argument('--noise-type', choices=['bernoulli', 'gaussian', 'uniform', 'positive_uniform'])
+        parser.add_argument('--noise-magnitude', type=float, default=1.0)
         
     return parser
