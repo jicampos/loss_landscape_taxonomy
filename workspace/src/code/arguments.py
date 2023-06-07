@@ -105,6 +105,7 @@ def get_parser(code_type='training'):
     if code_type in ['training']:
         
         parser.add_argument('--file-prefix', type=str, default = "", help='store file prefix')
+        parser.add_argument('--noise', action='store_true', default=False)
         parser.add_argument('--experiment-model', type=str, choices=['JT', 'ECON', 'RN07'], default=['JT'], help='Model architecture')
         
     if code_type in ['CKA', 'hessian', 'model_dist', 'curve', 'loss_acc', 'ntk']:
