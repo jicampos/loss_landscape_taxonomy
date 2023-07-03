@@ -163,7 +163,7 @@ cython_debug/
 #.idea/
 
 # bash scripts
-bash_scripts/
+# bash_scripts/
 
 # data files 
 data/
@@ -172,14 +172,18 @@ data/
 *.csv
 
 # log files 
-*.txt
+# *.txt
 *.err
 *.log
-*.ckpt
-*.pkl
+# *.ckpt
+# *.pkl
 *.yaml
 events*
 
 # old files/folders
 src_deprecated/
 utils/
+
+# other 
+notebooks/
+checkpoint/
