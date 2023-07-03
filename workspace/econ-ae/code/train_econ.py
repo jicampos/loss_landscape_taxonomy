@@ -116,8 +116,10 @@ def main(args):
     # 4 EVALUTE MODEL
     # ------------------------
     if args.train or args.evaluate:
-        if args.checkpoint:
-            checkpoint = torch.load(args.checkpoint)
+        if args.checkpoint or True:
+            checkpoint_file = os.path.join(args.saving_folder, args.experiment_name, f'net_{args.file_prefix}_best.pkl.ckpt')
+            print('Loading checkpoint...', checkpoint_file)
+            checkpoint = torch.load(checkpoint_file)
             model.load_state_dict(checkpoint['state_dict'])
             # model = model.load_state_dict(checkpoint['state_dict'])
         # Need val_sum to compute EMD
@@ -126,7 +128,7 @@ def main(args):
         data_module.setup("test")
         test_results = test_model(model, data_module.test_dataloader())
         test_results_log = os.path.join(
-            args.saving_folder, args.experiment_name, args.experiment_name + "_emd.txt"
+            args.saving_folder, args.experiment_name, args.experiment_name + f"_emd_{args.file_prefix}.txt"
         )
         with open(test_results_log, "w") as f:
             f.write(str(test_results))
@@ -136,7 +138,7 @@ def main(args):
 if __name__ == "__main__":
     # parser = ArgumentParser()
     parser.add_argument("--process_data", action="store_true", default=False)
-    parser.add_argument("--max_epochs", type=int, default=100)
+    parser.add_argument("--max_epochs", type=int, default=10)
     parser.add_argument("--save_dir", type=str, default="./pt_autoencoder_test")
     parser.add_argument("--experiment_name", type=str, default="autoencoder")
     parser.add_argument("--fast_dev_run", action="store_true", default=False)
@@ -144,7 +146,7 @@ if __name__ == "__main__":
         "--accelerator", type=str, choices=["cpu", "gpu", "auto"], default="auto"
     )
     parser.add_argument("--checkpoint", type=str, default="", help="model checkpoint")
-    parser.add_argument("--train", action="store_false", default=True)
+    parser.add_argument("--train", action="store_true", default=False)
     parser.add_argument("--evaluate", action="store_true", default=False)
     parser.add_argument(
         "--quantize", 

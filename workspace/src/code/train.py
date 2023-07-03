@@ -6,59 +6,11 @@ import torch.optim as optim
 import sys
 sys.path.insert(1, './code/')
 
-from model import get_new_model
-
 from arguments import get_parser
 from utils import *
 from data import get_loader
 
-from sklearn.metrics import accuracy_score
-
 parser = get_parser(code_type='training')
-
-
-# class from https://github.com/Zhen-Dong/HAWQ/blob/main/quant_train.py#L683
-class AverageMeter(object):
-    """Computes and stores the average and current value"""
-
-    def __init__(self, name, fmt=":f"):
-        self.name = name
-        self.fmt = fmt
-        self.reset()
-
-    def reset(self):
-        self.val = 0
-        self.avg = 0
-        self.sum = 0
-        self.count = 0
-
-    def update(self, val, n=1):
-        self.val = val
-        self.sum += val * n
-        self.count += n
-        self.avg = self.sum / self.count
-
-    def __str__(self):
-        fmtstr = "{name} {val" + self.fmt + "} ({avg" + self.fmt + "})"
-        return fmtstr.format(**self.__dict__)
-
-
-# class from https://github.com/Zhen-Dong/HAWQ/blob/main/quant_train.py#L708
-class ProgressMeter(object):
-    def __init__(self, num_batches, meters, prefix=""):
-        self.batch_fmtstr = self._get_batch_fmtstr(num_batches)
-        self.meters = meters
-        self.prefix = prefix
-
-    def display(self, batch):
-        entries = [self.prefix + self.batch_fmtstr.format(batch)]
-        entries += [str(meter) for meter in self.meters]
-        print("\t".join(entries))
-
-    def _get_batch_fmtstr(self, num_batches):
-        num_digits = len(str(num_batches // 1))
-        fmt = "{:" + str(num_digits) + "d}"
-        return "[" + fmt + "/" + fmt.format(num_batches) + "]"
     
 def update_lr(optimizer, lr):    
     for param_group in optimizer.param_groups:
@@ -93,74 +45,41 @@ def save_early_stop_model(args, model, loss_vals):
 def train(args, model, train_loader, test_loader, optimizer, criterion, epoch):
     model.train()
     
-    losses = AverageMeter("Loss", ":.4e")
-    accuracy = AverageMeter("Acc", ":6.6f")
-    progress = ProgressMeter(
-        len(train_loader),
-        [losses, accuracy],
-        prefix="Epoch: [{}]".format(epoch),
-    )
-    
-    #print('Starting Epoch: ', epoch)
+    print('Current Epoch: ', epoch)
     train_loss = 0.
     total_num = 0
     correct = 0
     
     P = 0 # num samples / batch size
-    for i, (inputs, targets) in enumerate(train_loader):
-        #print(inputs.shape)
+    for inputs, targets in train_loader:
+
         if args.ignore_incomplete_batch:
             if_condition = inputs.shape[0] != args.train_bs
             
             if if_condition:
-                print("Neglect the last batch so that num samples/batch size = int")
+                print("Neglect the last epoch so that num samples/batch size = int")
                 break
-                  
+        
         P += 1
         # loop over dataset
-        # inputs, targets = inputs.to("cuda"), targets.to("cuda")
+        inputs, targets = inputs.to("cuda"), targets.to("cuda")
         optimizer.zero_grad()
 
-        outputs = model(inputs.float())
-        loss = criterion(outputs, targets.float())
+        outputs = model(inputs)
+        loss = criterion(outputs, targets)
         
-        #print(inputs[0])
-        #print(targets[0])
-        #print(outputs[0])
-        
-        #train_loss += loss.item() * targets.size()[0]
-        #total_num += targets.size()[0]
-        #_, predicted = outputs.max(1)
-        #correct += predicted.eq(targets).sum().item()
-        
-        losses.update(loss.item(), inputs.size(0))
-
-        batch_preds = torch.max(outputs, 1)[1]
-        if len(targets.shape) > 1:
-            targets = torch.max(targets, 1)[1]  # target labels
-        batch_acc = accuracy_score(
-            targets.detach().cpu().numpy(), batch_preds.detach().cpu().numpy()
-        )
-        # update progress meter
-        accuracy.update(batch_acc, inputs.size(0))
-        
-        if i % 300 == 0: # print every 50 batches
-            progress.display(i)
-            #print(targets[0])
-            #print(outputs[0])
-            #print(batch_preds)
-            #print(batch_labels)
-        
+        train_loss += loss.item() * targets.size()[0]
+        total_num += targets.size()[0]
+        _, predicted = outputs.max(1)
+        correct += predicted.eq(targets).sum().item()
         
         loss.backward()
         optimizer.step()
             
-    acc, loss = test(args, model, test_loader, criterion)
-    train_loss = losses.avg
-    print(f"Training Loss of Epoch {epoch}: {losses.avg}")
-    print(f"Training Acc of Epoch {epoch}: {accuracy.avg}")
-    print(f"Testing Acc of Epoch {epoch}: {acc}")  
-    print(f"Testing Loss of Epoch {epoch}: {loss}")  
+    acc = test(args, model, test_loader)
+    train_loss /= total_num
+    print(f"Training Loss of Epoch {epoch}: {train_loss}")
+    print(f"Testing of Epoch {epoch}: {acc}")  
     
     return train_loss
 
@@ -182,17 +101,11 @@ def main():
     print("Experiement: {0} training for {1}".format(args.training_type, args.arch))
     print("------------------------------------------------------")
 
-    criterion = nn.BCELoss()
-    # criterion = nn.BCELoss().to("cuda")    
-    #from models.jt_q_three_layer import jt_quant 
-
-    model = get_new_model(args)
+    criterion = nn.CrossEntropyLoss().to("cuda")
     
-    #from torchsummary import summary
-    #summary(model, input_size=(1, 16))
-    print("---------------------- Model -------------------------")
-    print(model)
-    print("------------------------------------------------------")
+    from models.resnet_width import ResNet18
+
+    model = ResNet18(width=args.resnet18_width).cuda()
     
     if args.resume:
         
@@ -208,11 +121,11 @@ def main():
     print("The base learning rate is {0}".format(base_lr))
 
     if args.training_type == 'small_lr':
-        optimizer = optim.Adam(model.parameters(), lr=base_lr,  weight_decay=args.weight_decay)
+        optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=args.weight_decay)
     elif args.training_type == 'no_decay':
-        optimizer = optim.Adam(model.parameters(), lr=base_lr,  weight_decay=0)
+        optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0)
     else:
-        optimizer = optim.Adam(model.parameters(), lr=base_lr,  weight_decay=args.weight_decay)
+        optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=args.weight_decay) 
 
     loss_vals = []
     best_train_loss = 1000000
@@ -258,7 +171,6 @@ def main():
         
         if save_early_stop_model(args, model, loss_vals):
             torch.save(model.state_dict(), f'{args.saving_folder}net_{args.file_prefix}_early_stopped_model.pkl')
-            break
             
         if args.no_lr_decay and epoch==args.stop_epoch:
             torch.save(model.state_dict(), f'{args.saving_folder}net_{args.file_prefix}.pkl')

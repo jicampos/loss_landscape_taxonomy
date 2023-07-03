@@ -1,76 +1,64 @@
-import os 
-import numpy as np
+from cifar10_data_random_labels import CIFAR10RandomLabels
+from cifar10_data_subset import CIFAR10Subset
+from torchvision import datasets, transforms
 import torch
-import torchvision
-import torchvision.transforms as transforms
-from torch.utils.data import TensorDataset, DataLoader
-
-# Hard code here, though normally grabbed from a yaml file
-# features = ['j_zlogz', 'j_c1_b0_mmdt', 'j_c1_b1_mmdt', 'j_c1_b2_mmdt', 'j_c2_b1_mmdt', 'j_c2_b2_mmdt', 'j_d2_b1_mmdt', 'j_d2_b2_mmdt', 'j_d2_a1_b1_mmdt', 'j_d2_a1_b2_mmdt', 'j_m2_b1_mmdt', 'j_m2_b2_mmdt', 'j_n2_b1_mmdt', 'j_n2_b2_mmdt', 'j_mass_mmdt', 'j_multiplicity']
-
-
-def load_CIFAR10(args, kwargs):
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    ])
-
-    trainset = torchvision.datasets.CIFAR10(root=args.data_path, train=True, download=True, transform=transform)
-    train_loader = torch.utils.data.DataLoader(trainset, batch_size=args.train_bs, shuffle=True, **kwargs)
-
-    testset = torchvision.datasets.CIFAR10(root=args.data_path, train=False, download=True, transform=transform)
-    test_loader = torch.utils.data.DataLoader(testset, batch_size=args.test_bs, shuffle=False, **kwargs)
-
-    classes = ('plane', 'car', 'bird', 'cat',
-            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-    return train_loader, test_loader
-
-
-def load_JETS(args, kwargs):
-    # No support for subset or randomized labels at this point...
-
-    # Data is normalized via sklearn.standardscaler per dataset right now, which is how the HAWQ models + QAP Brevitas models are trained
-    # but it likely makes more sense to fit to the train data and use that mean/var to normalize train and test sets?
-    #TODO - Investigate normalizing per dataset or on train set mean/var 
-    
-    print("Loading Datasets")
-    
-    file_suffix = ''
-    if args.noise:
-        print(f'Loading noisy dataset with {args.noise_type} {args.noise_magnitude}')
-        file_suffix = f'_{args.noise_type}{args.noise_magnitude}'
-    X_train = np.load(os.path.join(args.data_path, 'X_train' + file_suffix + '.npy'))
-    y_train = np.load(os.path.join(args.data_path, 'y_train' + file_suffix + '.npy'))
-    X_test  = np.load(os.path.join(args.data_path, 'X_test' + file_suffix + '.npy'))
-    y_test  = np.load(os.path.join(args.data_path, 'y_test' + file_suffix + '.npy'))
-
-    # Transform to torch tensor
-    X_train = torch.Tensor(X_train) 
-    y_train = torch.Tensor(y_train)
-    X_test = torch.Tensor(X_test)
-    y_test = torch.Tensor(y_test)
-
-    # Create dataset and dataloaders
-    train_dataset = TensorDataset(X_train, y_train) 
-    test_dataset = TensorDataset(X_test, y_test)
-    
-    train_loader = DataLoader(train_dataset, batch_size=args.train_bs, shuffle=True, **kwargs)
-    test_loader = DataLoader(test_dataset, batch_size=args.test_bs, shuffle=False, **kwargs)
-    
-    print("\nDataset loading complete!")
-
-    return train_loader, test_loader
 
 
 def get_loader(args):
-    kwargs = {'num_workers': 10, 'pin_memory': True}
-    model_arch = args.arch.split('_')[0]
 
-    print(f'Loading dataset with train batch size {args.train_bs} and test batch size {args.test_bs}')
+    CIFAR10_mean, CIFAR10_var = (0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)
+    
+    transform_train = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(CIFAR10_mean, CIFAR10_var),
+    ])
+    transform_test = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(CIFAR10_mean, CIFAR10_var),
+    ])
+    
+    if args.random_labels:
+    
+        kwargs = {'num_workers': 2, 'pin_memory': True}
+        ## Here, we try with shuffle or not shuffling data
+        train_loader = torch.utils.data.DataLoader(
+                        CIFAR10RandomLabels(root='../../data/random_labels', train=True, download=True,
+                        label_path = args.random_label_path,
+                        transform=transform_train, num_classes=args.num_classes,
+                        corrupt_prob=args.label_corrupt_prob, trainset = True),
+                        batch_size=args.train_bs, shuffle=args.shuffle_random_data, **kwargs)
+        test_loader = torch.utils.data.DataLoader(
+                        CIFAR10RandomLabels(root='../../data/random_labels', train=False,
+                        label_path = args.random_label_path_test,
+                        transform=transform_test, num_classes=args.num_classes,
+                        corrupt_prob=args.label_corrupt_prob, trainset = False, test_on_noise=args.test_on_noise),
+                        batch_size=args.test_bs, shuffle=False, **kwargs)
+        
+    elif args.data_subset:
+        
+        kwargs = {'num_workers': 2, 'pin_memory': True}
+        train_set = CIFAR10Subset(root='../../data', train=True, download=True, subset=args.subset,
+                                    label_path = args.random_label_path, corrupt_prob=args.label_corrupt_prob, 
+                                    trainset = True, subset_noisy=args.subset_noisy, 
+                                    transform=transform_train)
+        train_loader = torch.utils.data.DataLoader(train_set, batch_size=args.train_bs, shuffle=True, **kwargs)
+        
+        if args.subset_noisy and args.test_on_noise:
+            test_set = CIFAR10RandomLabels(root='../../data/random_labels', train=False,
+                        label_path = args.random_label_path_test,
+                        transform=transform_test, num_classes=args.num_classes,
+                        corrupt_prob=args.label_corrupt_prob, trainset = False, test_on_noise=args.test_on_noise)
+            
+        else:
+            test_set = datasets.CIFAR10(root='../../data', train=False, download=True, transform=transform_test)
+        test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.test_bs, shuffle=False)
 
-    if model_arch == 'RN07':
-        return load_CIFAR10(args, kwargs)
-    elif model_arch == 'JT':
-        return load_JETS(args, kwargs)
     else:
-        raise Exception(f'Model architecture {model_arch} not recognized')
+        trainset = datasets.CIFAR10(root='../../data', train=True, download=True, transform=transform_train)
+        train_loader = torch.utils.data.DataLoader(trainset, batch_size=args.train_bs, shuffle=True)
+
+        testset = datasets.CIFAR10(root='../../data', train=False, download=True, transform=transform_test)
+        test_loader = torch.utils.data.DataLoader(testset, batch_size=args.test_bs, shuffle=False)
+    
+    return train_loader, test_loader
+

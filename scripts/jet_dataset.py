@@ -159,11 +159,12 @@ if __name__ == '__main__':
         X_train += noise_tr
         X_test += noise_ts
 
+    if args.noise: 
+        args.save_path = os.path.join(args.save_path, args.noise_type)
+
     X_train = preprocess_data(X_train, preprocess)
     X_test = preprocess_data(X_test, preprocess)
 
-    if args.noise: 
-        args.save_path = os.path.join(args.save_path, args.noise_type)
     if not os.path.isdir(args.save_path):
         os.mkdir(args.save_path)
 

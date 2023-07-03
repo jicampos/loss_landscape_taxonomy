@@ -2,61 +2,24 @@ import numpy as np
 import torch
 import torch.nn as nn
 import os
-from sklearn.metrics import accuracy_score
 
-class AverageMeter(object):
-    """Computes and stores the average and current value"""
 
-    def __init__(self, name, fmt=":f"):
-        self.name = name
-        self.fmt = fmt
-        self.reset()
-
-    def reset(self):
-        self.val = 0
-        self.avg = 0
-        self.sum = 0
-        self.count = 0
-
-    def update(self, val, n=1):
-        self.val = val
-        self.sum += val * n
-        self.count += n
-        self.avg = self.sum / self.count
-
-    def __str__(self):
-        fmtstr = "{name} {val" + self.fmt + "} ({avg" + self.fmt + "})"
-        return fmtstr.format(**self.__dict__)
-
-def test(args, model, test_loader, criterion):
+def test(args, model, test_loader):
     print('Testing')
     model.eval()
-    accuracy = AverageMeter("Acc", ":6.6f")
-    loss = AverageMeter("Loss", ":6.6f")
+    
     correct = 0
     total_num = 0
-    for data, targets in test_loader:
-        # data, target = data.cuda(), target.cuda()
+    for data, target in test_loader:
+        data, target = data.cuda(), target.cuda()
         with torch.no_grad():
             output = model(data)
-            #pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
-            
-            batch_loss = criterion(output, targets)
-            loss.update(batch_loss, data.size(0))
-
-            batch_preds = torch.max(output, 1)[1]
-            if len(targets.shape) > 1:
-                targets = torch.max(targets, 1)[1]  # Get target labels
-            batch_acc = accuracy_score(
-                targets.detach().cpu().numpy(), batch_preds.detach().cpu().numpy()
-            )
-            accuracy.update(batch_acc, data.size(0))
-            
-            #correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
-            #total_num += len(data)
-    print(accuracy)
-    #print(f'testing_acc: {acc:.3f}')
-    return accuracy.avg, loss.avg # correct / total_num 
+            pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
+            correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
+            total_num += len(data)
+    
+    print('testing_correct: ', correct / total_num, '\n')
+    return correct / total_num 
 
 
 def mixup_data(x, y, alpha=1.0, use_cuda=True):
@@ -136,47 +99,32 @@ def test_acc_loss(test_loader, model, criterion, regularizer=None, **kwargs):
     loss_sum = 0.0
     nll_sum = 0.0
     correct = 0.0
-    accuracy = AverageMeter("Acc", ":6.6f")
-    
+
     model.eval()
 
-    for data, target in test_loader:
-        # data = data.cuda(non_blocking=True)
-        # target = target.cuda(non_blocking=True)
+    for input, target in test_loader:
+        input = input.cuda(non_blocking=True)
+        target = target.cuda(non_blocking=True)
 
-        output = model(data, **kwargs)
+        output = model(input, **kwargs)
         nll = criterion(output, target)
         loss = nll.clone()
         if regularizer is not None:
             loss += regularizer(model)
 
-        nll_sum += nll.item() * data.size(0)
-        loss_sum += loss.item() * data.size(0)
-        
-        batch_preds = torch.max(output, 1)[1]
-        batch_labels = torch.max(target, 1)[1]
-        batch_acc = accuracy_score(
-            batch_labels.detach().cpu().numpy(), batch_preds.detach().cpu().numpy()
-        )
-        accuracy.update(batch_acc, data.size(0))
-            
-        #correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
-        #total_num += len(data)
-        
-        #print(f'testing_acc: {acc:.3f}')
-        # correct / total_num 
-        #pred = output.data.argmax(1, keepdim=True)
-        #correct += pred.eq(target.data.view_as(pred)).sum().item()
-        
+        nll_sum += nll.item() * input.size(0)
+        loss_sum += loss.item() * input.size(0)
+        pred = output.data.argmax(1, keepdim=True)
+        correct += pred.eq(target.data.view_as(pred)).sum().item()
 
     return {
-        'nll': nll_sum / len(test_loader),
-        'loss': loss_sum / len(test_loader),
-        'accuracy': accuracy.avg,
+        'nll': nll_sum / len(test_loader.dataset),
+        'loss': loss_sum / len(test_loader.dataset),
+        'accuracy': correct * 100.0 / len(test_loader.dataset),
     }
 
 
-def test_ensemble_average(models, test_loader, weights =None): # Not supprorted for JT yet
+def test_ensemble_average(models, test_loader, weights =None):
     
     smx=nn.Softmax()
     
@@ -187,8 +135,7 @@ def test_ensemble_average(models, test_loader, weights =None): # Not supprorted 
     num_models = len(models)
     if weights == None:
         weights = [1.0]*num_models
-
-    accuracy = AverageMeter("Acc", ":6.6f")    
+    
     correct = 0
     total_num = 0
     for data, target in test_loader:
@@ -198,7 +145,8 @@ def test_ensemble_average(models, test_loader, weights =None): # Not supprorted 
                 if ind == 0:
                     output = smx(models[ind](data)) * weights[ind]
                 else:
-                    output += smx(models[ind](data)) * weights[ind]            
+                    output += smx(models[ind](data)) * weights[ind]
+            
             pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
             total_num += len(data)

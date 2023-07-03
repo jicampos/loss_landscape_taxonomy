@@ -16,9 +16,7 @@ from utils import *
 parser = get_parser(code_type='loss_acc')
 args = parser.parse_args()
 
-#softmax1 = nn.Softmax().cuda()
-
-#criterion = nn.BCELoss().to("cuda")
+softmax1 = nn.Softmax().cuda()
 
 train_loader, test_loader = get_loader(args)
 
@@ -34,7 +32,7 @@ if not args.ensemble_average_acc:
         
         file_name = return_file_name_single(args, exp_id)
         model = load_checkpoint(args, file_name)
-        results[exp_id] = test_acc_loss(eval_loader, model, nn.BCELoss())
+        results[exp_id] = test_acc_loss(eval_loader, model, nn.CrossEntropyLoss())
 else:
     models = []
     for exp_id in range(5):

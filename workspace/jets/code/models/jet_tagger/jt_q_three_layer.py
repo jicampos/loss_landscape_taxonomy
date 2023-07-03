@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.append(os.path.join(sys.path[0], "../utils/")) 
+sys.path.append(os.path.join(sys.path[0], "../../../common/hawq/")) 
 
 import torch.nn as nn
 import torch.nn.utils.prune as prune

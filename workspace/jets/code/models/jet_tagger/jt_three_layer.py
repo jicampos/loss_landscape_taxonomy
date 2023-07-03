@@ -54,6 +54,6 @@ class ThreeLayer_BN(nn.Module):
 
 
 def get_jettagger(args):
-    if args.batch_norm:
-        return ThreeLayer_BN()
+    # if args.batch_norm:
+        # return ThreeLayer_BN()
     return ThreeLayerMLP()

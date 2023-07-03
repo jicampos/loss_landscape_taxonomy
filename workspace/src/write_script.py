@@ -1,7 +1,7 @@
 import argparse
 import numpy as np
 import os
-import sys
+
 
 def get_script(args, BASH_COMMAND_LIST):
     
@@ -53,22 +53,8 @@ def get_load_temperature(args):
     elif args.load_range == 'constant_small':
         load = [(0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01'), 
                (0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01'), (0.1, '01')]
-    elif args.load_range == 'bits_6_11':
-        load = [(6, '06'), (7, '07'), (8, '08'), (9, '09'), (10, '01'), (11, '11'), (32, '32')]
     elif args.load_range == 'customize':
-        load_map = {'0': (0.0, '0'), '0025': (0.025, '0025'), '005': (0.05, '005'), '0075': (0.075, '0075'), '01': (0.1, '01'), '0125': (0.125, '0125'), 
-                    '015': (0.15, '015'), '0175': (0.175, '0175'), '02': (0.2, '02'), '025': (0.25, '025'), '03': (0.3, '03'), '035': (0.35, '035'), 
-                    '04': (0.4, '04'), '045': (0.45, '045'), '05': (0.5, '05'), '055': (0.55, '055'), '06': (0.6, '06'), '065': (0.65, '065'), 
-                    '07': (0.7, '07'), '075': (0.75, '075'), '08': (0.8, '08'), '085': (0.85, '085'), '09': (0.9, '09'), '095': (0.95, '095'), '10': (1.0, '10')}
-        
-        # this is prolly the dumb way of doing it, but eh, it works
-        bits_load_map = { '1':  (1, '01'),   '2':  (2, '02'),   '3':  (3, '03'),  '4':  (4, '04'),  '5':  (5, '05'),  '6':  (6, '06'), 
-                     '7':  (7, '07'),   '8':  (8, '08'),   '9':  (9, '09'), '10': (10, '10'), '11': (11, '11'), '12': (12, '12'), 
-                    '13': (13, '13'),  '14': (14, '14'),  '15': (15, '15'), '16': (16, '16'), '17': (17, '17'), '18': (18, '18'), 
-                    '19': (19, '19'),  '20': (20, '20'),  '21': (21, '21'), '22': (22, '22'), '23': (23, '23'), '24': (24, '24'), 
-                    '25': (25, '25'),  '26': (26, '26'),  '27': (27, '27'), '28': (28, '28'), '29': (29, '29'), '30': (30, '30'), 
-                    '31': (31, '27'),  '32': (32, '32')}
-        
+        load_map = {'0': (0.0, '0'), '0025': (0.025, '0025'), '005': (0.05, '005'), '0075': (0.075, '0075'), '01': (0.1, '01'), '0125': (0.125, '0125'), '015': (0.15, '015'), '0175': (0.175, '0175'), '02': (0.2, '02'), '025': (0.25, '025'), '03': (0.3, '03'), '035': (0.35, '035'), '04': (0.4, '04'), '045': (0.45, '045'), '05': (0.5, '05'), '055': (0.55, '055'), '06': (0.6, '06'), '065': (0.65, '065'), '07': (0.7, '07'), '075': (0.75, '075'), '08': (0.8, '08'), '085': (0.85, '085'), '09': (0.9, '09'), '095': (0.95, '095'), '10': (1.0, '10')}
         
         load = [load_map[load] for load in args.load]
     
@@ -77,7 +63,7 @@ def get_load_temperature(args):
         temperature = args.temperature
         return load, temperature
     elif args.temperature_range == 'coarse':
-        lr_list = [0.1, 0.05, 0.025, 0.0125, 0.00625, 0.003125, 0.0015625] #0.4, 0.2,
+        lr_list = [0.4, 0.2, 0.1, 0.05, 0.025, 0.0125, 0.00625, 0.003125, 0.0015625]
         bs_list = [16, 32, 64, 128, 256, 512, 1024]
         wd_list = [3.2e-3, 1.6e-3, 8e-4, 4e-4, 2e-4, 1e-4, 5e-5, 2.5e-5, 1.25e-5]
     elif args.temperature_range == 'fine':
@@ -186,9 +172,6 @@ def get_command_list(args):
 
     load_list, temperature_list = get_load_temperature(args)
     
-    print(load_list)
-    print(temperature_list)
-    
     home_dir = '../'
     
     for load, load_suffix in load_list:
@@ -197,8 +180,6 @@ def get_command_list(args):
             
             # Get the folder names
             ckpt_folder = get_ckpt_folder(args, home_dir, val, load_suffix)
-            print(ckpt_folder)
-            print(val, load_suffix)
             random_label_path = f'../../data/random_labels/random_label_{load_suffix}_normal.pkl'
             random_label_path_test = f'../../data/random_labels/random_label_{load_suffix}_normal_test.pkl'
             
@@ -234,12 +215,8 @@ def get_command_list(args):
                 
             if args.test_on_noise:
                 data_command += " --test-on-noise"
-
-            if args.noise:
-                data_command += f' --data-path {os.path.join(args.data_path, args.noise_type)} ' # print(sys.path[0])
-                data_command += f' --noise --noise-type {args.noise_type} --noise-magnitude {args.noise_magnitude}'
-            else:
-                data_command += f' --data-path {args.data_path} ' # print(sys.path[0])
+                
+            
             # Two different modes if using training or testing data
             if args.experiment_type in ['hessian', 'CKA', 'curve', 'loss_acc']:
                 data_command += f" --train-or-test {args.train_or_test}"
@@ -372,8 +349,6 @@ def get_command_list(args):
                 early_stopping_suffix = f' --save-early-stop --min-delta 0.0001 --patience 5'
                 if args.training_type == 'normal':
                     command_suffix += f' --no-lr-decay --stop-epoch {stop_epoch}{early_stopping_suffix} --save-best'
-                elif args.training_type == 'bs_decay':
-                    command_suffix += f' --no-lr-decay --stop-epoch {stop_epoch}{early_stopping_suffix} --save-best'
                 elif args.training_type == 'small_wd':
                     command_suffix += f' --no-lr-decay --stop-epoch {stop_epoch}{early_stopping_suffix} --save-best'
                 elif args.training_type == 'lr_scaling':
@@ -382,10 +357,8 @@ def get_command_list(args):
                 elif args.training_type == 'lr_decay':
                     # If we train with learning rate decay, we do not use the early stopping checkpoint
                     # This is because the early stopped checkpoint may confuse which temperature we use
-                    # command_suffix += f' --one-lr-decay --epochs 100 --save-best'
-                    command_suffix += f' --no-lr-decay --epochs 100 --save-best'
-                elif args.training_type == 'bs_decay':
-                    command_suffix += f' --no-lr-decay --epochs 100 --save-best'
+                    command_suffix += f' --one-lr-decay --epochs 100 --save-best'
+                    
                 else:
                     raise NameError('Training type not included yet!')
 
@@ -401,17 +374,13 @@ def get_command_list(args):
                     result_name1 = os.path.join(ckpt_folder, f'net_exp_{exp_id}_early_stopped_model.pkl')
                     result_name2 = os.path.join(ckpt_folder, f'net_exp_{exp_id}.pkl')
                     result = (result_name1, result_name2)
-
-                    model_arch = args.arch.split('_')[0]
-                    train_file = '' if model_arch == 'JT' else f"_{model_arch.lower()}"
-                    command = f"python code/train{train_file}.py --training-type {args.training_type} " \
+            
+                    command = f"python code/train.py --training-type {args.training_type} " \
                                 + f"--arch {args.arch} --saving-folder {ckpt_folder} --file-prefix exp_{exp_id} " \
                                 + f"--mixup-alpha 16.0 {data_command} " \
-                                + f"--lr {lr} --weight-decay {wd} --train-bs {bs} --test-bs {bs} " \
-                                + f"--weight-precision {args.weight_precision} --bias-precision {args.bias_precision} --act-precision {args.act_precision} " \
-                                + f"{command_suffix} > >(tee -a {ckpt_folder}log_{exp_id}.txt) 2> >(tee -a {ckpt_folder}err_{exp_id}.txt >&2)" 
-                    # tee output: f"{command_suffix} > >(tee -a {ckpt_folder}log_{exp_id}.txt) 2> >(tee -a {ckpt_folder}err_{exp_id}.txt >&2)"
-                    # og output:  f"{command_suffix} 1>{ckpt_folder}log_{exp_id}.txt 2>{ckpt_folder}err_{exp_id}.txt"
+                                + f"--lr {lr} --weight-decay {wd} --train-bs {bs} " \
+                                + f"{command_suffix} 1>{ckpt_folder}log_{exp_id}.txt 2>{ckpt_folder}err_{exp_id}.txt" 
+
                     BASH_COMMAND_LIST.append((command, result))
                         
             elif args.experiment_type == 'loss_acc':
@@ -419,25 +388,14 @@ def get_command_list(args):
                 if args.early_stop_checkpoint:
                     command_suffix += ' --early-stopping'
                 
-                if args.noise:
-                    result_folder_name, result_name = create_metric_folder(args, folder=ckpt_folder, name=f'loss_acc{train_or_test_suffix}_{args.noise_type}{args.noise_magnitude}.pkl')
-                else:
-                    result_folder_name, result_name = create_metric_folder(args, folder=ckpt_folder, name=f'loss_acc{train_or_test_suffix}.pkl')
+                result_folder_name, result_name = create_metric_folder(args, folder=ckpt_folder, name=f'loss_acc{train_or_test_suffix}.pkl')
 
-                if args.noise:
-                    command = f"python ./code/loss_acc.py " \
-                            + f"--arch {args.arch} " \
-                            + f"{data_command} --checkpoint-folder {ckpt_folder}{command_suffix} " \
-                            + f"--result-location {result_name} " \
-                            + f"1>{result_folder_name}/loss_acc{train_or_test_suffix}_{args.noise_type}{args.noise_magnitude}.log " \
-                            + f"2>{result_folder_name}/loss_acc{train_or_test_suffix}_{args.noise_type}{args.noise_magnitude}.err"
-                else:    
-                    command = f"python ./code/loss_acc.py " \
-                            + f"--arch {args.arch} " \
-                            + f"{data_command} --checkpoint-folder {ckpt_folder}{command_suffix} " \
-                            + f"--result-location {result_name} " \
-                            + f"1>{result_folder_name}/loss_acc{train_or_test_suffix}.log " \
-                            + f"2>{result_folder_name}/loss_acc{train_or_test_suffix}.err"
+                command = f"python ./code/loss_acc.py " \
+                          + f"--arch {args.arch} " \
+                          + f"{data_command} --checkpoint-folder {ckpt_folder}{command_suffix} " \
+                          + f"--result-location {result_name} " \
+                          + f"1>{result_folder_name}/loss_acc{train_or_test_suffix}.log " \
+                          + f"2>{result_folder_name}/loss_acc{train_or_test_suffix}.err"
 
                 BASH_COMMAND_LIST.append((command, result_name))
                                 
@@ -505,10 +463,6 @@ if __name__ == "__main__":
                         help='which experiment do you want')
 
     # parameters for data
-    parser.add_argument('--data-path', type=str, default='../../data/JT/')
-    parser.add_argument('--noise-type', type=str, default='uniform')  # choices=['none', 'bernoulli', 'gaussian', 'uniform', 'positive_uniform'])
-    parser.add_argument('--noise', default=False, action='store_true')  # Default: True 
-    parser.add_argument('--noise-magnitude', type=float, default=4.0)
     parser.add_argument('--data-type', type=str, default='subset', 
                         choices = ['random_label', 'subset', 'subset_noisy', 'subset_augmentation', 'augmix'],
                         help='which type of data do you want to train with?')
@@ -521,7 +475,7 @@ if __name__ == "__main__":
 
     # parameters for training
     parser.add_argument('--arch', type=str, default = 'ResNet18', help='Model architecture')
-    parser.add_argument('--training-type', type=str, default = 'normal', help='Training type', choices = ['normal', 'bs_decay', 'lr_decay', 'small_wd', 'lr_scaling'])
+    parser.add_argument('--training-type', type=str, default = 'normal', help='Training type', choices = ['normal', 'lr_decay', 'small_wd', 'lr_scaling'])
     parser.add_argument('--stop-epoch', type=int, default = 80, help='maximum number of epochs to train')
     parser.add_argument('--exp-num', type=int, default = 5, help='number of experiments')
     parser.add_argument('--exp-start', type=int, default = 0, help='start of the exp index')
@@ -536,11 +490,6 @@ if __name__ == "__main__":
     parser.add_argument('--lr-standard', type=float, default = 0.05, help='standard learning rate')
     parser.add_argument('--bs-standard', type=int, default = 128, help='standard batch size')
     parser.add_argument('--wd-standard', type=float, default = 5e-4, help='standard weight decay')
-
-    # (Jet Tagger) Bitwidth parameters
-    parser.add_argument('--weight-precision', dest='weight_precision', type=int, default = 8, help='Quantized Weight Bitwidth')
-    parser.add_argument('--bias-precision', dest='bias_precision', type=int, default = 8, help='Quantized Bias Bitwidth')
-    parser.add_argument('--act-precision', dest='act_precision', type=int, default = 11, help='Quantized Activation Bitwidth') # weight bits + 3 = act bits typ.
     
     # parameters for the 2D load-temperature phase plot
     parser.add_argument('--temperature-range', type=str, default = 'coarse', 
