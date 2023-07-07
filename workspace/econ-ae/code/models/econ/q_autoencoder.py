@@ -164,7 +164,8 @@ class QuantizedEncoder(nn.Module):
 
         self.quant_input = QuantAct(activation_bit=self.act_precision)
         self.quant_relu = QuantAct(activation_bit=self.act_precision)
-        self.relu = nn.ReLU()
+        self.relu1 = nn.ReLU()
+        self.relu2 = nn.ReLU()
         self.flatten = nn.Flatten()
 
         base_layer = getattr(model, 'conv')
@@ -181,11 +182,11 @@ class QuantizedEncoder(nn.Module):
         x, p_sf = self.quant_input(x)
 
         x, w_sf = self.conv(x, p_sf)
-        x = self.relu(x)
+        x = self.relu1(x)
         x, p_sf = self.quant_relu(x, p_sf, w_sf)
 
         x = self.flatten(x)
-        x = self.relu(self.enc_dense(x, p_sf))
+        x = self.relu2(self.enc_dense(x, p_sf))
         return x
 
 

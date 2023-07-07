@@ -63,7 +63,7 @@ def load_JETS(args, kwargs):
 
 
 def load_ECON(args, kwargs):
-    parser = get_parser(code_type='hessian')
+    parser = get_parser(code_type='CKA')
     parser.add_argument("--process_data", action="store_true", default=False)
     parser.add_argument("--max_epochs", type=int, default=10)
     parser.add_argument("--save_dir", type=str, default="./pt_autoencoder_test")

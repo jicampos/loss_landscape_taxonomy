@@ -1,16 +1,12 @@
 from __future__ import print_function
 
 import sys
-sys.path.insert(1, '..')
-
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
-
 from arguments import get_parser
-from model import load_checkpoint 
+
 from utils import *
-from data import get_loader
 
 
 ##################################################################
@@ -33,6 +29,13 @@ def get_filename(args, exp_id1):
     return checkpoint1 
 
 
+def get_attr(module, name):
+    names = name.split('.')
+    for name in names:
+        module = getattr(module, name)
+    return module 
+
+
 ##################################################################
 def hook(model, input, output):
     if len(output) == 2:
@@ -42,14 +45,14 @@ def hook(model, input, output):
 
 
 def register_hooks(model):
-    for name, layer in model.named_children():
+    for name, layer in model.named_modules():
         layer.__name__ = name
         layer._activations = torch.tensor([])
         layer.register_forward_hook(hook)
 
 
 def cleanup(model):
-    for _name, layer in model.named_children():
+    for _name, layer in model.named_modules():
         layer._activations = torch.tensor([])
 
 
@@ -58,7 +61,9 @@ def compute_neural_efficiency(model, data_loader):
     batch_eff = []
     register_hooks(model)
 
-    for inputs, _ in data_loader:
+    for idx, (inputs, _) in enumerate(data_loader):
+        if idx+1 == len(data_loader):
+            break
         _ = model(inputs)
         activations = get_activations(model, layer_types=('Linear', 'Conv2d','QuantLinear', 'QuantConv2d'))
         b_eff = layer_entropy(model, activations, len(inputs))
@@ -83,7 +88,10 @@ def num_nodes(module):
 def layer_entropy(model, activations, width):
     entropy = []
     for layer_name, acts in activations.items():
-        layer = getattr(model, layer_name)
+        if len(acts.shape) == 1:
+            continue
+        layer = get_attr(model, layer_name)
+        # layer = getattr(model, layer_name)
         # layer neural_eff = entropy/num_nodes
         # print(f'Layer {layer_name} non-zero count: {np.count_nonzero(acts.numpy(), axis=0)}')
         entropy.append(
@@ -99,30 +107,48 @@ act_layers = ['ReLU', 'LeakyReLU', 'ReLU6', 'PReLU', 'SELU', 'CELU', 'GELU', 'Si
 layers = param_layers + act_layers
 
 
-def get_activations(model, layer_types=()):
+def get_activations(model, layer_types=(), layer_names=['encoder.conv', 'encoder.enc_dense']):
     if not layer_types:
         layer_types = layers
     layer_a = {}
-    for _, module in model.named_children():
-        if module.__class__.__name__ in layer_types:
+    if layer_names:
+        for layer_name in layer_names:
+            module = get_attr(model, layer_name)
             layer_a[module.__name__] = module._activations
-    return layer_a
+        return layer_a
+    else:
+        for _, module in model.named_modules():
+            if module.__class__.__name__ in layer_types:
+                layer_a[module.__name__] = module._activations
+        return layer_a
 
 
 ##################################################################
 parser = get_parser(code_type='neural_eff')
 args = parser.parse_args()
 
-model_eff = []
+model_arch = args.arch.split('_')[0]
+print('Importing code for', model_arch)
+if model_arch == 'JT':
+    sys.path.append(os.path.join(sys.path[0], "../jets/code")) 
+elif model_arch == 'ECON':
+    sys.path.append(os.path.join(sys.path[0], "../econ-ae/code")) 
 
+from model import load_checkpoint 
+from data import get_loader
+
+##################################################################
+print(os.getcwd())
 train_loader, test_loader = get_loader(args)
 
-# if args.train_or_test == 'train':
-    # eval_loader = train_loader
-# elif args.train_or_test == 'test':
-    # eval_loader = test_loader
+if args.train_or_test == 'train':
+    eval_loader = train_loader
+elif args.train_or_test == 'test':
+    eval_loader = test_loader
+
 eval_loader = test_loader
 
+model_eff = []
 for exp_id1 in range(3):
     file_name1 = get_filename(args, exp_id1)
     model = load_checkpoint(args, file_name1)    

@@ -191,5 +191,6 @@ def get_parser(code_type='training'):
         parser.add_argument('--noise', action='store_true', default=False)
         parser.add_argument('--noise-type', choices=['bernoulli', 'gaussian', 'uniform', 'positive_uniform'])
         parser.add_argument('--noise-magnitude', type=float, default=1.0)
+        parser.add_argument('--train-or-test', choices=['train', 'test'])
         
     return parser
