@@ -1,20 +1,30 @@
 from __future__ import print_function
 
+import os 
 import sys
-sys.path.insert(1, './code/')
 import numpy as np
 import pickle
 import torch.nn as nn
 import torch.nn.functional as F
 
-from data import get_loader
 from arguments import get_parser
-from model import load_checkpoint 
 from utils import *
 from CKA_utils import *
 
 parser = get_parser(code_type='CKA')
 args = parser.parse_args()
+
+model_arch = args.arch.split('_')[0]
+print('Importing code for', model_arch)
+if model_arch == 'JT':
+    sys.path.append(os.path.join(sys.path[0], "../jets/code")) 
+elif model_arch == 'ECON':
+    sys.path.append(os.path.join(sys.path[0], "../econ-ae/code")) 
+
+# Import dataloader & model 
+from data import get_loader
+from model import load_checkpoint
+
 
 # Get data
 train_loader, test_loader = get_loader(args)

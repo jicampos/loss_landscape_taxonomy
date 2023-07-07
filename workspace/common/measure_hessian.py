@@ -6,47 +6,49 @@ https://github.com/amirgholami/PyHessian
 
 from __future__ import print_function
 
+import os 
+import sys
 import numpy as np
 import random
 import argparse
+import pickle
+from tqdm import tqdm, trange
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
-from torchvision import datasets, transforms
 from torch.autograd import Variable
+from torch.utils.data import TensorDataset
+from torchvision import datasets, transforms
 
-import os 
-import sys
-sys.path.append(os.path.join(sys.path[0], "../utils/pyhessian/")) 
-from data import get_loader
-from arguments import get_parser
-import pickle
-from utils import *
-from tqdm import tqdm, trange
+# Local imports 
+sys.path.append(os.path.join(sys.path[0], "pyhessian/")) 
 import pyhessian
 from pyhessian import hessian
-from model import load_checkpoint
+from utils import *
+from arguments import get_parser
 
-
-import logging
-import os
-
-from torch.utils.data import TensorDataset
 
 parser = get_parser(code_type='hessian')
-# args = parser.add_argument('--train-bs', default=1024, type=int)
-# args = parser.add_argument('--test-bs', default=1024, type=int)
 args = parser.parse_args()
 for arg in vars(args):
     print(arg, getattr(args, arg))
 
-# from models.resnet_width import ResNet18
-# arch_kwargs = {'width': args.resnet18_width}
+model_arch = args.arch.split('_')[0]
+print('Importing code for', model_arch)
+if model_arch == 'JT':
+    sys.path.append(os.path.join(sys.path[0], "../jets/code")) 
+elif model_arch == 'ECON':
+    sys.path.append(os.path.join(sys.path[0], "../econ-ae/code")) 
+
+# Import dataloader & model 
+from data import get_loader
+from model import load_checkpoint
+
 
 # Get data
-
 args.train_bs = args.mini_hessian_batch_size
 args.test_bs = args.mini_hessian_batch_size
 
@@ -63,8 +65,11 @@ def return_model(file_name, args):
     
     return model
 
-
-criterion = nn.CrossEntropyLoss()  # label loss
+if model_arch == 'ECON':
+    from models.econ.telescope_pt import telescopeMSE8x8
+    criterion = telescopeMSE8x8
+elif model_arch == 'JT':
+    criterion = nn.CrossEntropyLoss()  # label loss
 
 ######################################################
 # Begin the computation
@@ -119,8 +124,8 @@ for exp_id in range(3):
 
     print('********** finish data londing and begin Hessian computation **********')
 
-    top_eigenvalues, _ = hessian_comp.eigenvalues()
-    trace = hessian_comp.trace()
+    top_eigenvalues, _ = hessian_comp.eigenvalues(maxIter=200, tol=1e-6)
+    trace = hessian_comp.trace(maxIter=200, tol=1e-6)
 
     print('\n***Top Eigenvalues: ', top_eigenvalues)
     print('\n***Trace: ', np.mean(trace))

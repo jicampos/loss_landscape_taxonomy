@@ -1,76 +1,51 @@
-import torch
-from models.jet_tagger.jt_q_three_layer import get_quantized_jettagger 
-from models.jet_tagger.jt_three_layer import get_jettagger 
-from models.mlperf.rn07 import get_rn07
 import re
+import torch
+from models.econ.q_autoencoder import AutoEncoder
 
 
 input_shapes = {
     "JT": (1,16),
     "RN07": (1,3,32,32),
+    "ECON": (1, 1, 8, 8),
 }
 
-def get_new_model(args):
-    model_arch = args.arch.split('_')[0]
-    if model_arch == 'RN07':
-        return get_rn07(args)
-    if args.weight_precision is 32:
-        print("using FP32 model")
-        model = get_jettagger(args)#.cuda()
-    else:
-        print("using quant model")
-        model = get_quantized_jettagger(args)#.cuda()
+def get_new_model(model_arch, bitwidth, args):
+    if model_arch == 'ECON' and bitwidth == 32:
+        model = AutoEncoder(
+            accelerator='auto', 
+            quantize=False,
+            precision=[
+                bitwidth, 
+                bitwidth, 
+                bitwidth+3
+            ],
+            learning_rate=0.1
+        )
+    elif model_arch == 'ECON' and bitwidth < 32:
+        model = AutoEncoder(
+            accelerator='auto', 
+            quantize=True,
+            precision=[
+                bitwidth, 
+                bitwidth, 
+                bitwidth+3
+            ],
+            learning_rate=0.1
+        )
     return model
 
 
-class ArgFake:
-    def __init__(self, w=32, b=32, a=32, bn=False, d=False, arch='JT'):
-        self.weight_precision = w
-        self.bias_precision = b
-        self.act_precision = a
-        self.batch_norm = bn
-        self.dropout = d
-        self.arch = arch
-
-def update_fc_size(model, ckp, dense_layers=['dense_1', 'dense_2', 'dense_3', 'dense_4']):
-    for dl in dense_layers:
-        layer = getattr(model, dl)
-        ckp[f"{dl}.fc_scaling_factor"] = torch.ones(layer.fc_scaling_factor.shape) * ckp[f"{dl}.fc_scaling_factor"]
-    return ckp
-
-def load_checkpoint(args, file_name): 
-   # checkpoint = torch.load(file_name)
+def load_checkpoint(args, checkpoint_filename): 
+   # Find model architecture and quantization scheme  
    model_arch = args.arch.split('_')[0]
-   result = re.search(f'{model_arch}_(.*)b', args.arch)
-   quant = int(result.group(1))
-   fake = ArgFake(w=quant,b=quant,a=quant+3, arch=model_arch)
-   model = get_new_model(fake)
+   bitwidth_str = re.search(f'{model_arch}_(.*)b', args.arch)
+   bitwidth = int(bitwidth_str.group(1))
+
+   model = get_new_model(model_arch, bitwidth, args)
+   model(torch.randn(input_shapes[model_arch]))  # Update tensor shapes 
    
-   checkpoint = torch.load(file_name, map_location=torch.device("cpu"))
-   model(torch.randn(input_shapes[model_arch]))
-   model.load_state_dict(checkpoint)
+   # Load checkpoint 
+   print('Loading checkpoint...', checkpoint_filename)
+   checkpoint = torch.load(checkpoint_filename)
+   model.load_state_dict(checkpoint['state_dict'])  # strict=False
    return model
-
-#    if quant is 32:
-#         model.load_state_dict(checkpoint)
-#         #model.train()
-#         return model
-
-#     #set_bit_config(model, checkpoint["bit_config"], args)
-#     model = get_new_model(fake)
-#     #checkpoint = checkpoint["state_dict"]
-#     model_dict = model.state_dict()
-#     modified_dict = {}
-    
-#     updated_ckp = update_fc_size(model, checkpoint)   
-    
-#     for key, value in checkpoint.items():
-#         if model_dict[key].shape != value.shape:
-#             print(f"mismatch: {key}: {value}")
-#             value = torch.tensor([value], dtype=torch.float64)
-#         modified_dict[key] = value
-    
-#     model.load_state_dict(modified_dict, strict=False)
-    
-    
-    # return model

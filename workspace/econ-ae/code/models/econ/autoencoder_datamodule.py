@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import pandas as pd
 import pytorch_lightning as pl
+from torch.utils.data import TensorDataset
 
 from .utils_pt import normalize
 
@@ -241,17 +242,21 @@ class AutoEncoderDataModule(pl.LightningDataModule):
         """
         Return the training dataloader
         """
+        train_data_tensor = torch.Tensor(self.train_data)
+        train_dataset = TensorDataset(train_data_tensor, train_data_tensor)
         return torch.utils.data.DataLoader(
-            self.train_data, batch_size=500, shuffle=True, num_workers=self.num_workers
+            train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers
         )
 
     def val_dataloader(self):
         """
         Return the validation dataloader
         """
+        val_data_tensor = torch.Tensor(self.val_data)
+        val_dataset = TensorDataset(val_data_tensor, val_data_tensor)
         # Take the first valid_split% of the data as validation data
         return torch.utils.data.DataLoader(
-            self.val_data, batch_size=500, shuffle=False, num_workers=self.num_workers
+            val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers
         )
 
     def test_dataloader(self):

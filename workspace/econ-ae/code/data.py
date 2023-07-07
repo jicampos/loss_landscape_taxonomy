@@ -1,12 +1,12 @@
 import os 
+import argparse
+from arguments import get_parser
 import numpy as np
 import torch
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import TensorDataset, DataLoader
-
-# Hard code here, though normally grabbed from a yaml file
-# features = ['j_zlogz', 'j_c1_b0_mmdt', 'j_c1_b1_mmdt', 'j_c1_b2_mmdt', 'j_c2_b1_mmdt', 'j_c2_b2_mmdt', 'j_d2_b1_mmdt', 'j_d2_b2_mmdt', 'j_d2_a1_b1_mmdt', 'j_d2_a1_b2_mmdt', 'j_m2_b1_mmdt', 'j_m2_b2_mmdt', 'j_n2_b1_mmdt', 'j_n2_b2_mmdt', 'j_mass_mmdt', 'j_multiplicity']
+from models.econ.autoencoder_datamodule import AutoEncoderDataModule
 
 
 def load_CIFAR10(args, kwargs):
@@ -62,6 +62,36 @@ def load_JETS(args, kwargs):
     return train_loader, test_loader
 
 
+def load_ECON(args, kwargs):
+    parser = get_parser(code_type='hessian')
+    parser.add_argument("--process_data", action="store_true", default=False)
+    parser.add_argument("--max_epochs", type=int, default=10)
+    parser.add_argument("--save_dir", type=str, default="./pt_autoencoder_test")
+    parser.add_argument("--experiment_name", type=str, default="autoencoder")
+    parser.add_argument("--fast_dev_run", action="store_true", default=False)
+    parser.add_argument(
+        "--accelerator", type=str, choices=["cpu", "gpu", "auto"], default="auto"
+    )
+    parser.add_argument("--checkpoint", type=str, default="", help="model checkpoint")
+    parser.add_argument("--train", action="store_true", default=False)
+    parser.add_argument("--evaluate", action="store_true", default=False)
+    parser.add_argument(
+        "--quantize", 
+        action="store_true", 
+        default=False, 
+        help="quantize model to 6-bit fixed point (1 signed bit, 1 integer bit, 4 fractional bits)"
+    )
+
+    # Add dataset-specific args
+    parser = AutoEncoderDataModule.add_argparse_args(parser)
+    args = parser.parse_args()
+    data_module = AutoEncoderDataModule.from_argparse_args(args)
+    data_module.setup(0)
+    train_dataloader = data_module.train_dataloader()
+    test_dataloader = data_module.test_dataloader()
+    return train_dataloader, test_dataloader
+
+
 def get_loader(args):
     kwargs = {'num_workers': 10, 'pin_memory': True}
     model_arch = args.arch.split('_')[0]
@@ -72,5 +102,7 @@ def get_loader(args):
         return load_CIFAR10(args, kwargs)
     elif model_arch == 'JT':
         return load_JETS(args, kwargs)
+    elif model_arch == 'ECON':
+        return load_ECON(args, kwargs)
     else:
         raise Exception(f'Model architecture {model_arch} not recognized')
