@@ -152,6 +152,8 @@ class AutoEncoderDataModule(pl.LightningDataModule):
         self.data_dir = data_dir
         self.data_file = data_file
         self.batch_size = batch_size
+        self.train_bs = batch_size
+        self.test_bs = batch_size
         self.num_workers = num_workers
         self.calq_cols = [f"CALQ_{i}" for i in range(48)]
         self.valid_split = 0.2
@@ -242,21 +244,17 @@ class AutoEncoderDataModule(pl.LightningDataModule):
         """
         Return the training dataloader
         """
-        train_data_tensor = torch.Tensor(self.train_data)
-        train_dataset = TensorDataset(train_data_tensor, train_data_tensor)
         return torch.utils.data.DataLoader(
-            train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers
+            self.train_data, batch_size=self.train_bs, shuffle=True, num_workers=self.num_workers
         )
 
     def val_dataloader(self):
         """
         Return the validation dataloader
         """
-        val_data_tensor = torch.Tensor(self.val_data)
-        val_dataset = TensorDataset(val_data_tensor, val_data_tensor)
         # Take the first valid_split% of the data as validation data
         return torch.utils.data.DataLoader(
-            val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers
+            self.val_data, batch_size=self.test_bs, shuffle=False, num_workers=self.num_workers
         )
 
     def test_dataloader(self):
@@ -264,3 +262,20 @@ class AutoEncoderDataModule(pl.LightningDataModule):
         Return the test dataloader
         """
         return self.val_dataloader()
+
+    def dataloaders(self):
+        """
+        Return train and test as Tensor dataloaders. Used for metrics, not training
+        """
+        val_data_tensor = torch.Tensor(self.val_data)
+        val_dataset = TensorDataset(val_data_tensor, val_data_tensor)
+        val_loader = torch.utils.data.DataLoader(
+            val_dataset, batch_size=self.test_bs, shuffle=False, num_workers=self.num_workers
+        )
+    
+        train_data_tensor = torch.Tensor(self.train_data)
+        train_dataset = TensorDataset(train_data_tensor, train_data_tensor)
+        train_loader = torch.utils.data.DataLoader(
+            train_dataset, batch_size=self.train_bs, shuffle=True, num_workers=self.num_workers
+        )
+        return train_loader, val_loader

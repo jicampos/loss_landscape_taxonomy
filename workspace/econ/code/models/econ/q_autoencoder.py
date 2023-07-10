@@ -136,21 +136,21 @@ CALQ_MASK = torch.tensor(
 )
 
 encoder_type = {
-    'base': (3, 8, 128),
-    'big': (5, 32, 512),
-    'small': (3, 1, 16),
+    'autoencoder': (3, 8, 128),
+    'econ-big': (5, 32, 288),
+    'econ-small': (3, 1, 16),
 }
 
 
 class BaseEncoder(nn.Module):
-    def __init__(self, network_type, *args, **kwargs) -> None:
+    def __init__(self, econ_type, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.encoded_dim = 16
         self.shape = (1, 8, 8)  # PyTorch defaults to (C, H, W)
         self.val_sum = None
 
-        kernel_size, num_kernels, fc_input = encoder_type[network_type]
+        kernel_size, num_kernels, fc_input = encoder_type[econ_type]
 
         self.conv = nn.Conv2d(1, num_kernels, kernel_size=kernel_size, stride=2, padding=1)
         self.relu = nn.ReLU()
@@ -200,7 +200,7 @@ class QuantizedEncoder(nn.Module):
 
 
 class AutoEncoder(pl.LightningModule):
-    def __init__(self, accelerator, quantize, precision, learning_rate, *args, **kwargs) -> None:
+    def __init__(self, accelerator, quantize, precision, learning_rate, econ_type, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.encoded_dim = 16
@@ -210,7 +210,7 @@ class AutoEncoder(pl.LightningModule):
         self.accelerator = accelerator
         self.learning_rate = learning_rate
 
-        self.encoder = BaseEncoder() 
+        self.encoder = BaseEncoder(econ_type) 
         if self.quantize:
             self.encoder = QuantizedEncoder(self.encoder, precision[0], precision[1], precision[2])
         

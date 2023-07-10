@@ -86,10 +86,10 @@ def load_ECON(args, kwargs):
     parser = AutoEncoderDataModule.add_argparse_args(parser)
     args = parser.parse_args()
     data_module = AutoEncoderDataModule.from_argparse_args(args)
+    data_module.train_bs = args.train_bs
+    data_module.test_bs = args.test_bs
     data_module.setup(0)
-    train_dataloader = data_module.train_dataloader()
-    test_dataloader = data_module.test_dataloader()
-    return train_dataloader, test_dataloader
+    return data_module.dataloaders()
 
 
 def get_loader(args):

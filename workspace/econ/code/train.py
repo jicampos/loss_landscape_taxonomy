@@ -58,6 +58,8 @@ def main(args):
     # 0 PREPARE DATA
     # ------------------------
     data_module = AutoEncoderDataModule.from_argparse_args(args)
+    data_module.train_bs = args.train_bs
+    data_module.test_bs = args.test_bs
     if args.process_data:
         print("Processing data...")
         data_module.process_data()
@@ -74,7 +76,8 @@ def main(args):
             args.bias_precision, 
             args.act_precision
         ],
-        learning_rate=args.lr
+        learning_rate=args.lr,
+        econ_type=args.experiment_name,
     )
 
     torchinfo.summary(model, input_size=(1, 1, 8, 8))  # (B, C, H, W)
@@ -88,10 +91,10 @@ def main(args):
         monitor="val_loss",
         mode="min",
         dirpath=os.path.join(args.saving_folder, args.experiment_name),
-        # filename=f"{args.experiment_name}_{args.file_prefix}" "_epoch={epoch:02d}_loss={val_loss:.3f}",
-        filename=f'net_{args.file_prefix}_best.pkl',
+        filename=f'net_{args.file_prefix}_best',
         auto_insert_metric_name=False,
     )
+    top3_checkpoint_callback.FILE_EXTENSION = '.pkl'
     print(f'Saving to dir: {os.path.join(args.saving_folder, args.experiment_name)}')
     print(f'Running experiment: {args.file_prefix}')
 
@@ -117,7 +120,7 @@ def main(args):
     # ------------------------
     if args.train or args.evaluate:
         if args.checkpoint or True:
-            checkpoint_file = os.path.join(args.saving_folder, args.experiment_name, f'net_{args.file_prefix}_best.pkl.ckpt')
+            checkpoint_file = os.path.join(args.saving_folder, args.experiment_name, f'net_{args.file_prefix}_best.pkl')
             print('Loading checkpoint...', checkpoint_file)
             checkpoint = torch.load(checkpoint_file)
             model.load_state_dict(checkpoint['state_dict'])
@@ -157,23 +160,6 @@ if __name__ == "__main__":
 
     # Add dataset-specific args
     parser = AutoEncoderDataModule.add_argparse_args(parser)
-
-    # Add loss landscape args 
-    # parser.add_argument("--training-type", type=str)
-    # parser.add_argument("--arch", type=str)
-    # parser.add_argument("--subset", type=float)
-    # parser.add_argument("--file-prefix", type=str)
-    # parser.add_argument("--mixup-alpha", type=float)
-    # parser.add_argument("--lr", type=float)
-    # parser.add_argument("--weight-decay", type=float)
-    # parser.add_argument("--train-bs", type=int)
-    # parser.add_argument("--test-bs", type=int)
-    # parser.add_argument("--weight-precision", type=int)
-    # parser.add_argument("--bias-precision", type=int)
-    # parser.add_argument("--act-precision", type=int)
-    # parser.add_argument("--one-lr-decay", action="store_true")
-    # parser.add_argument("--save-best", action="store_true")
-    # parser.add_argument("--ignore-incomplete-batch", action="store_true")
 
     args = parser.parse_args()
     main(args)
