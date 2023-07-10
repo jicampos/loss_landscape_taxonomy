@@ -1,15 +1,25 @@
 from __future__ import print_function
 
+import os
 import sys
-sys.path.insert(1, './code/')
-
 import numpy as np
 import pickle
-import matplotlib.pyplot as plt
 
 from arguments import get_parser
-from model import load_checkpoint 
 from utils import *
+
+
+parser = get_parser(code_type='model_dist')
+args = parser.parse_args()
+
+model_arch = args.arch.split('_')[0]
+print('Importing code for', model_arch)
+if model_arch == 'JT':
+    sys.path.append(os.path.join(sys.path[0], "../jets/code")) 
+elif model_arch == 'ECON':
+    sys.path.append(os.path.join(sys.path[0], "../econ-ae/code")) 
+
+from model import load_checkpoint 
 
 
 def get_params(model): 
@@ -29,9 +39,6 @@ def compute_distance(model1, model2):
     
     return dist
 
-
-parser = get_parser(code_type='model_dist')
-args = parser.parse_args()
 
 model_distance = {}
 
