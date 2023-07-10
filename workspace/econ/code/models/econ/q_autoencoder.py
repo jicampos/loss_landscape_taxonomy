@@ -135,18 +135,27 @@ CALQ_MASK = torch.tensor(
     ]
 )
 
+encoder_type = {
+    'base': (3, 8, 128),
+    'big': (5, 32, 512),
+    'small': (3, 1, 16),
+}
+
+
 class BaseEncoder(nn.Module):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, network_type, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.encoded_dim = 16
         self.shape = (1, 8, 8)  # PyTorch defaults to (C, H, W)
         self.val_sum = None
 
-        self.conv = nn.Conv2d(1, 8, kernel_size=3, stride=2, padding=1)
+        kernel_size, num_kernels, fc_input = encoder_type[network_type]
+
+        self.conv = nn.Conv2d(1, num_kernels, kernel_size=kernel_size, stride=2, padding=1)
         self.relu = nn.ReLU()
         self.flatten = nn.Flatten()
-        self.enc_dense = nn.Linear(128, self.encoded_dim)
+        self.enc_dense = nn.Linear(fc_input, self.encoded_dim)
     
     def forward(self, x):
         x = self.relu(self.conv(x))
