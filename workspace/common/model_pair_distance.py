@@ -17,7 +17,7 @@ print('Importing code for', model_arch)
 if model_arch == 'JT':
     sys.path.append(os.path.join(sys.path[0], "../jets/code")) 
 elif model_arch == 'ECON':
-    sys.path.append(os.path.join(sys.path[0], "../econ-ae/code")) 
+    sys.path.append(os.path.join(sys.path[0], "../econ/code")) 
 
 from model import load_checkpoint 
 

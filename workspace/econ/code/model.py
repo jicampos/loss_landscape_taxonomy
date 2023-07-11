@@ -19,7 +19,8 @@ def get_new_model(model_arch, bitwidth, args):
                 bitwidth, 
                 bitwidth+3
             ],
-            learning_rate=0.1
+            learning_rate=0.1,
+            econ_type=args.experiment_name,
         )
     elif model_arch == 'ECON' and bitwidth < 32:
         model = AutoEncoder(
@@ -30,7 +31,8 @@ def get_new_model(model_arch, bitwidth, args):
                 bitwidth, 
                 bitwidth+3
             ],
-            learning_rate=0.1
+            learning_rate=0.1,
+            econ_type=args.experiment_name,
         )
     return model
 
