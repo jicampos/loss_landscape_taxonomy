@@ -137,7 +137,7 @@ CALQ_MASK = torch.tensor(
 
 encoder_type = {
     'baseline': (3, 8, 128),
-    'big': (5, 32, 288),
+    'large': (5, 32, 288),
     'small': (3, 1, 16),
 }
 
