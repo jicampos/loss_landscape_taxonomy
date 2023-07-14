@@ -33,8 +33,8 @@ def get_params(model):
 
 def compute_distance(model1, model2):
     
-    params1 = get_params(model1)
-    params2 = get_params(model2)
+    params1 = get_params(model1.encoder)
+    params2 = get_params(model2.encoder)
     dist = (params1-params2).norm().item()
     
     return dist

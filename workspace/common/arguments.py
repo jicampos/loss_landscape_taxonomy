@@ -5,6 +5,8 @@ import argparse
 def get_parser(code_type='training'):
 
     parser = argparse.ArgumentParser(description='Arguments for this experiment')
+
+    parser.add_argument('--experiment-name', type=str, default='autoencoder')
     
     #######################
     # data loader
@@ -155,6 +157,7 @@ def get_parser(code_type='training'):
         parser.add_argument('--batch-norm', action='store_false', help='do we need batch norm or not')
         parser.add_argument('--residual', action='store_false', help='do we need residual connect or not')
         parser.add_argument('--cuda', action='store_true', help='do we use gpu or not')
+        # parser.add_argument('--experiment-name', type=str, default='autoencoder')
 
 
     ########################
