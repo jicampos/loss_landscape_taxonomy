@@ -9,10 +9,11 @@ import multiprocessing
 import pytorch_lightning as pl 
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from argparse import ArgumentParser
-from models.econ.q_autoencoder import AutoEncoder
-from models.econ.autoencoder_datamodule import AutoEncoderDataModule
-from models.econ.utils_pt import unnormalize, emd
+from q_autoencoder import AutoEncoder
+from autoencoder_datamodule import AutoEncoderDataModule
+from utils_pt import unnormalize, emd
 from arguments import get_parser
 
 parser = get_parser(code_type='training')
@@ -84,6 +85,9 @@ def main(args):
 
     tb_logger = pl_loggers.TensorBoardLogger(args.saving_folder, name=args.experiment_name)
 
+    # Stop training when model converges
+    early_stop_callback = EarlyStopping(monitor="val_loss", min_delta=0.00, patience=5, verbose=True, mode="min")
+
     # Save top-3 checkpoints based on Val/Loss
     top3_checkpoint_callback = ModelCheckpoint(
         save_top_k=3,
@@ -105,7 +109,7 @@ def main(args):
         max_epochs=args.max_epochs,
         accelerator=args.accelerator,
         logger=tb_logger,
-        callbacks=[top3_checkpoint_callback],
+        callbacks=[top3_checkpoint_callback, early_stop_callback],
         fast_dev_run=args.fast_dev_run,
     )
 

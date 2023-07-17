@@ -12,8 +12,8 @@ import itertools
 
 from hawq.utils.quantization_utils.quant_modules import QuantAct, QuantLinear, QuantConv2d
 from collections import OrderedDict
-from .telescope_pt import telescopeMSE8x8, move_constants_to_gpu
-from .autoencoder_datamodule import ARRANGE, ARRANGE_MASK
+from telescope_pt import telescopeMSE8x8, move_constants_to_gpu
+from autoencoder_datamodule import ARRANGE, ARRANGE_MASK
 
 
 """

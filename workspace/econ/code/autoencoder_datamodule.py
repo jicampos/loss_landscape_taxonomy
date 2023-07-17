@@ -5,7 +5,7 @@ import pandas as pd
 import pytorch_lightning as pl
 from torch.utils.data import TensorDataset
 
-from .utils_pt import normalize
+from utils_pt import normalize
 
 ARRANGE = torch.tensor(
     [
@@ -168,7 +168,7 @@ class AutoEncoderDataModule(pl.LightningDataModule):
     def add_argparse_args(parent_parser):
         parser = parent_parser.add_argument_group("Dataset")
         parser.add_argument("--data_dir", type=str, default=None)
-        parser.add_argument("--data_file", type=str, default="../../data/ECON/nELinks5.npy")
+        parser.add_argument("--data_file", type=str, default="../../data/ECON/Elegun/nELinks5.npy")
         parser.add_argument("--num_workers", type=int, default=8)
         parser.add_argument("--batch_size", type=int, default=500)
         return parent_parser

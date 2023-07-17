@@ -1,6 +1,6 @@
 import re
 import torch
-from models.econ.q_autoencoder import AutoEncoder
+from q_autoencoder import AutoEncoder
 
 
 input_shapes = {

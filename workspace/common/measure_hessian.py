@@ -66,7 +66,7 @@ def return_model(file_name, args):
     return model
 
 if model_arch == 'ECON':
-    from models.econ.telescope_pt import telescopeMSE8x8
+    from telescope_pt import telescopeMSE8x8
     criterion = telescopeMSE8x8
 elif model_arch == 'JT':
     criterion = nn.CrossEntropyLoss()  # label loss
