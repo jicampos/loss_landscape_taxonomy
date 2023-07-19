@@ -8,11 +8,25 @@ import pickle
 import matplotlib.pyplot as plt
 
 from arguments import get_parser
-from model import load_checkpoint 
 from utils import *
+
+parser = get_parser(code_type='neural_eff')
+args = parser.parse_args()
+
+
+model_arch = args.arch.split('_')[0]
+print('Importing code for', model_arch)
+if model_arch == 'JT':
+    sys.path.append(os.path.join(sys.path[0], "../jets/code")) 
+elif model_arch == 'ECON':
+    sys.path.append(os.path.join(sys.path[0], "../econ/code")) 
+
+from model import load_checkpoint 
 from data import get_loader
 
 
+##################################################################
+# Helper Functions
 ##################################################################
 def get_filename(args, exp_id1):
     checkpoint1 = os.path.join(args.checkpoint_folder, f"net_exp_{exp_id1}.pkl")
@@ -33,42 +47,33 @@ def get_filename(args, exp_id1):
     return checkpoint1 
 
 
-def compute_gradient_trace(model):
+def get_batch_gradients(model):
     gradient_traces = []
-    for name, param in model.named_parameters():
-        if len(param.shape) > 1:
-            gradient_traces.append(param.trace().item())
-    return np.array(gradient_traces).mean()
+    for name, param in model.encoder.named_parameters():
+        if param.requires_grad and type(param.grad) == torch.Tensor:
+            # print('Adding', name, type(param))
+            gradient_traces.append(param.grad.mean())
+    # print('Computing mean of', gradient_traces)
+    return np.array(gradient_traces)
 
 
 ##################################################################
-def get_params(model): 
-    # wrt data at the current step
-    res = []
-    for p in model.parameters():
-        if p.requires_grad:
-            res.append(p.data.view(-1))
-    weight_flat = torch.cat(res)
-    return weight_flat
-
-def compute_distance(model1, model2):
-    
-    params1 = get_params(model1)
-    params2 = get_params(model2)
-    dist = (params1-params2).norm().item()
-    
-    return dist
-
+# Compute Gradient 
 ##################################################################
-parser = get_parser(code_type='neural_eff')
-args = parser.parse_args()
-
-
 model_gradients = []
 train_loader, test_loader = get_loader(args)
-eval_loader = test_loader  # hard coded - make dependent on args
 
-criterion = nn.BCELoss()
+if args.train_or_test == 'train':
+    eval_loader = train_loader
+elif args.train_or_test == 'test':
+    eval_loader = test_loader
+
+if model_arch == 'JT':
+    criterion = nn.CrossEntropyLoss()  
+elif model_arch == 'ECON':
+    from telescope_pt import telescopeMSE8x8
+    criterion = telescopeMSE8x8
+
 
 for exp_id1 in range(3):
     gradient_traces = []
@@ -81,7 +86,7 @@ for exp_id1 in range(3):
         outputs = model(inputs)
         loss = criterion(outputs, targets.float()) 
         loss.backward()
-        gradient_traces.append(compute_gradient_trace(model))
+        gradient_traces.append(get_batch_gradients(model))
     model_gradients.append(np.array(gradient_traces).mean())
 
 print('Finish computing gradients')
@@ -91,3 +96,4 @@ pickle.dump(model_gradients, f)
 f.close()
 
 # python ./code/gradient.py --arch JT_6b --early-stopping --data-path ../../data/JT --train-bs 16 --test-bs 16 --checkpoint-folder ../checkpoint/different_knobs_subset_10/bs_16/bs_decay/JT_6b/ --result-location ../checkpoint/different_knobs_subset_10/bs_16/bs_decay/JT_6b/metrics/gradient.pkl 1>../checkpoint/different_knobs_subset_10/bs_16/bs_decay/JT_6b/metrics//gradient.log 2>../checkpoint/different_knobs_subset_10/bs_16/bs_decay/JT_6b/metrics//gradient.err
+# python ../common/gradient.py --early-stopping --arch ECON_6b --experiment-name baseline --train-or-test test --data-path ../../data/ECON/Elegun --train-bs 16 --test-bs 16 --checkpoint-folder ../checkpoint/different_knobs_subset_10/lr_0.05/normal/ECON_6b/autoencoder --result-location ../checkpoint/different_knobs_subset_10/lr_0.05/normal/ECON_6b/metrics/baseline/gradient.pkl
