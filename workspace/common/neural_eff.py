@@ -95,7 +95,8 @@ def layer_entropy(model, activations, width):
         # layer neural_eff = entropy/num_nodes
         # print(f'Layer {layer_name} non-zero count: {np.count_nonzero(acts.numpy(), axis=0)}')
         entropy.append(
-            (np.count_nonzero(acts.numpy(), axis=0) / width).sum() / num_nodes(layer)
+            ((acts > 0).type(torch.int8).sum(axis=0) / width).sum() / num_nodes(layer)
+            # (np.count_nonzero(acts.numpy(), axis=0) / width).sum() / num_nodes(layer)
         )
     cleanup(model)
     return np.sqrt(np.sqrt(np.prod(entropy)))
