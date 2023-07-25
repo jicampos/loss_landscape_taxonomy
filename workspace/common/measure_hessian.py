@@ -42,6 +42,8 @@ if model_arch == 'JT':
     sys.path.append(os.path.join(sys.path[0], "../jets/code")) 
 elif model_arch == 'ECON':
     sys.path.append(os.path.join(sys.path[0], "../econ/code")) 
+elif model_arch == 'AD':
+    sys.path.append(os.path.join(sys.path[0], "../ad08/code")) 
 
 # Import dataloader & model 
 from data import get_loader
@@ -70,6 +72,8 @@ if model_arch == 'ECON':
     criterion = telescopeMSE8x8
 elif model_arch == 'JT':
     criterion = nn.CrossEntropyLoss()  # label loss
+elif model_arch == 'AD':
+    criterion = nn.MSELoss()  # reconstruction loss
 
 ######################################################
 # Begin the computation

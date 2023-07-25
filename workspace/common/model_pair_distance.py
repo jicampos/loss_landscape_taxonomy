@@ -18,6 +18,8 @@ if model_arch == 'JT':
     sys.path.append(os.path.join(sys.path[0], "../jets/code")) 
 elif model_arch == 'ECON':
     sys.path.append(os.path.join(sys.path[0], "../econ/code")) 
+elif model_arch == 'AD':
+    sys.path.append(os.path.join(sys.path[0], "../ad08/code")) 
 
 from model import load_checkpoint 
 
@@ -33,8 +35,8 @@ def get_params(model):
 
 def compute_distance(model1, model2):
     
-    params1 = get_params(model1.encoder)
-    params2 = get_params(model2.encoder)
+    params1 = get_params(model1)
+    params2 = get_params(model2)
     dist = (params1-params2).norm().item()
     
     return dist
