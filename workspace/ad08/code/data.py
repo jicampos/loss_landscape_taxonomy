@@ -10,7 +10,7 @@ def get_loader(args):
 
     print(f'Loading dataset with train batch size {args.train_bs} and test batch size {args.test_bs}')
     
-    X_train = np.load(os.path.join(args.data_dir, 'train_data_inputs_64_frames_5_hops_512_fft_1024_mels_128_power_2.0.npy'))
+    X_train = np.load(os.path.join(args.data_path, 'train_data_inputs_64_frames_5_hops_512_fft_1024_mels_128_power_2.0.npy'))
     X_train, X_test = train_test_split(X_train, test_size=0.1)
 
     # Convert to torch tensors

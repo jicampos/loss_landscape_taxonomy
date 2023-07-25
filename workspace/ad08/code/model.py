@@ -5,6 +5,7 @@ from typing import Any, Optional
 from pytorch_lightning.utilities.types import STEP_OUTPUT
 sys.path.append(os.path.join(sys.path[0], "../common/")) 
 sys.path.append(os.path.join(sys.path[0], "../../common/")) # For debugging 
+import torchinfo
 import re
 import pytorch_lightning as pl
 import torch 
@@ -225,7 +226,7 @@ class AD08(pl.LightningModule):
 # Helper functions
 ####################################################
 def get_new_model(model_arch, bitwidth, args):
-  model = AD08(model, args.weight_precision, args.bias_precision, args.act_precision)
+  model = AD08([bitwidth, bitwidth, int(bitwidth+3)])
   return model
 
 
@@ -236,7 +237,8 @@ def load_checkpoint(args, checkpoint_filename):
    bitwidth = int(bitwidth_str.group(1))
 
    model = get_new_model(model_arch, bitwidth, args)
-   model(torch.randn([1, 1, 64]))  # Update tensor shapes 
+   torchinfo.summary(model, (1, 64))
+  #  model(torch.randn([2, 1, 64]))  # Update tensor shapes 
    
    # Load checkpoint 
    print('Loading checkpoint...', checkpoint_filename)
