@@ -1,7 +1,6 @@
 import os
 import sys
-sys.path.append(os.path.join(sys.path[0], "../../../common/hawq/")) 
-
+sys.path.append(os.path.join(sys.path[0], "../../common/")) 
 import torch.nn as nn
 import torch.nn.utils.prune as prune
 from hawq.utils.quantization_utils.quant_modules import QuantAct, QuantLinear
