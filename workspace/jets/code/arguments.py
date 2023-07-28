@@ -142,6 +142,7 @@ def get_parser(code_type='training'):
                     help='no CKA computation on input data')
         parser.add_argument('--mixup-CKA', dest='mixup_CKA', default = False, action='store_true', 
                             help='measure CKA on mixup data')
+        parser.add_argument('--noise', action='store_true', help='do we use noisy dataset or not')
 
     ########################
     # parameters for Hessian
