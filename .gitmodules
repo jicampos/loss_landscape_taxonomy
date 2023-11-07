@@ -1,1 +1,4 @@
 
+[submodule "workspace/common/hawq"]
+	path = workspace/common/hawq
+	url = https://github.com/Zhen-Dong/HAWQ

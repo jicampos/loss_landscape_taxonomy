@@ -2,6 +2,7 @@ import ot
 import torch
 import numpy as np
 
+# TODO: ask to Cristian Erwick
 hexCoords = np.array(
     [
         [0.0, 0.0],
