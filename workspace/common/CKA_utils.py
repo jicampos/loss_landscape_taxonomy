@@ -14,40 +14,49 @@ softmax1 = nn.Softmax()
 # softmax1 = nn.Softmax().cuda()
 
 def compare_classification(model1, model2, eval_loader, args=None, cos=None):
-    
+    # set both models in evaluation mode 
     model1.eval()
     model2.eval()
+    # init the metrics
     total_divergence = 0.0
     total_num = 0
     total_batch = 0
     total_agreement = 0
     total_cosine = 0
     
+    # iterate over the evaluation dataset
     for inputs, targets in eval_loader:
-        
         total_num += inputs.shape[0]
         total_batch += 1
         # inputs, targets = inputs.cuda(), targets.cuda()
+        # if specified, it mixup the records
         if args.mixup_CKA:
             inputs, _, _, _ = mixup_data(inputs, targets, args.mixup_alpha, use_cuda = False)
+        # get the output of the model
         with torch.no_grad():
             outputs1 = model1(inputs)
             outputs2 = model2(inputs)
         
+        # change the shape of the tensor to vector
         outputs1_vec, outputs2_vec = outputs1.view(-1), outputs2.view(-1)
 
+        # compute the cosine similarity
         sim = cos(outputs1_vec, outputs2_vec)
 
+        # get the predicted label of both models
         p_1, p_2 = F.softmax(outputs1, dim=1), F.softmax(outputs2, dim=1)
+        # set the min and max values
         p_mixture = torch.clamp((p_1 + p_2) / 2., 1e-7, 1).log()
                 
+        
         divergence = (F.kl_div(p_mixture, p_1, reduction='sum') +
-            F.kl_div(p_mixture, p_2, reduction='sum')) / 2.
+                      F.kl_div(p_mixture, p_2, reduction='sum')) / 2.
         
         total_divergence += divergence.detach()
         
         pred1 = outputs1.data.max(1, keepdim=True)[1]
         pred2 = outputs2.data.max(1, keepdim=True)[1]
+        # update the metrics
         total_agreement += pred1.eq(pred2).sum().detach()
         total_cosine += sim.detach()
         
@@ -59,7 +68,7 @@ def compare_classification(model1, model2, eval_loader, args=None, cos=None):
 
             
 def register_inputs(inputs, activations):
-    
+    # add 'input' key in the passed object
     if 'input' in activations.keys():
         activations['input'] = torch.cat([activations['input'], inputs.detach()])
     else:
@@ -67,7 +76,7 @@ def register_inputs(inputs, activations):
 
             
 def register_output(output, activations):
-    
+    # add the 'output' and the 'softmax' to the activations
     if 'output' in activations.keys():
         activations['output'] = torch.cat([activations['output'], output.detach()])
     else:
@@ -79,32 +88,40 @@ def register_output(output, activations):
         activations['softmax'] = softmax1(output.detach()).detach()
         
         
-def all_latent(model1, model2, eval_loader, num_batches = 10, args = None):
+def all_latent(model1, model2, eval_loader, num_batches=10, args=None):
     
     # These two variables should be global
     latent_all_1 = {}
     latent_all_2 = {}
 
+    # set the models in evaluation mode
     model1.eval()
     model2.eval()
     
+    # iterate over the batches of the dataset
     for batch_idx, (inputs, targets) in enumerate(eval_loader):
-        if batch_idx>num_batches:
+        
+        # early stopping condition
+        if batch_idx > num_batches:
             break
             
         # inputs, targets = inputs.cuda(), targets.cuda()
         
+        # mixup the inputs dataset if specified
         if args.mixup_CKA:
             inputs, _, _, _ = mixup_data(inputs, targets, args.mixup_alpha, use_cuda = False)
         
+        # add the inputs
         if not args.not_input:
             register_inputs(inputs, latent_all_1)
             register_inputs(inputs, latent_all_2)
         
+        # get the outputs of both the models
         with torch.no_grad():
             outputs1 = model1(inputs)
             outputs2 = model2(inputs)
             
+        # add the outputs
         register_output(outputs1, latent_all_1)
         register_output(outputs2, latent_all_2)
         
@@ -112,10 +129,10 @@ def all_latent(model1, model2, eval_loader, num_batches = 10, args = None):
         
         shape = latent_all_1[name].shape
         
+        # reshape the layers in the objects
         if not args.flattenHW or len(shape) != 4:
             latent_all_1[name] = latent_all_1[name].view(latent_all_1[name].size(0), -1).cpu().data.numpy()
             latent_all_2[name] = latent_all_2[name].view(latent_all_2[name].size(0), -1).cpu().data.numpy()
-
         else:
             latent_all_1[name] = latent_all_1[name].permute(0,2,3,1).reshape(-1, shape[3]).cpu().data.numpy()
             latent_all_2[name] = latent_all_2[name].permute(0,2,3,1).reshape(-1, shape[3]).cpu().data.numpy()

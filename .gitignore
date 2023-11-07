@@ -187,3 +187,4 @@ utils/
 # other 
 notebooks/
 checkpoint/
+workspace/checkpoints/

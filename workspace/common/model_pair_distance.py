@@ -8,10 +8,11 @@ import pickle
 from arguments import get_parser
 from utils import *
 
-
+# parse the arguments from the command
 parser = get_parser(code_type='model_dist')
 args = parser.parse_args()
 
+# pick the selected architecture 
 model_arch = args.arch.split('_')[0]
 print('Importing code for', model_arch)
 if model_arch == 'JT':
@@ -23,7 +24,10 @@ elif model_arch == 'AD':
 
 from model import load_checkpoint 
 
-
+'''
+Get the array with all the parameter of the model
+that are trainable
+'''
 def get_params(model): 
     # wrt data at the current step
     res = []
@@ -33,6 +37,9 @@ def get_params(model):
     weight_flat = torch.cat(res)
     return weight_flat
 
+'''
+Compute the distance of the parameter of the model
+'''
 def compute_distance(model1, model2):
     
     params1 = get_params(model1)

@@ -11,7 +11,7 @@ NOISE = True
 NOISE_TYPE = 'gaussian'  # gaussian, uniform
 NOISE_MAGNITUDE = '1.0'  # 0.05, 0.1, 1.0
 DATAPATH = '../../data/JT' + '/' + NOISE_TYPE
-TRAINING_TYPE = 'bs_decay'
+TRAINING_TYPE = 'normal'
 
 
 # Name of script for given metric
@@ -35,7 +35,7 @@ metric_file = {
 #####################
 def metric_command(batch_size, bitwidth, metric='hessian'):
     if metric == 'hessian':
-        commmand = f'python ./code/{file_lut[EXPERIMENT_TYPE]}.py --training-type {TRAINING_TYPE} --arch {MODEL}_{bitwidth}b --data-subset --subset 1.0 --data-path {DATAPATH} --train-bs {batch_size} --test-bs {batch_size} '
+        command = f'python ./code/{file_lut[EXPERIMENT_TYPE]}.py --training-type {TRAINING_TYPE} --arch {MODEL}_{bitwidth}b --data-subset --subset 1.0 --data-path {DATAPATH} --train-bs {batch_size} --test-bs {batch_size} '
     elif metric == 'neural_eff':
         command = f'python ./code/{file_lut[EXPERIMENT_TYPE]}.py --arch {MODEL}_{bitwidth}b --early-stopping --data-path {DATAPATH} --train-bs {batch_size} --test-bs {batch_size} --checkpoint-folder ../checkpoint/different_knobs_subset_10/bs_{batch_size}/{TRAINING_TYPE}/{MODEL}_{bitwidth}b/ '
     elif metric == 'gradient':
@@ -63,7 +63,7 @@ def metric_params(batch_size, bitwidth, metric='hessian'):
 
 
 #####################
-def write_experiemnt():
+def write_experiment():
     if NOISE:
         file_suffix = f'_{NOISE_TYPE}{NOISE_MAGNITUDE}_np'
     else: 
@@ -78,10 +78,10 @@ def write_experiemnt():
         f.write(f'## {TEMPERATURE} {batch_size} ##\n')
         f.write(f'echo "Running {TEMPERATURE} {batch_size}"\n')
         for bitwidth in BITWDITHS:
-            commmand= metric_command(batch_size, bitwidth, EXPERIMENT_TYPE)
+            command = metric_command(batch_size, bitwidth, EXPERIMENT_TYPE)
             parameters = metric_params(batch_size, bitwidth, EXPERIMENT_TYPE)
             result_location = f'--result-location ../checkpoint/different_knobs_subset_10/bs_{batch_size}/{TRAINING_TYPE}/{MODEL}_{bitwidth}b/metrics/{metric_file[EXPERIMENT_TYPE]}{file_suffix}.pkl 1>../checkpoint/different_knobs_subset_10/bs_{batch_size}/{TRAINING_TYPE}/{MODEL}_{bitwidth}b/metrics//{metric_file[EXPERIMENT_TYPE]}{file_suffix}.log 2>../checkpoint/different_knobs_subset_10/bs_{batch_size}/{TRAINING_TYPE}/{MODEL}_{bitwidth}b/metrics//{metric_file[EXPERIMENT_TYPE]}{file_suffix}.err\n'
-            final_command = commmand+parameters+result_location
+            final_command = command + parameters + result_location
             f.write(final_command)
         f.write('\n')
 
@@ -91,9 +91,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=['hessian', 'gradient', 'CKA', 'neural_eff', 'loss_acc'])
     parser.add_argument('--model', choices=['JT', 'ECON', 'RN07'])
+    # parser.add_argument('--training', choices=['normal', 'bs-decay']) TODO
     args = parser.parse_args()
     
     EXPERIMENT_TYPE = args.metric
     MODEL = args.model
 
-    write_experiemnt()
+    write_experiment()

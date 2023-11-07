@@ -30,12 +30,13 @@ from pyhessian import hessian
 from utils import *
 from arguments import get_parser
 
-
+# use the parser to get the parameter
 parser = get_parser(code_type='hessian')
 args = parser.parse_args()
 for arg in vars(args):
     print(arg, getattr(args, arg))
 
+# select the model architecture
 model_arch = args.arch.split('_')[0]
 print('Importing code for', model_arch)
 if model_arch == 'JT':
@@ -61,12 +62,14 @@ if args.train_or_test == 'train':
 elif args.train_or_test == 'test':
     eval_loader = test_loader
 
+# get the model from the checkpoint
 def return_model(file_name, args):
 
     model = load_checkpoint(args, file_name)
     
     return model
 
+# pick the correct loss function based on the model
 if model_arch == 'ECON':
     from telescope_pt import telescopeMSE8x8
     criterion = telescopeMSE8x8
@@ -101,6 +104,7 @@ for exp_id in range(3):
             if i == batch_num - 1:
                 break
             
+    # get the model file name
     file_name = os.path.join(args.checkpoint_folder, f"net_exp_{exp_id}.pkl")
     es_file_name = os.path.join(args.checkpoint_folder, f"net_exp_{exp_id}_early_stopped_model.pkl")
     best_file_name = os.path.join(args.checkpoint_folder, f"net_exp_{exp_id}_best.pkl")
@@ -128,6 +132,7 @@ for exp_id in range(3):
 
     print('********** finish data londing and begin Hessian computation **********')
 
+    # compute the hessian eigenvalues and the trace
     top_eigenvalues, _ = hessian_comp.eigenvalues(maxIter=200, tol=1e-6)
     trace = hessian_comp.trace(maxIter=200, tol=1e-6)
 
@@ -136,6 +141,7 @@ for exp_id in range(3):
 
     hessian_result[exp_id] = {'top_eigenvalue': top_eigenvalues, 'trace': np.mean(trace)}
 
+# save the results
 f = open(args.result_location, "wb")
 pickle.dump(hessian_result, f)
 f.close()

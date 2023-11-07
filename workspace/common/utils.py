@@ -30,23 +30,31 @@ class AverageMeter(object):
 
 def test(args, model, test_loader, criterion):
     print('Testing')
+    # set the model in evaluation mode
     model.eval()
+    # init accuracy and loss metrics 
     accuracy = AverageMeter("Acc", ":6.6f")
     loss = AverageMeter("Loss", ":6.6f")
     correct = 0
     total_num = 0
+    
+    # iterate over the test set
     for data, targets in test_loader:
         # data, target = data.cuda(), target.cuda()
         with torch.no_grad():
+            # get the output of the model
             output = model(data)
             #pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
             
+            # compute the loss based on user-specified criteria
             batch_loss = criterion(output, targets)
             loss.update(batch_loss, data.size(0))
 
-            batch_preds = torch.max(output, 1)[1]
+            batch_preds = torch.max(output, 1)[1]   # get the predicted class
             if len(targets.shape) > 1:
                 targets = torch.max(targets, 1)[1]  # Get target labels
+                
+            # compute the accuracy
             batch_acc = accuracy_score(
                 targets.detach().cpu().numpy(), batch_preds.detach().cpu().numpy()
             )
@@ -133,17 +141,17 @@ def return_file_name_single(args, exp_id1):
 
 
 def test_acc_loss(test_loader, model, criterion, regularizer=None, **kwargs):
+    # init metrics
     loss_sum = 0.0
     nll_sum = 0.0
     correct = 0.0
     accuracy = AverageMeter("Acc", ":6.6f")
-    
+    # set the model in eval mode
     model.eval()
 
     for data, target in test_loader:
         # data = data.cuda(non_blocking=True)
         # target = target.cuda(non_blocking=True)
-
         output = model(data, **kwargs)
         nll = criterion(output, target)
         loss = nll.clone()
@@ -176,30 +184,36 @@ def test_acc_loss(test_loader, model, criterion, regularizer=None, **kwargs):
     }
 
 
-def test_ensemble_average(models, test_loader, weights =None): # Not supprorted for JT yet
+def test_ensemble_average(models, test_loader, weights=None): # Not supprorted for JT yet
     
-    smx=nn.Softmax()
+    smx = nn.Softmax()
     
     print('Testing')
+    # set all the models in evaluation mode
     for model in models:
         model.eval()
     
     num_models = len(models)
+    
+    # weighted average of the models
     if weights == None:
         weights = [1.0]*num_models
 
     accuracy = AverageMeter("Acc", ":6.6f")    
     correct = 0
     total_num = 0
+    # iterate over the test set
     for data, target in test_loader:
         data, target = data.cuda(), target.cuda()
         with torch.no_grad():
+            # sum all the outputs of the models
             for ind in range(num_models):
                 if ind == 0:
                     output = smx(models[ind](data)) * weights[ind]
                 else:
                     output += smx(models[ind](data)) * weights[ind]            
             pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
+            # check if the output is equal to the target value
             correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
             total_num += len(data)
     

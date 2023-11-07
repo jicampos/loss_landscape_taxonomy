@@ -20,6 +20,7 @@ from data import get_loader
 from utils import *
 import curves
 
+# get the parser in order to get the parameter from the script
 parser = get_parser(code_type='curve')
 parser.add_argument('--curve', type=str, default=curves.Bezier, metavar='CURVE',
                     help='curve type to use (default: None)')
@@ -89,6 +90,9 @@ def save_checkpoint(dir, epoch, name='checkpoint', **kwargs):
     filepath = os.path.join(dir, '%s-%d.pt' % (name, epoch))
     torch.save(state, filepath)
 
+'''
+Check which batch normalization layer should we use
+'''
 def isbatchnorm(module):
     return issubclass(module.__class__, torch.nn.modules.batchnorm._BatchNorm) or \
            issubclass(module.__class__, curves._BatchNorm)

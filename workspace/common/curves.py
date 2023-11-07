@@ -15,6 +15,10 @@ from scipy.special import binom
 class Coeffs_T:
     value = 0
 
+'''
+Class used to implement the binomial distribution,
+used in the Mode Connectivity computation
+'''
 class Bezier(Module):
     def __init__(self, num_bends):
         super(Bezier, self).__init__()
@@ -30,7 +34,9 @@ class Bezier(Module):
                torch.pow(t, self.range) * \
                torch.pow((1.0 - t), self.rev_range)
 
-
+'''
+TODO: ask more info
+'''
 class PolyChain(Module):
     def __init__(self, num_bends):
         super(PolyChain, self).__init__()
@@ -41,7 +47,10 @@ class PolyChain(Module):
         t_n = t * (self.num_bends - 1)
         return torch.max(self.range.new([0.0]), 1.0 - torch.abs(t_n - self.range))
 
-
+'''
+Class used to implement the generic functionalities 
+of NN module
+'''
 class CurveModule(Module):
 
     def __init__(self, fix_points, parameter_names=()):
@@ -52,28 +61,38 @@ class CurveModule(Module):
         self.l2 = 0.0
 
     def compute_weights_t(self, coeffs_t):
+        # init the parameter
         w_t = [None] * len(self.parameter_names)
         self.l2 = 0.0
+        # iterate over the parameter
         for i, parameter_name in enumerate(self.parameter_names):
             for j, coeff in enumerate(coeffs_t):
                 parameter = getattr(self, '%s_%d' % (parameter_name, j))
+                # update the parameter
                 if parameter is not None:
                     if w_t[i] is None:
                         w_t[i] = parameter * coeff
                     else:
                         w_t[i] += parameter * coeff
+                        
+            # update the L2 regularization
             if w_t[i] is not None:
                 self.l2 += torch.sum(w_t[i] ** 2)
         return w_t
 
 
+'''
+Class which extend the CurveModule, that implement a Feed Forward layer 
+
+Note:   This implementation allow the user to fix some parameters which are
+        not going to be modified during the training (useful with the Bezier curve)
+'''
 class Linear(CurveModule):
 
     def __init__(self, in_features, out_features, fix_points, bias=True):
         super(Linear, self).__init__(fix_points, ('weight', 'bias'))
         self.in_features = in_features
         self.out_features = out_features
-
         self.l2 = 0.0
         for i, fixed in enumerate(self.fix_points):
             self.register_parameter(
@@ -88,10 +107,12 @@ class Linear(CurveModule):
                 )
             else:
                 self.register_parameter('bias_%d' % i, None)
+                
+        # reset parameter
         self.reset_parameters()
 
     def reset_parameters(self):
-        stdv = 1. / math.sqrt(self.in_features)
+        stdv = 1. / math.sqrt(self.in_features) # TODO: check in the paper
         for i in range(self.num_bends):
             getattr(self, 'weight_%d' % i).data.uniform_(-stdv, stdv)
             bias = getattr(self, 'bias_%d' % i)
