@@ -1,4 +1,4 @@
-name: test-env
+name: loss_landscape
 channels:
   - pytorch
   - defaults
