@@ -1,4 +1,4 @@
-name: loss_landscape
+name: test-env
 channels:
   - pytorch
   - defaults
@@ -136,4 +136,6 @@ dependencies:
     - werkzeug==2.3.6
     - yarl==1.9.2
     - zipp==3.16.0
-prefix: /home/tbaldi/miniforge3/envs/loss_landscape
+    - pytorchcv==0.0.67  
+    - git+https://github.com/amirgholami/PyHessian.git
+    - git+https://github.com/jicampos/HAWQ.git@setup-pip

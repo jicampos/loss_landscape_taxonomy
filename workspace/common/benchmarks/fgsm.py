@@ -10,7 +10,7 @@ import torch.nn as nn
 from sklearn.metrics import accuracy_score
 # Custom 
 from arguments import get_parser
-from utils import *
+from workspace.common.metrics.utils.utils import *
 
 
 ####################################################

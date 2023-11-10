@@ -18,7 +18,7 @@ sys.path.insert(1, './code/')
 from arguments import get_parser
 from data import get_loader
 from utils import *
-import curves
+import workspace.common.metrics.utils.curves as curves
 
 # get the parser in order to get the parameter from the script
 parser = get_parser(code_type='curve')

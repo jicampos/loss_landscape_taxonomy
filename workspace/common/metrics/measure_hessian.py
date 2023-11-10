@@ -9,25 +9,10 @@ from __future__ import print_function
 import os 
 import sys
 import numpy as np
-import random
-import argparse
 import pickle
-from tqdm import tqdm, trange
-
-import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-import torch.optim.lr_scheduler as lr_scheduler
-from torch.autograd import Variable
-from torch.utils.data import TensorDataset
-from torchvision import datasets, transforms
-
-# Local imports 
-sys.path.append(os.path.join(sys.path[0], "pyhessian/")) 
-import pyhessian
 from pyhessian import hessian
-from utils import *
+from workspace.common.metrics.utils.utils import *
 from arguments import get_parser
 
 # use the parser to get the parameter
@@ -35,6 +20,8 @@ parser = get_parser(code_type='hessian')
 args = parser.parse_args()
 for arg in vars(args):
     print(arg, getattr(args, arg))
+
+from econ.code.model_loader import load_checkpoint
 
 # select the model architecture
 model_arch = args.arch.split('_')[0]
@@ -48,7 +35,6 @@ elif model_arch == 'AD':
 
 # Import dataloader & model 
 from data import get_loader
-from model import load_checkpoint
 
 
 # Get data
@@ -133,13 +119,18 @@ for exp_id in range(3):
     print('********** finish data londing and begin Hessian computation **********')
 
     # compute the hessian eigenvalues and the trace
-    top_eigenvalues, _ = hessian_comp.eigenvalues(maxIter=200, tol=1e-6)
+    top_eigenvalues, top_eigenvectors = hessian_comp.eigenvalues(maxIter=200, tol=1e-6)
     trace = hessian_comp.trace(maxIter=200, tol=1e-6)
 
-    print('\n***Top Eigenvalues: ', top_eigenvalues)
+    print('\n***Top Eigenvalues:\t', top_eigenvalues)
+    print('\n***Top Eigenvectors:\t', top_eigenvectors)
     print('\n***Trace: ', np.mean(trace))
 
-    hessian_result[exp_id] = {'top_eigenvalue': top_eigenvalues, 'trace': np.mean(trace)}
+    hessian_result[exp_id] = {
+        'top_eigenvalue': top_eigenvalues, 
+        'top_eigenvector': top_eigenvectors, 
+        'trace': np.mean(trace)
+    }
 
 # save the results
 f = open(args.result_location, "wb")

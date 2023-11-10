@@ -9,7 +9,7 @@ import torch.nn.functional as F
 
 from arguments import get_parser
 from utils import *
-from CKA_utils import *
+from workspace.common.metrics.utils.CKA_utils import *
 
 # get the parsed arguments from 'arguments.py'
 parser = get_parser(code_type='CKA')

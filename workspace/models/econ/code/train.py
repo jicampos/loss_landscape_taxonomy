@@ -14,9 +14,6 @@ from argparse import ArgumentParser
 from q_autoencoder import AutoEncoder
 from autoencoder_datamodule import AutoEncoderDataModule
 from utils_pt import unnormalize, emd
-from arguments import get_parser
-
-parser = get_parser(code_type='training')
 
 
 def test_model(model, test_loader):
@@ -53,54 +50,58 @@ def test_model(model, test_loader):
 
 
 def main(args):
+    # if the directory does not exist you create it
     if not os.path.exists(args.saving_folder):
         os.makedirs(args.saving_folder)
     # ------------------------
     # 0 PREPARE DATA
     # ------------------------
+    # instantiate the data module
     data_module = AutoEncoderDataModule.from_argparse_args(args)
-    data_module.train_bs = args.train_bs
-    data_module.test_bs = args.test_bs
+    # process the dataset if required
     if args.process_data:
         print("Processing data...")
         data_module.process_data()
     # ------------------------
     # 1 INIT LIGHTNING MODEL
     # ------------------------
-    args.quantize = True if args.weight_precision < 32 else False
-    print(f'Loading with quantize: {args.quantize}')
+    print(f'Loading with quantize: {(args.weight_precision < 32)}')
     model = AutoEncoder(
-        accelerator=args.accelerator, 
-        quantize=args.quantize,
+        quantize=(args.weight_precision < 32),
         precision=[
             args.weight_precision, 
             args.bias_precision, 
             args.act_precision
         ],
         learning_rate=args.lr,
-        econ_type=args.experiment_name,
+        econ_type=args.size,
     )
-
     torchinfo.summary(model, input_size=(1, 1, 8, 8))  # (B, C, H, W)
 
-    tb_logger = pl_loggers.TensorBoardLogger(args.saving_folder, name=args.experiment_name)
+    tb_logger = pl_loggers.TensorBoardLogger(args.saving_folder, name=args.size)
 
     # Stop training when model converges
-    early_stop_callback = EarlyStopping(monitor="val_loss", min_delta=0.00, patience=5, verbose=True, mode="min")
+    early_stop_callback = EarlyStopping(
+        monitor="val_loss", 
+        min_delta=0.00, 
+        patience=5, 
+        verbose=True, 
+        mode="min"
+    )
 
     # Save top-3 checkpoints based on Val/Loss
-    top3_checkpoint_callback = ModelCheckpoint(
-        save_top_k=3,
+    top_checkpoint_callback = ModelCheckpoint(
+        save_top_k=args.top_models,
         save_last=True,
         monitor="val_loss",
         mode="min",
-        dirpath=os.path.join(args.saving_folder, args.experiment_name),
-        filename=f'net_{args.file_prefix}_best',
+        dirpath=os.path.join(args.saving_folder, args.size),
+        filename=f'net_{args.experiment}_best',
         auto_insert_metric_name=False,
     )
-    top3_checkpoint_callback.FILE_EXTENSION = '.pkl'
-    print(f'Saving to dir: {os.path.join(args.saving_folder, args.experiment_name)}')
-    print(f'Running experiment: {args.file_prefix}')
+    top_checkpoint_callback.FILE_EXTENSION = '.pkl'
+    print(f'Saving to dir: {os.path.join(args.saving_folder, args.size)}')
+    print(f'Running experiment: {args.experiment}')
 
     # ------------------------
     # 2 INIT TRAINER
@@ -108,62 +109,62 @@ def main(args):
     trainer = pl.Trainer(
         max_epochs=args.max_epochs,
         accelerator=args.accelerator,
+        devices="auto",
         logger=tb_logger,
-        callbacks=[top3_checkpoint_callback, early_stop_callback],
+        callbacks=[top_checkpoint_callback, early_stop_callback],
         fast_dev_run=args.fast_dev_run,
     )
 
     # ------------------------
     # 3 TRAIN MODEL
     # ------------------------
-    if args.train:
+    if not args.no_train:
         trainer.fit(model=model, datamodule=data_module)
 
     # ------------------------
     # 4 EVALUTE MODEL
     # ------------------------
-    if args.train or args.evaluate:
-        if args.checkpoint or True:
-            checkpoint_file = os.path.join(args.saving_folder, args.experiment_name, f'net_{args.file_prefix}_best.pkl')
-            print('Loading checkpoint...', checkpoint_file)
-            checkpoint = torch.load(checkpoint_file)
-            model.load_state_dict(checkpoint['state_dict'])
-            # model = model.load_state_dict(checkpoint['state_dict'])
-        # Need val_sum to compute EMD
-        _, val_sum = data_module.get_val_max_and_sum()
-        model.set_val_sum(val_sum)
-        data_module.setup("test")
-        test_results = test_model(model, data_module.test_dataloader())
-        test_results_log = os.path.join(
-            args.saving_folder, args.experiment_name, args.experiment_name + f"_emd_{args.file_prefix}.txt"
-        )
-        with open(test_results_log, "w") as f:
-            f.write(str(test_results))
-            f.close()
+    # load the model from file
+    checkpoint_file = os.path.join(args.saving_folder, args.size, f'net_{args.experiment}_best.pkl')
+    print('Loading checkpoint...', checkpoint_file)
+    checkpoint = torch.load(checkpoint_file)
+    model.load_state_dict(checkpoint['state_dict'])
+    # Need val_sum to compute EMD
+    _, val_sum = data_module.get_val_max_and_sum()
+    model.set_val_sum(val_sum)
+    data_module.setup("test")
+    test_results = test_model(model, data_module.test_dataloader())
+    # save the results on file
+    test_results_log = os.path.join(
+        args.saving_folder, args.size, args.size + f"_emd_{args.experiment}.txt"
+    )
+    with open(test_results_log, "w") as f:
+        f.write(str(test_results))
+        f.close()
 
 
 if __name__ == "__main__":
-    # parser = ArgumentParser()
+    parser = ArgumentParser()
+    parser.add_argument("--saving_folder", type=str)
     parser.add_argument("--process_data", action="store_true", default=False)
+    parser.add_argument("--no_train", action="store_true", default=False)
     parser.add_argument("--max_epochs", type=int, default=10)
-    parser.add_argument("--save_dir", type=str, default="./pt_autoencoder_test")
-    parser.add_argument("--experiment_name", type=str, default="baseline")
-    parser.add_argument("--fast_dev_run", action="store_true", default=False)
+    parser.add_argument("--size", type=str, default="baseline")
+    parser.add_argument("--weight_precision", type=int, default=8)
+    parser.add_argument("--bias_precision", type=int, default=8)
+    parser.add_argument("--act_precision", type=int, default=11)
+    parser.add_argument("--lr", type=float, default=0.0015625)
+    parser.add_argument("--top_models", type=int, default=3)
+    parser.add_argument("--experiment", type=int, default=0)
     parser.add_argument(
-        "--accelerator", type=str, choices=["cpu", "gpu", "auto"], default="auto"
+        "--accelerator", type=str, choices=["cpu", "gpu", "tpu", "auto"], default="auto"
     )
-    parser.add_argument("--checkpoint", type=str, default="", help="model checkpoint")
-    parser.add_argument("--train", action="store_true", default=False)
-    parser.add_argument("--evaluate", action="store_true", default=False)
-    parser.add_argument(
-        "--quantize", 
-        action="store_true", 
-        default=False, 
-        help="quantize model to 6-bit fixed point (1 signed bit, 1 integer bit, 4 fractional bits)"
-    )
-
     # Add dataset-specific args
     parser = AutoEncoderDataModule.add_argparse_args(parser)
-
+    # NOTE: do not activate during real training, just for debugging
+    parser.add_argument("--fast_dev_run", action="store_true", default=False)
+    
     args = parser.parse_args()
+    
+    print(' '.join(f'{k}={v}\n' for k, v in vars(args).items()))
     main(args)

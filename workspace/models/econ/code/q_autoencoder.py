@@ -1,18 +1,12 @@
 # import ot
-import os
-import sys
-print(os.path.join(sys.path[0], "../../common/"))
-sys.path.append(os.path.join(sys.path[0], "../../common/")) 
-import time
+# print(os.path.join(sys.path[0], "../../common/"))
+# sys.path.append(os.path.join(sys.path[0], "../../common/")) 
 import torch
 import torch.nn as nn
 import pytorch_lightning as pl
-import multiprocessing
-import itertools
-
-from hawq.utils.quantization_utils.quant_modules import QuantAct, QuantLinear, QuantConv2d
+from hawq.utils import QuantAct, QuantLinear, QuantConv2d
 from collections import OrderedDict
-from telescope_pt import telescopeMSE8x8, move_constants_to_gpu
+from telescope_pt import telescopeMSE8x8
 from autoencoder_datamodule import ARRANGE, ARRANGE_MASK
 
 
@@ -170,7 +164,6 @@ class QuantizedEncoder(nn.Module):
         self.weight_precision = weight_precision
         self.bias_precision = bias_precision
         self.act_precision = act_precision
-
         self.quant_input = QuantAct(activation_bit=self.act_precision)
         self.quant_relu = QuantAct(activation_bit=self.act_precision)
         self.relu1 = nn.ReLU()
@@ -200,14 +193,13 @@ class QuantizedEncoder(nn.Module):
 
 
 class AutoEncoder(pl.LightningModule):
-    def __init__(self, accelerator, quantize, precision, learning_rate, econ_type, *args, **kwargs) -> None:
+    def __init__(self, quantize, precision, learning_rate, econ_type, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.encoded_dim = 16
         self.shape = (1, 8, 8)  # PyTorch defaults to (C, H, W)
         self.val_sum = None
         self.quantize = quantize
-        self.accelerator = accelerator
         self.learning_rate = learning_rate
 
         self.encoder = BaseEncoder(econ_type) 
