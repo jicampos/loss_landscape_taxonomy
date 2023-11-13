@@ -110,7 +110,6 @@ def main(args):
         accelerator=args.accelerator,
         devices="auto",
         gpus=-1,
-        distributed_backend='dp',
         logger=tb_logger,
         callbacks=[top_checkpoint_callback, early_stop_callback],
         fast_dev_run=args.fast_dev_run,
