@@ -34,7 +34,7 @@ W = 1/1 + 1/2 + 1/2 + 1/4 = 2.25
 while for a SC shifted one TC to the right the weight is 2*1/4+2*1/2=1.5
 """
 # pick the right device for the task (gpu or cpu)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 SCmask_48_36 = torch.tensor(
             [
@@ -167,7 +167,7 @@ for i in range(48):
         
 
 def telescopeMSE2(y_true, y_pred):
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     y_true = y_true.to(dtype=y_pred.dtype)
     y_true = y_true.to(device)
     y_pred = y_pred.to(device)
@@ -203,7 +203,7 @@ def telescopeMSE2(y_true, y_pred):
 
 
 def telescopeMSE8x8(y_true, y_pred):
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     y_true = y_true.to(dtype=y_pred.dtype)
     y_true = y_true.to(device)
     y_pred = y_pred.to(device)

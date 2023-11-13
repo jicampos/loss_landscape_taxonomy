@@ -243,7 +243,11 @@ class AutoEncoderDataModule(pl.LightningDataModule):
         Return the training dataloader
         """
         return torch.utils.data.DataLoader(
-            self.train_data, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers
+            self.train_data, 
+            batch_size=self.batch_size, 
+            shuffle=True, 
+            num_workers=self.num_workers,
+            persistent_workers=True     # keep the workers active 
         )
 
     def val_dataloader(self):
@@ -252,7 +256,11 @@ class AutoEncoderDataModule(pl.LightningDataModule):
         """
         # Take the first valid_split% of the data as validation data
         return torch.utils.data.DataLoader(
-            self.val_data, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers
+            self.val_data, 
+            batch_size=self.batch_size, 
+            shuffle=False, 
+            num_workers=self.num_workers,
+            persistent_workers=True     # keep the workers active 
         )
 
     def test_dataloader(self):
@@ -268,12 +276,20 @@ class AutoEncoderDataModule(pl.LightningDataModule):
         val_data_tensor = torch.Tensor(self.val_data)
         val_dataset = TensorDataset(val_data_tensor, val_data_tensor)
         val_loader = torch.utils.data.DataLoader(
-            val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers
+            val_dataset, 
+            batch_size=self.batch_size, 
+            shuffle=False, 
+            num_workers=self.num_workers,
+            persistent_workers=True     # keep the workers active 
         )
     
         train_data_tensor = torch.Tensor(self.train_data)
         train_dataset = TensorDataset(train_data_tensor, train_data_tensor)
         train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers
+            train_dataset, 
+            batch_size=self.batch_size, 
+            shuffle=True, 
+            num_workers=self.num_workers,
+            persistent_workers=True     # keep the workers active 
         )
         return train_loader, val_loader

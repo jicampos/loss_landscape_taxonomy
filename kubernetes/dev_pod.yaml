@@ -1,20 +1,34 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: loss-landscape-dev-pod
+  name: dev-pod
 spec:
+  # affinity:
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #       - matchExpressions:
+  #         - key: nvidia.com/gpu.product
+  #           operator: In
+  #           values:
+  #           - NVIDIA-GeForce-RTX-3090
   containers:
   - name: gpu-container
     image: jupyter/scipy-notebook
-    command: ["jupyter", "lab", "--NotebookApp.token=627a7b3b"]
+    command: ["/bin/bash","-c"]
+    args: ["git clone https://github.com/balditommaso/loss_landscape_taxonomy.git;
+            cd loss_landscape_taxonomy;
+            conda env create -f environment.yml;
+            . scripts/get_econ_data.sh;
+            jupyter lab --NotebookApp.token=627a7b3b;"]
     volumeMounts:
     - mountPath: /loss_landscape
       name: loss-landscape-volume
     resources:
       limits:
-        nvidia.com/gpu: "1"
-        memory: "32G"
-        cpu: "8"
+        nvidia.com/gpu: "2"
+        memory: "16G"
+        cpu: "4"
   restartPolicy: Never
   volumes:
     - name: loss-landscape-volume
