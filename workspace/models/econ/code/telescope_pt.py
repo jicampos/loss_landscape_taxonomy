@@ -211,6 +211,7 @@ def move_constants_to_gpu():
 
 
 def telescopeMSE8x8(y_true, y_pred):
+    global remap_8x8_matrix
     y_true = y_true.to(dtype=y_pred.dtype)
     # move both the tensors to the proper device (cpu, gpu)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
