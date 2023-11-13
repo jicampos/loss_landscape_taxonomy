@@ -109,7 +109,6 @@ def main(args):
         max_epochs=args.max_epochs,
         accelerator=args.accelerator,
         devices="auto",
-        gpus=-1,
         logger=tb_logger,
         callbacks=[top_checkpoint_callback, early_stop_callback],
         fast_dev_run=args.fast_dev_run,
@@ -117,8 +116,8 @@ def main(args):
     
     # multiply the batch size by the number of nodes and the number of GPUs
     print(f"Number of nodes: {trainer.num_nodes}")
-    print(f"Number of GPUs: {trainer.num_gpus}")
-    data_module.batch_size = trainer.num_nodes * trainer.num_gpus * data_module.batch_size
+    print(f"Number of GPUs: {trainer.num_devices}")
+    data_module.batch_size = trainer.num_nodes * trainer.num_devices * data_module.batch_size
     print(f"New batch size: {data_module.batch_size}")
     # ------------------------
     # 3 TRAIN MODEL
