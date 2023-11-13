@@ -113,6 +113,7 @@ for i in range(12):
 
 
 def telescopeMSE2(y_true, y_pred):
+    global Remap_48_36
     y_true = y_true.to(dtype=y_pred.dtype)
 
     # TC-level MSE
@@ -122,6 +123,10 @@ def telescopeMSE2(y_true, y_pred):
         torch.square(y_true_rs - y_pred_rs) * torch.maximum(y_pred_rs, y_true_rs),
         dim=-1,
     )
+    
+    # move both the tensors to the proper device (cpu, gpu)
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    Remap_48_36 = Remap_48_36.to(device)
 
     # map TCs to 2x2 supercells and compute MSE
     y_pred_36 = torch.matmul(y_pred_rs, Remap_48_36)
