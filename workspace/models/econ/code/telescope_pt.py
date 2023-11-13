@@ -33,13 +33,10 @@ i.e. the weight for a SC combined from the upper left 2x2 is
 W = 1/1 + 1/2 + 1/2 + 1/4 = 2.25
 while for a SC shifted one TC to the right the weight is 2*1/4+2*1/2=1.5
 """
+# pick the right device for the task (gpu or cpu)
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-
-class TelescopeLoss:
-    
-    def __init__(self):
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        SCmask_48_36 = torch.tensor(
+SCmask_48_36 = torch.tensor(
             [
                 [0, 1, 4, 5, 0.25 * 1.5],  # 2x2 supercells that perfectly tile the sensor
                 [2, 3, 6, 7, 0.25 * 1.0 + 1.0 / 12],  # 4 TC indices for 1 supercell (+) weight
@@ -79,40 +76,42 @@ class TelescopeLoss:
                 [18, 19, 39, 35, 0.25 * 1.0 + 1.0 / 6],
             ]
         ).to(self.device)
-        self.Remap_48_36 = torch.zeros((48, 36)).to(self.device)
-        # combine neighbor cells in 2x2 grids, record weights
-        # multilpy weights by 0.25 for now to account for effective increase in cells from 12 (sum weights now 48 not 12)
-        for isc, sc in enumerate(SCmask_48_36):
-            for tc in sc[:4]:
-                self.Remap_48_36[int(tc), isc] = 1
-        self.Weights_48_36 = SCmask_48_36[:, 4].to(self.device)
-        # keep simplified 12 x 3 mapping for now
-        SCmask_48_12 = torch.tensor(
-            [
-                [0, 1, 4, 5],
-                [2, 3, 6, 7],
-                [8, 9, 12, 13],
-                [10, 11, 14, 15],
-                [16, 17, 20, 21],
-                [18, 19, 22, 23],
-                [24, 25, 28, 29],
-                [26, 27, 30, 31],
-                [32, 33, 36, 37],
-                [34, 35, 38, 39],
-                [40, 41, 44, 45],
-                [42, 43, 46, 47],
-            ]
-        ).to(self.device)
-        self.Remap_48_12 = torch.zeros((48, 12)).to(self.device)
-        for isc, sc in enumerate(SCmask_48_12):
-            for tc in sc:
-                self.Remap_48_12[int(tc), isc] = 1
-                
-        self.Remap_12_3 = torch.zeros((12, 3)).to(self.device)
-        for i in range(12):
-            self.Remap_12_3[i, int(i / 4)] = 1
-            
-        remap_8x8 = [
+Remap_48_36 = torch.zeros((48, 36)).to(device)
+# combine neighbor cells in 2x2 grids, record weights
+# multilpy weights by 0.25 for now to account for effective increase in cells from 12 (sum weights now 48 not 12)
+for isc, sc in enumerate(SCmask_48_36):
+    for tc in sc[:4]:
+        Remap_48_36[int(tc), isc] = 1
+Weights_48_36 = SCmask_48_36[:, 4].to(device)
+
+# keep simplified 12 x 3 mapping for now
+SCmask_48_12 = torch.tensor(
+    [
+        [0, 1, 4, 5],
+        [2, 3, 6, 7],
+        [8, 9, 12, 13],
+        [10, 11, 14, 15],
+        [16, 17, 20, 21],
+        [18, 19, 22, 23],
+        [24, 25, 28, 29],
+        [26, 27, 30, 31],
+        [32, 33, 36, 37],
+        [34, 35, 38, 39],
+        [40, 41, 44, 45],
+        [42, 43, 46, 47],
+    ]
+).to(device)
+Remap_48_12 = torch.zeros((48, 12)).to(device)
+for isc, sc in enumerate(SCmask_48_12):
+    for tc in sc:
+        Remap_48_12[int(tc), isc] = 1
+
+
+Remap_12_3 = torch.zeros((12, 3)).to(device)
+for i in range(12):
+    Remap_12_3[i, int(i / 4)] = 1
+    
+remap_8x8 = [
                 4,
                 12,
                 20,
@@ -162,51 +161,55 @@ class TelescopeLoss:
                 40,
                 32,
             ]
-        self.remap_8x8_matrix = torch.zeros(48 * 64, dtype=torch.float32).reshape((64, 48)).to(self.device)
-        for i in range(48):
-            self.remap_8x8_matrix[remap_8x8[i], i] = 1
-                
-    
-    def telescopeMSE2(self, y_true, y_pred):
-        y_true = y_true.to(dtype=y_pred.dtype)
-        y_true = y_true.to(self.device)
-        y_pred = y_pred.to(self.device)
-    
-        # TC-level MSE
-        y_pred_rs = torch.reshape(y_pred, (-1, 48))
-        y_true_rs = torch.reshape(y_true, (-1, 48))
-        loss_tc1 = torch.mean(
-            torch.square(y_true_rs - y_pred_rs) * torch.maximum(y_pred_rs, y_true_rs),
-            dim=-1,
-        )
+remap_8x8_matrix = torch.zeros(48 * 64, dtype=torch.float32).reshape((64, 48)).to(self.device)
+for i in range(48):
+    remap_8x8_matrix[remap_8x8[i], i] = 1
         
-        # map TCs to 2x2 supercells and compute MSE
-        y_pred_36 = torch.matmul(y_pred_rs, self.Remap_48_36)
-        y_true_36 = torch.matmul(y_true_rs, self.Remap_48_36)
-        loss_tc2 = torch.mean(
-            torch.square(y_true_36 - y_pred_36)
-            * torch.maximum(y_pred_36, y_true_36)
-            * self.Weights_48_36,
-            dim=-1,
-        )
-        
-        # map 2x2 supercells to 4x4 supercells and compute MSE
-        y_pred_12 = torch.matmul(y_pred_rs, self.Remap_48_12)
-        y_true_12 = torch.matmul(y_true_rs, self.Remap_48_12)
-        y_pred_3 = torch.matmul(y_pred_12, self.Remap_12_3)
-        y_true_3 = torch.matmul(y_true_12, self.Remap_12_3)
-        loss_tc3 = torch.mean(
-            torch.square(y_true_3 - y_pred_3) * torch.maximum(y_pred_3, y_true_3), dim=-1
-        )
 
-        return 4 * loss_tc1.mean() + 2 * loss_tc2.mean() + loss_tc3.mean()
+def telescopeMSE2(y_true, y_pred):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    y_true = y_true.to(dtype=y_pred.dtype)
+    y_true = y_true.to(device)
+    y_pred = y_pred.to(device)
 
-    def telescopeMSE8x8(self, y_true, y_pred):
-        y_true = y_true.to(dtype=y_pred.dtype)
-        y_true = y_true.to(self.device)
-        y_pred = y_pred.to(self.device)
-        return self.telescopeMSE2(
-            torch.matmul(torch.reshape(y_true, (-1, 64)), self.remap_8x8_matrix),
-            torch.matmul(torch.reshape(y_pred, (-1, 64)), self.remap_8x8_matrix),
-        )
+    # TC-level MSE
+    y_pred_rs = torch.reshape(y_pred, (-1, 48))
+    y_true_rs = torch.reshape(y_true, (-1, 48))
+    loss_tc1 = torch.mean(
+        torch.square(y_true_rs - y_pred_rs) * torch.maximum(y_pred_rs, y_true_rs),
+        dim=-1,
+    )
+    
+    # map TCs to 2x2 supercells and compute MSE
+    y_pred_36 = torch.matmul(y_pred_rs, Remap_48_36)
+    y_true_36 = torch.matmul(y_true_rs, Remap_48_36)
+    loss_tc2 = torch.mean(
+        torch.square(y_true_36 - y_pred_36)
+        * torch.maximum(y_pred_36, y_true_36)
+        * Weights_48_36,
+        dim=-1,
+    )
+    
+    # map 2x2 supercells to 4x4 supercells and compute MSE
+    y_pred_12 = torch.matmul(y_pred_rs, Remap_48_12)
+    y_true_12 = torch.matmul(y_true_rs, Remap_48_12)
+    y_pred_3 = torch.matmul(y_pred_12, Remap_12_3)
+    y_true_3 = torch.matmul(y_true_12, Remap_12_3)
+    loss_tc3 = torch.mean(
+        torch.square(y_true_3 - y_pred_3) * torch.maximum(y_pred_3, y_true_3), dim=-1
+    )
+
+    return 4 * loss_tc1.mean() + 2 * loss_tc2.mean() + loss_tc3.mean()
+
+
+def telescopeMSE8x8(self, y_true, y_pred):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    y_true = y_true.to(dtype=y_pred.dtype)
+    y_true = y_true.to(device)
+    y_pred = y_pred.to(device)
+    return telescopeMSE2(
+        torch.matmul(torch.reshape(y_true, (-1, 64)), remap_8x8_matrix),
+        torch.matmul(torch.reshape(y_pred, (-1, 64)), remap_8x8_matrix),
+    )
+    
     
