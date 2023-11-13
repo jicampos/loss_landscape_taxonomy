@@ -167,7 +167,7 @@ for i in range(48):
         
 
 def telescopeMSE2(y_true, y_pred):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     y_true = y_true.to(dtype=y_pred.dtype)
     y_true = y_true.to(device)
     y_pred = y_pred.to(device)
@@ -203,7 +203,7 @@ def telescopeMSE2(y_true, y_pred):
 
 
 def telescopeMSE8x8(y_true, y_pred):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     y_true = y_true.to(dtype=y_pred.dtype)
     y_true = y_true.to(device)
     y_pred = y_pred.to(device)
