@@ -230,7 +230,7 @@ class AutoEncoder(pl.LightningModule):
             ("sigmoid", nn.Sigmoid()),
         ]))
         
-        self.loss = TelescopeLoss.telescopeMSE8x8
+        self.loss = TelescopeLoss
 
     def invert_arrange(self):
         """
@@ -282,13 +282,13 @@ class AutoEncoder(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x = batch
         x_hat = self(x)
-        loss = self.loss(x, x_hat)
+        loss = self.loss.telescopeMSE8x8(x, x_hat)
         self.log("train_loss", loss, on_epoch=True, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
         x = batch
         x_hat = self(x)
-        loss = self.loss(x, x_hat)
+        loss = self.loss.telescopeMSE8x8(x, x_hat)
         self.log("val_loss", loss, on_epoch=True, prog_bar=True)
         return loss
