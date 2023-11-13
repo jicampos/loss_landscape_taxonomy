@@ -177,7 +177,7 @@ data/
 *.log
 # *.ckpt
 # *.pkl
-*.yaml
+
 events*
 
 # old files/folders

@@ -212,6 +212,10 @@ def move_constants_to_gpu():
 
 def telescopeMSE8x8(y_true, y_pred):
     y_true = y_true.to(dtype=y_pred.dtype)
+    # move both the tensors to the proper device (cpu, gpu)
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    y_true = y_true.to(device)
+    y_pred = y_pred.to(device)
     return telescopeMSE2(
         torch.matmul(torch.reshape(y_true, (-1, 64)), remap_8x8_matrix),
         torch.matmul(torch.reshape(y_pred, (-1, 64)), remap_8x8_matrix),

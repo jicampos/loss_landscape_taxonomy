@@ -1,5 +1,6 @@
-mkdir data/ECON/
-mkdir data/ECON/Elegun/
+#!/bin/bash
+
+mkdir -p data/ECON/Elegun/
 
 cd data/ECON/Elegun
 

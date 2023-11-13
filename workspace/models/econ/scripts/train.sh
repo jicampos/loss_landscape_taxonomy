@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: load the data of the Econ model if it is missing
+
 # Constants
 ADD_PRECISION=3
 SAVING_FOLDER="../../checkpoint/different_knobs_subset_10"
