@@ -34,8 +34,7 @@ W = 1/1 + 1/2 + 1/2 + 1/4 = 2.25
 while for a SC shifted one TC to the right the weight is 2*1/4+2*1/2=1.5
 """
 # pick the right device for the task (gpu or cpu)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print("Device used in telescope", device)
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 SCmask_48_36 = torch.tensor(
             [
@@ -76,14 +75,14 @@ SCmask_48_36 = torch.tensor(
                 [17, 18, 43, 39, 0.25 * 1.0],
                 [18, 19, 39, 35, 0.25 * 1.0 + 1.0 / 6],
             ]
-        ).cuda()
-Remap_48_36 = torch.zeros((48, 36)).cuda()
+        )
+Remap_48_36 = torch.zeros((48, 36))
 # combine neighbor cells in 2x2 grids, record weights
 # multilpy weights by 0.25 for now to account for effective increase in cells from 12 (sum weights now 48 not 12)
 for isc, sc in enumerate(SCmask_48_36):
     for tc in sc[:4]:
         Remap_48_36[int(tc), isc] = 1
-Weights_48_36 = SCmask_48_36[:, 4].cuda()
+Weights_48_36 = SCmask_48_36[:, 4]
 
 # keep simplified 12 x 3 mapping for now
 SCmask_48_12 = torch.tensor(
@@ -101,14 +100,14 @@ SCmask_48_12 = torch.tensor(
         [40, 41, 44, 45],
         [42, 43, 46, 47],
     ]
-).cuda()
-Remap_48_12 = torch.zeros((48, 12)).cuda()
+)
+Remap_48_12 = torch.zeros((48, 12))
 for isc, sc in enumerate(SCmask_48_12):
     for tc in sc:
         Remap_48_12[int(tc), isc] = 1
 
 
-Remap_12_3 = torch.zeros((12, 3)).cuda()
+Remap_12_3 = torch.zeros((12, 3))
 for i in range(12):
     Remap_12_3[i, int(i / 4)] = 1
     
@@ -162,7 +161,7 @@ remap_8x8 = [
                 40,
                 32,
             ]
-remap_8x8_matrix = torch.zeros(48 * 64, dtype=torch.float32).reshape((64, 48)).cuda()
+remap_8x8_matrix = torch.zeros(48 * 64, dtype=torch.float32).reshape((64, 48))
 for i in range(48):
     remap_8x8_matrix[remap_8x8[i], i] = 1
         
@@ -170,8 +169,6 @@ for i in range(48):
 def telescopeMSE2(y_true, y_pred):
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     y_true = y_true.to(dtype=y_pred.dtype)
-    y_true = y_true.cuda()
-    y_pred = y_pred.cuda()
 
     # TC-level MSE
     y_pred_rs = torch.reshape(y_pred, (-1, 48))
@@ -206,8 +203,6 @@ def telescopeMSE2(y_true, y_pred):
 def telescopeMSE8x8(y_true, y_pred):
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     y_true = y_true.to(dtype=y_pred.dtype)
-    y_true = y_true.cuda()
-    y_pred = y_pred.cuda()
     return telescopeMSE2(
         torch.matmul(torch.reshape(y_true, (-1, 64)), remap_8x8_matrix),
         torch.matmul(torch.reshape(y_pred, (-1, 64)), remap_8x8_matrix),

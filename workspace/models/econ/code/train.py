@@ -26,7 +26,6 @@ def test_model(model, test_loader):
     output_calQ_list = []
     with torch.no_grad():
         for x in tqdm(test_loader):
-            x = x.to(model.device)
             output = model(x)
             input_calQ = model.map_to_calq(x)
             output_calQ_fr = model.map_to_calq(output)
@@ -66,7 +65,7 @@ def main(args):
     # 1 INIT LIGHTNING MODEL
     # ------------------------
     print(f'Loading with quantize: {(args.weight_precision < 32)}')
-    model = AutoEncoder(
+    model = DataAutoEncoder(
         quantize=(args.weight_precision < 32),
         precision=[
             args.weight_precision, 
@@ -110,6 +109,8 @@ def main(args):
         max_epochs=args.max_epochs,
         accelerator=args.accelerator,
         devices="auto",
+        gpus=-1,
+        distributed_backend='dp',
         logger=tb_logger,
         callbacks=[top_checkpoint_callback, early_stop_callback],
         fast_dev_run=args.fast_dev_run,
