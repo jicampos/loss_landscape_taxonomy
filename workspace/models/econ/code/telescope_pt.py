@@ -216,6 +216,7 @@ def telescopeMSE8x8(y_true, y_pred):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     y_true = y_true.to(device)
     y_pred = y_pred.to(device)
+    remap_8x8_matrix = remap_8x8_matrix.to(device)
     return telescopeMSE2(
         torch.matmul(torch.reshape(y_true, (-1, 64)), remap_8x8_matrix),
         torch.matmul(torch.reshape(y_pred, (-1, 64)), remap_8x8_matrix),
