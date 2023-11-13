@@ -162,7 +162,7 @@ remap_8x8 = [
                 40,
                 32,
             ]
-remap_8x8_matrix = torch.zeros(48 * 64, dtype=torch.float32, device=pl.device).reshape((64, 48))
+remap_8x8_matrix = torch.zeros(48 * 64, dtype=torch.float32).reshape((64, 48))
 for i in range(48):
     remap_8x8_matrix[remap_8x8[i], i] = 1
         
