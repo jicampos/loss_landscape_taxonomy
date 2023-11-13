@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: train-bs-job
+spec:
+  # affinity:
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #       - matchExpressions:
+  #         - key: nvidia.com/gpu.product
+  #           operator: In
+  #           values:
+  #           - NVIDIA-GeForce-RTX-3090
+  containers:
+  - name: gpu-container
+    image: jupyter/scipy-notebook
+    command: ["/bin/bash","-c"]
+    args: ["git clone https://github.com/balditommaso/loss_landscape_taxonomy.git;
+            cd loss_landscape_taxonomy;
+            conda env create -f environment.yml;
+            . scripts/get_econ_data.sh;
+            conda activate loss_landscape;
+            cd workspace/models/econ;
+            . script/train.sh --process_data --scan bs;
+            cd ~/loss_landscape_taxonomy;
+            mv workspace/checkpoint /loss_landscape;"]
+    volumeMounts:
+    - mountPath: /loss_landscape
+      name: loss-landscape-volume
+    resources:
+      limits:
+        nvidia.com/gpu: "8"
+        memory: "64G"
+        cpu: "16"
+  restartPolicy: Never
+  volumes:
+    - name: loss-landscape-volume
+      persistentVolumeClaim:
+        claimName: loss-landscape-volume

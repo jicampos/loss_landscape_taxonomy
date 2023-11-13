@@ -136,9 +136,6 @@ run_train() {
         touch $log_file
         mkdir -p $error_folder
         touch $error_file
-        
-        echo $process_data
-        echo $no_train
 
         echo ""
         echo " BATCH SIZE $bs - LEARNING_RATE $lr - PRECISION $precision - test $i "
@@ -165,7 +162,6 @@ run_train() {
 
             echo ""
             echo "-----------------------------------------------------------"
-            exit 1 #debugging
 
     done
 }
