@@ -35,6 +35,7 @@ while for a SC shifted one TC to the right the weight is 2*1/4+2*1/2=1.5
 """
 # pick the right device for the task (gpu or cpu)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("Device used in telescope", device)
 
 SCmask_48_36 = torch.tensor(
             [
