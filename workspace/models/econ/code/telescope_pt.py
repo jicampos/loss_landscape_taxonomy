@@ -202,7 +202,7 @@ def telescopeMSE2(y_true, y_pred):
     return 4 * loss_tc1.mean() + 2 * loss_tc2.mean() + loss_tc3.mean()
 
 
-def telescopeMSE8x8(self, y_true, y_pred):
+def telescopeMSE8x8(y_true, y_pred):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     y_true = y_true.to(dtype=y_pred.dtype)
     y_true = y_true.to(device)
