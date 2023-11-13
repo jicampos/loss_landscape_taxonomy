@@ -185,8 +185,8 @@ def telescopeMSE2(y_true, y_pred, device):
     )
     
     # map TCs to 2x2 supercells and compute MSE
-    y_pred_36 = torch.matmul(y_pred_rs, Remap_48_36)
-    y_true_36 = torch.matmul(y_true_rs, Remap_48_36)
+    y_pred_36 = torch.matmul(y_pred_rs, Remap_48_36).to(device)
+    y_true_36 = torch.matmul(y_true_rs, Remap_48_36).to(device)
     loss_tc2 = torch.mean(
         torch.square(y_true_36 - y_pred_36)
         * torch.maximum(y_pred_36, y_true_36)
