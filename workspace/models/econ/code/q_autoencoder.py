@@ -6,7 +6,7 @@ import torch.nn as nn
 import pytorch_lightning as pl
 from hawq.utils import QuantAct, QuantLinear, QuantConv2d
 from collections import OrderedDict
-from telescope_pt import TelescopeLoss
+from telescope_pt import telescopeMSE8x8
 from autoencoder_datamodule import ARRANGE, ARRANGE_MASK
 
 
@@ -230,7 +230,7 @@ class AutoEncoder(pl.LightningModule):
             ("sigmoid", nn.Sigmoid()),
         ]))
         
-        self.loss = TelescopeLoss
+        self.loss = telescopeMSE8x8
 
     def invert_arrange(self):
         """
@@ -282,13 +282,13 @@ class AutoEncoder(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x = batch
         x_hat = self(x)
-        loss = self.loss.telescopeMSE8x8(self.loss, x, x_hat)
+        loss = self.loss(x, x_hat)
         self.log("train_loss", loss, on_epoch=True, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
         x = batch
         x_hat = self(x)
-        loss = self.loss.telescopeMSE8x8(self.loss, x, x_hat)
+        loss = self.loss(x, x_hat)
         self.log("val_loss", loss, on_epoch=True, prog_bar=True)
         return loss
