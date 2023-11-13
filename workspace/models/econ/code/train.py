@@ -65,7 +65,7 @@ def main(args):
     # 1 INIT LIGHTNING MODEL
     # ------------------------
     print(f'Loading with quantize: {(args.weight_precision < 32)}')
-    model = DataAutoEncoder(
+    model = AutoEncoder(
         quantize=(args.weight_precision < 32),
         precision=[
             args.weight_precision, 
