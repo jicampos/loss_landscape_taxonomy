@@ -34,7 +34,6 @@ W = 1/1 + 1/2 + 1/2 + 1/4 = 2.25
 while for a SC shifted one TC to the right the weight is 2*1/4+2*1/2=1.5
 """
 
-
 # combine neighbor cells in 2x2 grids, record weights
 # multilpy weights by 0.25 for now to account for effective increase in cells from 12 (sum weights now 48 not 12)
 SCmask_48_36 = torch.tensor(
@@ -131,6 +130,8 @@ def telescopeMSE2(y_true, y_pred):
     # map TCs to 2x2 supercells and compute MSE
     y_pred_36 = torch.matmul(y_pred_rs, Remap_48_36)
     y_true_36 = torch.matmul(y_true_rs, Remap_48_36)
+    y_pred_36 = y_pred_36.to(device)
+    y_true_36 = y_true_36.to(device)
     loss_tc2 = torch.mean(
         torch.square(y_true_36 - y_pred_36)
         * torch.maximum(y_pred_36, y_true_36)
