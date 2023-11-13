@@ -168,6 +168,7 @@ for i in range(48):
         
 
 def telescopeMSE2(y_true, y_pred, device):
+    global Remap_48_36, Remap_48_12, Remap_12_3
     # set the right device coming from PyTorch Lightning
     Remap_48_36 = Remap_48_36.to(device)
     Remap_48_12 = Remap_48_12.to(device)
