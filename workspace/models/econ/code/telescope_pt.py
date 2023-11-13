@@ -75,7 +75,7 @@ SCmask_48_36 = torch.tensor(
                 [17, 18, 43, 39, 0.25 * 1.0],
                 [18, 19, 39, 35, 0.25 * 1.0 + 1.0 / 6],
             ]
-        ).to(self.device)
+        ).to(device)
 Remap_48_36 = torch.zeros((48, 36)).to(device)
 # combine neighbor cells in 2x2 grids, record weights
 # multilpy weights by 0.25 for now to account for effective increase in cells from 12 (sum weights now 48 not 12)
@@ -161,7 +161,7 @@ remap_8x8 = [
                 40,
                 32,
             ]
-remap_8x8_matrix = torch.zeros(48 * 64, dtype=torch.float32).reshape((64, 48)).to(self.device)
+remap_8x8_matrix = torch.zeros(48 * 64, dtype=torch.float32).reshape((64, 48)).to(device)
 for i in range(48):
     remap_8x8_matrix[remap_8x8[i], i] = 1
         
