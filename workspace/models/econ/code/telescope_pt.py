@@ -168,11 +168,12 @@ for i in range(48):
         
 
 def telescopeMSE2(y_true, y_pred, device):
-    global Remap_48_36, Remap_48_12, Remap_12_3
+    global Remap_48_36, Remap_48_12, Remap_12_3, Weights_48_36
     # set the right device coming from PyTorch Lightning
     Remap_48_36 = Remap_48_36.to(device)
     Remap_48_12 = Remap_48_12.to(device)
     Remap_12_3 = Remap_12_3.to(device)
+    Weights_48_36 = Weights_48_36.to(device)
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     y_true = y_true.to(dtype=y_pred.dtype)
 
@@ -185,9 +186,9 @@ def telescopeMSE2(y_true, y_pred, device):
     )
     
     # map TCs to 2x2 supercells and compute MSE
-    y_pred_36 = torch.matmul(y_pred_rs, Remap_48_36).to(device)
-    y_true_36 = torch.matmul(y_true_rs, Remap_48_36).to(device)
-    loss_tc2 = torch.mean(
+    y_pred_36 = torch.matmul(y_pred_rs, Remap_48_36) # .to(device)
+    y_true_36 = torch.matmul(y_true_rs, Remap_48_36) # .to(device)
+    loss_tc2 = torch.mean( # 
         torch.square(y_true_36 - y_pred_36)
         * torch.maximum(y_pred_36, y_true_36)
         * Weights_48_36,
