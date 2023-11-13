@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import pytorch_lightning as pl 
 
 """
 PyTorch implementation of telescope loss functions. See below for details on the telescope loss functions.
@@ -161,7 +162,7 @@ remap_8x8 = [
                 40,
                 32,
             ]
-remap_8x8_matrix = torch.zeros(48 * 64, dtype=torch.float32).reshape((64, 48))
+remap_8x8_matrix = torch.zeros(48 * 64, dtype=torch.float32, device=pl.device).reshape((64, 48))
 for i in range(48):
     remap_8x8_matrix[remap_8x8[i], i] = 1
         
@@ -200,12 +201,12 @@ def telescopeMSE2(y_true, y_pred):
     return 4 * loss_tc1.mean() + 2 * loss_tc2.mean() + loss_tc3.mean()
 
 
-def telescopeMSE8x8(y_true, y_pred):
+def telescopeMSE8x8(y_true, y_pred, device):
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     y_true = y_true.to(dtype=y_pred.dtype)
     return telescopeMSE2(
-        torch.matmul(torch.reshape(y_true, (-1, 64)), remap_8x8_matrix),
-        torch.matmul(torch.reshape(y_pred, (-1, 64)), remap_8x8_matrix),
+        torch.matmul(torch.reshape(y_true, (-1, 64)), remap_8x8_matrix.to(device)),
+        torch.matmul(torch.reshape(y_pred, (-1, 64)), remap_8x8_matrix.to(device)),
     )
     
     
