@@ -113,6 +113,7 @@ def main(args):
         callbacks=[top_checkpoint_callback, early_stop_callback],
         fast_dev_run=args.fast_dev_run,
     )
+    print("strategy:", trainer.strategy)
     
     # multiply the batch size by the number of nodes and the number of GPUs
     print(f"Number of nodes: {trainer.num_nodes}")
