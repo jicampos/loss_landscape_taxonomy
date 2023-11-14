@@ -200,7 +200,7 @@ python code/train.py \
         --data_file "$DATA_FILE" \
         --batch_size 16 \
         --num_workers 4 \
-        --accelerator "all" \
+        --accelerator "auto" \
         --process_data \
         --weight_precision 2 \
         --bias_precision 2 \
