@@ -124,13 +124,14 @@ handle_options() {
 }
 
 run_train() {
+    saving_folder="$SAVING_FOLDER/$scanning"_$iter/ECON_"$precision"b/
     for i in $(eval echo "{1..$num_test}")
     do
         # create directories to retrieve informations of the training process
         timestamp=$(date +%s)\
-        log_folder="$SAVING_FOLDER/$scanning"_$iter/ECON_"$precision"b/log
+        log_folder="$saving_folder"/log
         log_file=$log_folder"/log_"$size"_"$i"_"$timestamp".txt"
-        error_folder="$SAVING_FOLDER/$scanning"_$iter/ECON_"$precision"b/error
+        error_folder="$saving_folder"/error
         error_file=$error_folder"/err_"$size"_"$i"_"$timestamp".txt"
         mkdir -p $log_folder
         touch $log_file
@@ -141,7 +142,7 @@ run_train() {
         echo " BATCH SIZE $bs - LEARNING_RATE $lr - PRECISION $precision - test $i "
         echo ""
         python code/train.py \
-            --saving_folder "$SAVING_FOLDER" \
+            --saving_folder "$saving_folder" \
             --data_dir "$DATA_DIR" \
             --data_file "$DATA_FILE" \
             --batch_size $bs \
