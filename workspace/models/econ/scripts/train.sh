@@ -195,25 +195,25 @@ mkdir -p "$SAVING_FOLDER/bs_16/ECON_2b/log"
 mkdir -p "$SAVING_FOLDER/bs_16/ECON_2b/error"   
 echo "********************** test **********************"
 python code/train.py \
-        --saving_folder "$SAVING_FOLDER/bs_16/ECON_2"b/ \
+        --saving_folder "$SAVING_FOLDER/bs_1024/ECON_8"b/ \
         --data_dir "$DATA_DIR" \
         --data_file "$DATA_FILE" \
-        --batch_size 16 \
+        --batch_size 1024 \
         --num_workers 4 \
         --accelerator "auto" \
         --process_data \
-        --weight_precision 2 \
-        --bias_precision 2 \
-        --act_precision 5   \
-        --lr 0015625 \
+        --weight_precision 8 \
+        --bias_precision 8 \
+        --act_precision 11   \
+        --lr 0.0015625 \
         --size "small" \
         --top_models 1 \
         --experiment 1 \
-        --max_epochs 5 \
+        --max_epochs 1 \
         > >(tee -a "$SAVING_FOLDER/bs_16/ECON_2b/log/log.txt") \
         2> >(tee -a "$SAVING_FOLDER/bs_16/ECON_2b/error/error.txt"    >&2)
 
-exit 1
+return
 # END DEBUG
 
 #iterate over the precision
