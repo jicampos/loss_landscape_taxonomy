@@ -190,6 +190,32 @@ handle_options "$@"
 # creating the directories if required
 mkdir -p $DATA_DIR
 
+# DEBUG
+mkdir -p "$SAVING_FOLDER/bs_16/ECON_2b/log"
+mkdir -p "$SAVING_FOLDER/bs_16/ECON_2b/error"   
+echo "********************** test **********************"
+python code/train.py \
+        --saving_folder "$SAVING_FOLDER/bs_16/ECON_2"b/ \
+        --data_dir "$DATA_DIR" \
+        --data_file "$DATA_FILE" \
+        --batch_size 16 \
+        --num_workers 4 \
+        --accelerator "all" \
+        --process_data \
+        --weight_precision 2 \
+        --bias_precision 2 \
+        --act_precision 5   \
+        --lr 0015625 \
+        --size "small" \
+        --top_models 1 \
+        --experiment 1 \
+        --max_epochs 5 \
+        > >(tee -a "$SAVING_FOLDER/bs_16/ECON_2b/log/log.txt") \
+        2> >(tee -a "$SAVING_FOLDER/bs_16/ECON_2b/error/error.txt"    >&2)
+
+exit 1
+# END DEBUG
+
 #iterate over the precision
 for precision in ${precisions[*]}
 do
