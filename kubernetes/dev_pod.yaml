@@ -11,7 +11,7 @@ spec:
             cd loss_landscape_taxonomy;
             conda env create -f environment.yml;
             source activate loss_landscape;
-            . scripts/get_econ_data.sh;
+            . scripts/get_econ_data.sh >/dev/null;
             cd /;
             jupyter lab --NotebookApp.token=627a7b3b;"]
     volumeMounts:
