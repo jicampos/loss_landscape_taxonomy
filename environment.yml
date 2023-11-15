@@ -138,4 +138,4 @@ dependencies:
     - zipp==3.16.0
     - pytorchcv==0.0.67  
     - git+https://github.com/amirgholami/PyHessian.git
-    - git+https://github.com/jicampos/HAWQ.git@setup-pip
+    - git+https://github.com/balditommaso/HAWQ.git@setup-pip
