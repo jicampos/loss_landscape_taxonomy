@@ -16,7 +16,7 @@ spec:
                 source activate loss_landscape;
                 cd $HOME/loss_landscape_taxonomy/workspace/models/econ/;
                 . scripts/train.sh --process_data --scan bs;
-                mv $HOME/loss_landscape_taxonomy/workspace/checkpoint /loss_landscape;"]
+                rsync -av $HOME/loss_landscape_taxonomy/workspace/checkpoint /loss_landscape;"]
         volumeMounts:
         - mountPath: /loss_landscape
           name: loss-landscape-volume
