@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Constants
 ADD_PRECISION=3
