@@ -3,8 +3,6 @@
 # sys.path.append(os.path.join(sys.path[0], "../../common/"))
 from itertools import starmap
 from utils_pt import unnormalize, emd 
-from typing import Any, List, Optional, Union
-from pytorch_lightning.utilities.types import EPOCH_OUTPUT, STEP_OUTPUT
 import torch
 import torch.nn as nn
 import pytorch_lightning as pl

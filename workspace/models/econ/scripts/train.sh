@@ -165,23 +165,23 @@ run_train() {
     done
 }
 
-scan_batch_sizes() {
-    lr=0.0015625    # fix the learning rate
-    for bs in ${batch_sizes[*]}
-    do
-        iter=$bs
-        run_train
-    done
-}
+# scan_batch_sizes() {
+#     lr=0.0015625    # fix the learning rate
+#     for bs in ${batch_sizes[*]}
+#     do
+#         iter=$bs
+#         run_train
+#     done
+# }
 
-scan_learning_rates() {
-    bs=500    # fix the batch size
-    for lr in ${learning_rates[*]}
-    do
-        iter=$lr
-        run_train
-    done
-}
+# scan_learning_rates() {
+#     bs=500    # fix the batch size
+#     for lr in ${learning_rates[*]}
+#     do
+#         iter=$lr
+#         run_train
+#     done
+# }
 
 # Main script execution
 handle_options "$@"
