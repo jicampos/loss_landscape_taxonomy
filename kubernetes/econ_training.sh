@@ -99,11 +99,11 @@ handle_options() {
 # Function to generate a Kubernetes Job YAML file
 generate_job_yaml() {
 
-    cat <<EOF >$job_name
+    cat <<EOF >$job_name".yaml"
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: train-bs-job
+  name: $(echo "$job_name" | sed 's/_/-/g')
 spec:
   template:
     spec:
@@ -111,31 +111,38 @@ spec:
       - name: gpu-container
         image: jupyter/scipy-notebook
         command: ["/bin/bash","-c"]
-        args: ["echo Generated"]
+        args: ["git clone https://github.com/balditommaso/loss_landscape_taxonomy.git;
+                cd /home/jovyan/loss_landscape_taxonomy;
+                conda env create -f environment.yml;
+                . scripts/get_econ_data.sh;
+                source activate loss_landscape;
+                cd /home/jovyan/loss_landscape_taxonomy/workspace/models/econ/;
+                . scripts/train.sh --process_data --scan bs;
+                echo Job completed!;"]
         volumeMounts:
         - mountPath: /loss_landscape
           name: loss-landscape-volume
         resources:
           limits:
             nvidia.com/gpu: "1"
-            memory: "32G"
-            cpu: "4"
+            memory: "64G"
+            cpu: "8"
           requests:
             nvidia.com/gpu: "1"
-            memory: "32G"
-            cpu: "4"
+            memory: "64G"
+            cpu: "8"
       restartPolicy: Never
       volumes:
         - name: loss-landscape-volume
           persistentVolumeClaim:
             claimName: loss-landscape-volume
 EOF
-    echo "$job_name"
+    echo $job_name.yaml
 }
 
 # Function to start a Kubernetes Job
 start_kubernetes_job() {
-    kubectl apply -f job.yaml
+    kubectl apply -f $job_name".yaml"
 }
 
 
@@ -145,12 +152,14 @@ for bs in ${batch_sizes[*]}
 do
     for lr in ${learning_rates[*]}
     do
-        job_name=ECON_bs"$bs"_lr$lr.yaml
-        generate_job_yaml "$job_name"
-        # start_kubernetes_job
+        job_name=$(echo "econ_bs"$bs"_lr$lr" | sed 's/\./_/g')
+        generate_job_yaml $job_name
+        start_kubernetes_job
     done
+    exit 1      # DEBUGGING
+    
 done
 
-echo Jobs started.
+echo Jobs started
 
 # END MAIN
