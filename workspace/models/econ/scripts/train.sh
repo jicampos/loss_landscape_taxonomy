@@ -189,29 +189,29 @@ handle_options "$@"
 mkdir -p $DATA_DIR
 
 # DEBUG
-mkdir -p "$SAVING_FOLDER/bs_16/ECON_2b/log"
-mkdir -p "$SAVING_FOLDER/bs_16/ECON_2b/error"   
-echo "********************** test **********************"
-python code/train.py \
-        --saving_folder "$SAVING_FOLDER/bs_1024/ECON_8"b/ \
-        --data_dir "$DATA_DIR" \
-        --data_file "$DATA_FILE" \
-        --batch_size 1024 \
-        --num_workers 4 \
-        --accelerator "auto" \
-        --process_data \
-        --weight_precision 8 \
-        --bias_precision 8 \
-        --act_precision 11   \
-        --lr 0.0015625 \
-        --size "small" \
-        --top_models 1 \
-        --experiment 1 \
-        --max_epochs 1 \
-        > >(tee -a "$SAVING_FOLDER/bs_16/ECON_2b/log/log.txt") \
-        2> >(tee -a "$SAVING_FOLDER/bs_16/ECON_2b/error/error.txt"    >&2)
+# mkdir -p "$SAVING_FOLDER/bs_16/ECON_2b/log"
+# mkdir -p "$SAVING_FOLDER/bs_16/ECON_2b/error"   
+# echo "********************** test **********************"
+# python code/train.py \
+#         --saving_folder "$SAVING_FOLDER/bs_1024/ECON_8"b/ \
+#         --data_dir "$DATA_DIR" \
+#         --data_file "$DATA_FILE" \
+#         --batch_size 1024 \
+#         --num_workers 1 \
+#         --accelerator "auto" \
+#         --no_train \
+#         --weight_precision 8 \
+#         --bias_precision 8 \
+#         --act_precision 11   \
+#         --lr 0.0015625 \
+#         --size "small" \
+#         --top_models 1 \
+#         --experiment 1 \
+#         --max_epochs 1 \
+#         > >(tee -a "$SAVING_FOLDER/bs_16/ECON_2b/log/log.txt") \
+#         2> >(tee -a "$SAVING_FOLDER/bs_16/ECON_2b/error/error.txt"    >&2)
 
-return
+# return
 # END DEBUG
 
 #iterate over the precision
@@ -229,4 +229,7 @@ do
         scan_learning_rates
     fi
 done
+
+
+exit 1
 

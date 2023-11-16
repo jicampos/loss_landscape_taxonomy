@@ -15,8 +15,8 @@ from q_autoencoder import AutoEncoder
 from autoencoder_datamodule import AutoEncoderDataModule
 from utils_pt import unnormalize, emd
 
-
-def test_model(model, test_loader):
+# Deprecated, embed in the model
+def test_model(model, test_loader, device):
     """
     Our own testing loop instead of using the trainer.test() method so that we
     can multithread EMD computation on the CPU
@@ -26,7 +26,8 @@ def test_model(model, test_loader):
     output_calQ_list = []
     with torch.no_grad():
         for x in tqdm(test_loader):
-            output = model(x)
+            print("batch", x)
+            output = model(x.to(device))
             input_calQ = model.map_to_calq(x)
             output_calQ_fr = model.map_to_calq(output)
             input_calQ = torch.stack(
@@ -132,13 +133,14 @@ def main(args):
     # load the model from file
     checkpoint_file = os.path.join(args.saving_folder, args.size, f'net_{args.experiment}_best.pkl')
     print('Loading checkpoint...', checkpoint_file)
-    checkpoint = torch.load(checkpoint_file)
+    checkpoint = torch.load(checkpoint_file)  
     model.load_state_dict(checkpoint['state_dict'])
     # Need val_sum to compute EMD
     _, val_sum = data_module.get_val_max_and_sum()
     model.set_val_sum(val_sum)
     data_module.setup("test")
-    test_results = test_model(model, data_module.test_dataloader())
+    # test_results = test_model(model, data_module.test_dataloader())
+    test_results = trainer.test(model, dataloaders=data_module.test_dataloader())
     # save the results on file
     test_results_log = os.path.join(
         args.saving_folder, args.size, args.size + f"_emd_{args.experiment}.txt"

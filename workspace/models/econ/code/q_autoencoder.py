@@ -1,6 +1,10 @@
 # import ot
 # print(os.path.join(sys.path[0], "../../common/"))
-# sys.path.append(os.path.join(sys.path[0], "../../common/")) 
+# sys.path.append(os.path.join(sys.path[0], "../../common/"))
+from itertools import starmap
+from utils_pt import unnormalize, emd 
+from typing import Any, List, Optional, Union
+from pytorch_lightning.utilities.types import EPOCH_OUTPUT, STEP_OUTPUT
 import torch
 import torch.nn as nn
 import pytorch_lightning as pl
@@ -292,3 +296,32 @@ class AutoEncoder(pl.LightningModule):
         loss = self.loss(x, x_hat, self.device)
         self.log("val_loss", loss, on_epoch=True, prog_bar=True)
         return loss
+    
+    def test_step(self, batch, batch_idx):
+        output = self(batch)
+        input_calQ = self.map_to_calq(batch)
+        output_calQ_fr = self.map_to_calq(output)
+        input_calQ = torch.stack(
+            [input_calQ[i] * self.val_sum[i] for i in range(len(input_calQ))]
+        )  # shape = (batch_size, 48)
+        output_calQ = unnormalize(
+            torch.clone(output_calQ_fr), self.val_sum
+        )  # ae_out
+        return {'input_calQ': input_calQ, 'output_calQ': output_calQ}
+    
+    def test_epoch_end(self, outputs):
+        # concatenate all the tensor coming from all the batches processed
+        input_calQ = torch.cat(
+            ([i_cal['input_calQ'] for i_cal in outputs]),
+            dim=0
+        )
+        output_calQ = torch.cat(
+            ([i_cal['output_calQ'] for i_cal in outputs]),
+            dim=0
+        )
+        # compute the average EMD
+        emd_list = list(starmap(emd, zip(input_calQ.tolist(), output_calQ.tolist())))
+        average_emd = torch.mean(torch.Tensor(emd_list)).item()
+        result = {'AVG_EMD': average_emd}
+        self.log_dict(result)
+        return result
