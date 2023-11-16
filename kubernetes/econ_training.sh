@@ -117,7 +117,15 @@ spec:
                 . scripts/get_econ_data.sh;
                 source activate loss_landscape;
                 cd /home/jovyan/loss_landscape_taxonomy/workspace/models/econ/;
-                . scripts/train.sh --process_data --scan bs;
+                . scripts/train.sh \
+                                --bs $bs \
+                                --lr $lr \
+                                --max_epochs $max_epochs \
+                                --size $size \
+                                --top_models $top_models \
+                                --num_test $num_test \
+                                --num_workers $num_workers \
+                                --accelerator $accelerator;
                 echo Job completed!;"]
         volumeMounts:
         - mountPath: /loss_landscape
@@ -147,6 +155,7 @@ start_kubernetes_job() {
 
 
 # MAIN
+handle_options "$@"
 # iterate over all the possibilities
 for bs in ${batch_sizes[*]}
 do
