@@ -145,7 +145,7 @@ run_train() {
         echo ""
         echo " BATCH SIZE $batch_size - LEARNING_RATE $learning_rate - PRECISION $precision - test $i "
         echo ""
-        echo "python code/train.py \
+        python code/train.py \
             --saving_folder "$saving_folder" \
             --data_dir "$DATA_DIR" \
             --data_file "$DATA_FILE" \
@@ -162,7 +162,7 @@ run_train() {
             --experiment $i \
             --max_epochs $max_epochs \
             > >(tee -a $log_file) \
-            2> >(tee -a $error_file >&2)"
+            2> >(tee -a $error_file >&2)
 
             echo ""
             echo "-----------------------------------------------------------"
