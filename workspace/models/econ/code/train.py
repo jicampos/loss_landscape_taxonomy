@@ -58,7 +58,7 @@ def main(args):
     # instantiate the data module
     data_module = AutoEncoderDataModule.from_argparse_args(args)
     # process the dataset if required
-    if args.process_data:
+    if not os.path.exists(args.data_file):
         print("Processing data...")
         data_module.process_data()
     # ------------------------
@@ -151,7 +151,6 @@ def main(args):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--saving_folder", type=str)
-    parser.add_argument("--process_data", action="store_true", default=False)
     parser.add_argument("--no_train", action="store_true", default=False)
     parser.add_argument("--max_epochs", type=int, default=10)
     parser.add_argument("--size", type=str, default="baseline")
