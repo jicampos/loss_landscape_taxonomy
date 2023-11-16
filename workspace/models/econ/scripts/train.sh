@@ -129,13 +129,11 @@ run_train() {
     for i in $(eval echo "{1..$num_test}")
     do
         # create directories to retrieve informations of the training process
-        timestamp=$(date +%s)\
-
         log_folder="$saving_folder"/log
-        log_file=$log_folder"/log_"$size"_"$i"_"$timestamp".txt"
+        log_file=$log_folder"/log_"$size"_"$i".txt"
 
         error_folder="$saving_folder"/error
-        error_file=$error_folder"/err_"$size"_"$i"_"$timestamp".txt"
+        error_file=$error_folder"/err_"$size"_"$i".txt"
 
         mkdir -p $log_folder
         touch $log_file
