@@ -52,7 +52,7 @@ handle_options() {
         case $1 in
             -h | --help)
                 usage
-                exit 0
+                return
                 ;;
             --no_train)
                 no_train=true
