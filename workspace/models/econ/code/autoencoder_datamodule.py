@@ -247,7 +247,6 @@ class AutoEncoderDataModule(pl.LightningDataModule):
             batch_size=self.batch_size, 
             shuffle=True, 
             num_workers=self.num_workers,
-            persistent_workers=True     # keep the workers active 
         )
 
     def val_dataloader(self):
@@ -260,7 +259,6 @@ class AutoEncoderDataModule(pl.LightningDataModule):
             batch_size=self.batch_size, 
             shuffle=False, 
             num_workers=self.num_workers,
-            persistent_workers=True     # keep the workers active 
         )
 
     def test_dataloader(self):
@@ -280,7 +278,6 @@ class AutoEncoderDataModule(pl.LightningDataModule):
             batch_size=self.batch_size, 
             shuffle=False, 
             num_workers=self.num_workers,
-            persistent_workers=True     # keep the workers active 
         )
     
         train_data_tensor = torch.Tensor(self.train_data)
@@ -290,6 +287,5 @@ class AutoEncoderDataModule(pl.LightningDataModule):
             batch_size=self.batch_size, 
             shuffle=True, 
             num_workers=self.num_workers,
-            persistent_workers=True     # keep the workers active 
         )
         return train_loader, val_loader
