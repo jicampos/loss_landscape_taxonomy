@@ -17,6 +17,7 @@ accelerator="auto"
 # ranges of the scan 
 batch_sizes=(16 32 64 128 256 512 1024)
 learning_rates=(0.1 0.05 0.025 0.0125 0.00625 0.003125 0.0015625)
+
 # precisions=(2 3 4 5 6 7 8 9 10 11)
 
 # Function to display script usage
@@ -133,12 +134,12 @@ spec:
         resources:
           limits:
             nvidia.com/gpu: "1"
-            memory: "64G"
-            cpu: "8"
+            memory: "128G"
+            cpu: "16"
           requests:
             nvidia.com/gpu: "1"
-            memory: "64G"
-            cpu: "8"
+            memory: "128G"
+            cpu: "16"
       restartPolicy: Never
       volumes:
         - name: loss-landscape-volume
@@ -172,3 +173,5 @@ done
 echo Jobs started
 
 # END MAIN
+
+# bash econ_training.sh --max_epochs 1 --size small --top_models 1 --num_test 1 --accelerator cpu
