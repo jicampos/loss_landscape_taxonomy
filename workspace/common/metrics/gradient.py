@@ -2,8 +2,8 @@ from __future__ import print_function
 import numpy as np
 import torch
 import torch.nn as nn
-import Metric
 
+from metric import Metric
 # ---------------------------------------------------------------------------- #
 #                                   Gradient                                   #
 # ---------------------------------------------------------------------------- #
@@ -31,3 +31,6 @@ class Gradient(Metric):
             gradient_traces.append(self._get_batch_gradients())
         self.results.append(np.array(gradient_traces).mean())
         
+        
+if __name__ == '__main__':
+    metric = Gradient()

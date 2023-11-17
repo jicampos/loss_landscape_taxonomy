@@ -19,3 +19,5 @@ class Metric:
         f = open(os.path.join(path, self.name + ".pkl"), "wb")
         pickle.dump(self.results, f)
         f.close()
+        
+        
