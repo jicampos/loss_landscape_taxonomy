@@ -259,7 +259,6 @@ class AutoEncoderDataModule(pl.LightningDataModule):
             batch_size=self.batch_size, 
             shuffle=False, 
             num_workers=self.num_workers,
-            persistent_workers=True     # keep the workers active 
         )
 
     def test_dataloader(self):
