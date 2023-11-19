@@ -154,7 +154,7 @@ class AutoEncoderDataModule(pl.LightningDataModule):
         self.batch_size = batch_size   
         self.num_workers = num_workers
         self.calq_cols = [f"CALQ_{i}" for i in range(48)]
-        self.valid_split = 0.2
+        self.valid_split = 0.2  # 20%
         self.val_max = None
         self.val_sum = None
         self.max_data = None

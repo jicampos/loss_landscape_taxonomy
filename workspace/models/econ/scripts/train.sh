@@ -128,63 +128,50 @@ run_train() {
     saving_folder="$SAVING_FOLDER/bs$batch_size"_lr$learning_rate/ECON_"$precision"b/
     for i in $(eval echo "{1..$num_test}")
     do
-        # create directories to retrieve informations of the training process
-        log_folder="$saving_folder"/log
-        log_file=$log_folder"/log_"$size"_"$i".txt"
-
-        error_folder="$saving_folder"/error
-        error_file=$error_folder"/err_"$size"_"$i".txt"
-
-        mkdir -p $log_folder
-        touch $log_file
-        mkdir -p $error_folder
-        touch $error_file
-
         echo ""
         echo " BATCH SIZE $batch_size - LEARNING_RATE $learning_rate - PRECISION $precision - test $i "
         echo ""
-        python code/train.py \
-            --saving_folder "$saving_folder" \
-            --data_dir "$DATA_DIR" \
-            --data_file "$DATA_FILE" \
-            --batch_size $batch_size \
-            --num_workers $num_workers \
-            --accelerator $accelerator \
-            `if [ $no_train == true ]; then echo "--no_train"; fi` \
-            --weight_precision $precision \
-            --bias_precision $precision \
-            --act_precision $(($precision + $ADD_PRECISION))   \
-            --lr $learning_rate \
-            --size $size \
-            --top_models $top_models \
-            --experiment $i \
-            --max_epochs $max_epochs \
-            > >(tee -a $log_file) \
-            2> >(tee -a $error_file >&2)
 
-            echo ""
-            echo "-----------------------------------------------------------"
+        # check if the model has been already computed 
+        if [ -e "" ]; then
+            echo "Already computed!"
+        else 
+            # create directories to retrieve informations of the training process
+            log_folder="$saving_folder"/log
+            log_file=$log_folder"/log_"$size"_"$i".txt"
 
+            error_folder="$saving_folder"/error
+            error_file=$error_folder"/err_"$size"_"$i".txt"
+
+            mkdir -p $log_folder
+            touch $log_file
+            mkdir -p $error_folder
+            touch $error_file
+
+            # training of the model
+            python code/train.py \
+                --saving_folder "$saving_folder" \
+                --data_dir "$DATA_DIR" \
+                --data_file "$DATA_FILE" \
+                --batch_size $batch_size \
+                --num_workers $num_workers \
+                --accelerator $accelerator \
+                `if [ $no_train == true ]; then echo "--no_train"; fi` \
+                --weight_precision $precision \
+                --bias_precision $precision \
+                --act_precision $(($precision + $ADD_PRECISION))   \
+                --lr $learning_rate \
+                --size $size \
+                --top_models $top_models \
+                --experiment $i \
+                --max_epochs $max_epochs \
+                > >(tee -a $log_file) \
+                2> >(tee -a $error_file >&2)
+        fi
+        echo ""
+        echo "-----------------------------------------------------------"
     done
 }
-
-# scan_batch_sizes() {
-#     lr=0.0015625    # fix the learning rate
-#     for bs in ${batch_sizes[*]}
-#     do
-#         iter=$bs
-#         run_train
-#     done
-# }
-
-# scan_learning_rates() {
-#     bs=500    # fix the batch size
-#     for lr in ${learning_rates[*]}
-#     do
-#         iter=$lr
-#         run_train
-#     done
-# }
 
 # Main script execution
 handle_options "$@"
