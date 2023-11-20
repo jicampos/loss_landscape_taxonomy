@@ -20,7 +20,7 @@ spec:
     resources:
       limits:
         nvidia.com/gpu: "1"
-        memory: "128G"
+        memory: "64G"
         cpu: "16"
   restartPolicy: Never
   volumes:

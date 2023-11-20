@@ -104,47 +104,48 @@ generate_job_yaml() {
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: $(echo "$job_name" | sed 's/_/-/g')
+    name: $(echo "$job_name" | sed 's/_/-/g')
 spec:
-  template:
-    spec:
-      containers:
-      - name: gpu-container
-        image: jupyter/scipy-notebook
-        command: ["/bin/bash","-c"]
-        args: ["git clone https://github.com/balditommaso/loss_landscape_taxonomy.git;
-                cd /home/jovyan/loss_landscape_taxonomy;
-                conda env create -f environment.yml;
-                . scripts/get_econ_data.sh;
-                source activate loss_landscape;
-                cd /home/jovyan/loss_landscape_taxonomy/workspace/models/econ/;
-                . scripts/train.sh \
-                                --bs $bs \
-                                --lr $lr \
-                                --max_epochs $max_epochs \
-                                --size $size \
-                                --top_models $top_models \
-                                --num_test $num_test \
-                                --num_workers $num_workers \
-                                --accelerator $accelerator;
-                echo Job completed!;"]
-        volumeMounts:
-        - mountPath: /loss_landscape
-          name: loss-landscape-volume
-        resources:
-          limits:
-            nvidia.com/gpu: "1"
-            memory: "128G"
-            cpu: "16"
-          requests:
-            nvidia.com/gpu: "1"
-            memory: "128G"
-            cpu: "16"
-      restartPolicy: Never
-      volumes:
-        - name: loss-landscape-volume
-          persistentVolumeClaim:
-            claimName: loss-landscape-volume
+    template:
+        spec:
+            restartPolicy: Never
+            containers:
+                name: gpu-container
+                image: jupyter/scipy-notebook
+                command: ["/bin/bash","-c"]
+                args: ["git clone https://github.com/balditommaso/loss_landscape_taxonomy.git;
+                        cd /home/jovyan/loss_landscape_taxonomy;
+                        conda env create -f environment.yml;
+                        . scripts/get_econ_data.sh;
+                        source activate loss_landscape;
+                        cd /home/jovyan/loss_landscape_taxonomy/workspace/models/econ/;
+                        . scripts/train.sh \
+                                        --bs $bs \
+                                        --lr $lr \
+                                        --max_epochs $max_epochs \
+                                        --size $size \
+                                        --top_models $top_models \
+                                        --num_test $num_test \
+                                        --num_workers $num_workers \
+                                        --accelerator $accelerator;
+                        echo Job completed!;"]
+                volumeMounts:
+                mountPath: /loss_landscape
+                name: loss-landscape-volume
+                resources:
+                    limits:
+                        nvidia.com/gpu: "1"
+                        memory: "128G"
+                        cpu: "16"
+                    requests:
+                        nvidia.com/gpu: "1"
+                        memory: "128G"
+                        cpu: "16"
+                restartPolicy: Never
+                volumes:
+                    name: loss-landscape-volume
+                    persistentVolumeClaim:
+                        claimName: loss-landscape-volume
 EOF
     echo $job_name.yaml
 }
@@ -162,16 +163,20 @@ for bs in ${batch_sizes[*]}
 do
     for lr in ${learning_rates[*]}
     do
-        job_name=$(echo "econ_bs"$bs"_lr$lr" | sed 's/\./_/g')
+        job_name=$(echo "econ_"$size"_bs"$bs"_lr$lr" | sed 's/\./_/g')
         generate_job_yaml $job_name
         start_kubernetes_job
-    done
-    exit 1      # DEBUGGING
-    
+    done    
 done
 
 echo Jobs started
+exit 0
 
 # END MAIN
 
-# bash econ_training.sh --max_epochs 1 --size small --top_models 1 --num_test 1 --accelerator cpu
+# SMALL
+# bash econ_training.sh --num_workers 4 --max_epochs 25 --size small --top_models 3 --num_test 3
+# BASELINE
+# bash econ_training.sh --num_workers 4 --max_epochs 25 --size baseline --top_models 3 --num_test 3
+# LARGE
+# bash econ_training.sh --num_workers 4 --max_epochs 25 --size large --top_models 3 --num_test 3

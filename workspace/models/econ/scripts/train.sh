@@ -188,7 +188,7 @@ do
 done
 
 
-exit 1
+exit 0
 
 # DEBUG
 # mkdir -p "$SAVING_FOLDER/bs_16/ECON_2b/log"
