@@ -110,7 +110,7 @@ spec:
         spec:
             restartPolicy: Never
             containers:
-                name: gpu-container
+              - name: gpu-container
                 image: jupyter/scipy-notebook
                 command: ["/bin/bash","-c"]
                 args: ["git clone https://github.com/balditommaso/loss_landscape_taxonomy.git;
@@ -130,8 +130,8 @@ spec:
                                         --accelerator $accelerator;
                         echo Job completed!;"]
                 volumeMounts:
-                mountPath: /loss_landscape
-                name: loss-landscape-volume
+                  - mountPath: /loss_landscape
+                    name: loss-landscape-volume
                 resources:
                     limits:
                         nvidia.com/gpu: "1"
@@ -141,9 +141,9 @@ spec:
                         nvidia.com/gpu: "1"
                         memory: "128G"
                         cpu: "16"
-                restartPolicy: Never
-                volumes:
-                    name: loss-landscape-volume
+            restartPolicy: Never
+            volumes:
+                  - name: loss-landscape-volume
                     persistentVolumeClaim:
                         claimName: loss-landscape-volume
 EOF
@@ -175,8 +175,8 @@ exit 0
 # END MAIN
 
 # SMALL
-# bash econ_training.sh --num_workers 4 --max_epochs 25 --size small --top_models 3 --num_test 3
+# bash econ_training.sh --num_workers 8 --max_epochs 25 --size small --top_models 3 --num_test 3
 # BASELINE
-# bash econ_training.sh --num_workers 4 --max_epochs 25 --size baseline --top_models 3 --num_test 3
+# bash econ_training.sh --num_workers 8 --max_epochs 25 --size baseline --top_models 3 --num_test 3
 # LARGE
-# bash econ_training.sh --num_workers 4 --max_epochs 25 --size large --top_models 3 --num_test 3
+# bash econ_training.sh --num_workers 8 --max_epochs 25 --size large --top_models 3 --num_test 3

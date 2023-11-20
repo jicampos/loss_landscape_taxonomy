@@ -186,4 +186,5 @@ src_deprecated/
 # other 
 workspace/checkpoint*
 kubernetes/checkpoint*
+kubernetes/econ*
 HAWQ*
