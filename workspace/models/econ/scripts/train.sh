@@ -132,15 +132,17 @@ run_train() {
         echo " BATCH SIZE $batch_size - LEARNING_RATE $learning_rate - PRECISION $precision - test $i "
         echo ""
 
+        test_file="$saving_folder$size/$size"_emd_"$i"
+        echo $test_file
         # check if the model has been already computed 
-        if [ -e "" ]; then
+        if [ -e "$test_file" ]; then
             echo "Already computed!"
         else 
             # create directories to retrieve informations of the training process
-            log_folder="$saving_folder"/log
+            log_folder="$saving_folder"log
             log_file=$log_folder"/log_"$size"_"$i".txt"
 
-            error_folder="$saving_folder"/error
+            error_folder="$saving_folder"error
             error_file=$error_folder"/err_"$size"_"$i".txt"
 
             mkdir -p $log_folder
