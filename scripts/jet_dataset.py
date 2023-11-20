@@ -114,12 +114,14 @@ if __name__ == '__main__':
     parser.add_argument('--save-path', type=str, default='data/JT')
     args = parser.parse_args()
 
+    # read the specified configuration file
     with open(args.config, "r") as stream:
         try:
             config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
 
+    # get the info from the config file
     train_path = config['data']['train']
     test_path  = config['data']['test']
     preprocess = config['data']['preprocess']
@@ -137,6 +139,7 @@ if __name__ == '__main__':
     train_dataset_shape = X_train.shape
     test_dataset_shape = X_test.shape
 
+    # prepare the noise based on the type
     if args.noise_type == 'bernoulli':
         noise_tr = np.random.randint(0, args.noise_magnitude, size = train_dataset_shape, dtype=np.uint8)*2-1
         noise_ts = np.random.randint(0, args.noise_magnitude, size = test_dataset_shape, dtype=np.uint8)*2-1
@@ -150,6 +153,7 @@ if __name__ == '__main__':
         noise_tr = np.random.uniform(0, args.noise_magnitude, size = train_dataset_shape)
         noise_ts = np.random.uniform(0, args.noise_magnitude, size = test_dataset_shape)
 
+    # add noise 
     file_suffix = ''
     if args.noise:
         print(f'Adding {args.noise_type} noise')
@@ -165,9 +169,11 @@ if __name__ == '__main__':
     X_train = preprocess_data(X_train, preprocess)
     X_test = preprocess_data(X_test, preprocess)
 
+    # create the directory if it does not exist
     if not os.path.isdir(args.save_path):
         os.mkdir(args.save_path)
 
+    # store the dataset
     np.save(os.path.join(args.save_path, 'X_train' + file_suffix + '.npy'), X_train)
     np.save(os.path.join(args.save_path, 'y_train' + file_suffix + '.npy'), y_train)
     np.save(os.path.join(args.save_path, 'X_test'  + file_suffix + '.npy'), X_test)

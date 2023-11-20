@@ -177,13 +177,13 @@ data/
 *.log
 # *.ckpt
 # *.pkl
-*.yaml
+
 events*
 
 # old files/folders
 src_deprecated/
-utils/
 
 # other 
-notebooks/
-checkpoint/
+workspace/checkpoint*
+kubernetes/checkpoint*
+HAWQ*
