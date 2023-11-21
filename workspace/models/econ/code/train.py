@@ -16,7 +16,7 @@ from autoencoder_datamodule import AutoEncoderDataModule
 from utils_pt import unnormalize, emd
 
 # Deprecated, embed in the model
-def test_model(model, test_loader, device):
+def test_model(model, test_loader):
     """
     Our own testing loop instead of using the trainer.test() method so that we
     can multithread EMD computation on the CPU
@@ -26,8 +26,7 @@ def test_model(model, test_loader, device):
     output_calQ_list = []
     with torch.no_grad():
         for x in tqdm(test_loader):
-            print("batch", x)
-            output = model(x.to(device))
+            output = model(x.cpu())
             input_calQ = model.map_to_calq(x)
             output_calQ_fr = model.map_to_calq(output)
             input_calQ = torch.stack(
@@ -161,7 +160,7 @@ if __name__ == "__main__":
     parser.add_argument("--act_precision", type=int, default=11)
     parser.add_argument("--lr", type=float, default=0.0015625)
     parser.add_argument("--top_models", type=int, default=3)
-    parser.add_argument("--experiment", type=int, default=0)
+    parser.add_argument("--experiment", type=int, default=1)
     parser.add_argument(
         "--accelerator", type=str, choices=["cpu", "gpu", "tpu", "auto"], default="auto"
     )

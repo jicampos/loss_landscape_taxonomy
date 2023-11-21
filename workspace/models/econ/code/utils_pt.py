@@ -1,6 +1,7 @@
 import ot
 import torch
 import numpy as np
+import pyemd
 
 # TODO: ask to Cristian Erwick
 hexCoords = np.array(
@@ -100,10 +101,11 @@ def unnormalize(norm_data, max_vals, sumlog2=True):
 
 
 def emd(_x, _y, threshold=-1):
-    if np.sum(_x) == 0:
-        return -1.0
-    if np.sum(_y) == 0:
-        return -0.5
+    # if np.sum(_x) == 0:
+    #     return -1.0
+    # if np.sum(_y) == 0:
+    #     epsilon = 1e-10
+    #     _y = np.array(_y) + epsilon
     x = np.array(_x, dtype=np.float64)
     y = np.array(_y, dtype=np.float64)
     x = (1.0 / x.sum() if x.sum() else 1.0) * x.flatten()
@@ -115,5 +117,7 @@ def emd(_x, _y, threshold=-1):
         y = np.where(y > threshold, y, 0)
         x = 1.0 * x / x.sum()
         y = 1.0 * y / y.sum()
-
-    return ot.emd2(x, y, hex_metric)
+        
+    # result = ot.emd2(x, y, hex_metric)
+    result = pyemd.emd(x, y, hex_metric)
+    return result
