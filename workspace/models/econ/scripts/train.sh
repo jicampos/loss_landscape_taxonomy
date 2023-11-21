@@ -126,13 +126,14 @@ handle_options() {
 
 run_train() {
     saving_folder="$SAVING_FOLDER/bs$batch_size"_lr$learning_rate/ECON_"$precision"b/
+    pids=()
     for i in $(eval echo "{1..$num_test}")
     do
         echo ""
         echo " BATCH SIZE $batch_size - LEARNING_RATE $learning_rate - PRECISION $precision - test $i "
         echo ""
 
-        test_file="$saving_folder$size/$size"_emd_"$i"
+        test_file="$saving_folder$size/$size"_emd_"$i.txt"
         echo $test_file
         # check if the model has been already computed 
         if [ -e "$test_file" ]; then
@@ -168,10 +169,18 @@ run_train() {
                 --experiment $i \
                 --max_epochs $max_epochs \
                 > >(tee -a $log_file) \
-                2> >(tee -a $error_file >&2)
+                2> >(tee -a $error_file >&2) &
+
+            pids+=($!)
         fi
         echo ""
         echo "-----------------------------------------------------------"
+    done
+
+    # Wait for all background processes to finish
+    for pid in "${pids[@]}"; do
+        wait $pid
+        echo "PID $pid finished!"
     done
 }
 
@@ -186,7 +195,6 @@ do
     # trainig with various batch sizes
     run_train
 done
-
 
 exit 0
 
@@ -215,3 +223,5 @@ exit 0
 
 # return
 # END DEBUG
+
+# . scripts/train.sh --num_workers 8 --bs 1024 --lr 0.0125 --max_epochs 25 --size small --top_models 3 --num_test 3 
