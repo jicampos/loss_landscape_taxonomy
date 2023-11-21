@@ -169,6 +169,7 @@ for i in range(48):
 
 def telescopeMSE2(y_true, y_pred, device):
     global Remap_48_36, Remap_48_12, Remap_12_3, Weights_48_36
+    
     # set the right device coming from PyTorch Lightning
     Remap_48_36 = Remap_48_36.to(device)
     Remap_48_12 = Remap_48_12.to(device)
@@ -208,10 +209,9 @@ def telescopeMSE2(y_true, y_pred, device):
 
 
 def telescopeMSE8x8(y_true, y_pred, device):
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     y_true = y_true.to(dtype=y_pred.dtype)
     return telescopeMSE2(
-        torch.matmul(torch.reshape(y_true, (-1, 64)), remap_8x8_matrix.to(device)),
+        torch.matmul(torch.reshape(y_true, (-1, 64)), remap_8x8_matrix.to(y_true)),
         torch.matmul(torch.reshape(y_pred, (-1, 64)), remap_8x8_matrix.to(device)),
         device
     )

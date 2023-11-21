@@ -1,11 +1,6 @@
 import os
-import time
-from tqdm import tqdm
 import torch
-# import qtorch
 import torchinfo
-import numpy as np
-import multiprocessing
 import pytorch_lightning as pl 
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -13,39 +8,6 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from argparse import ArgumentParser
 from q_autoencoder import AutoEncoder
 from autoencoder_datamodule import AutoEncoderDataModule
-from utils_pt import unnormalize, emd
-
-# Deprecated, embed in the model
-def test_model(model, test_loader):
-    """
-    Our own testing loop instead of using the trainer.test() method so that we
-    can multithread EMD computation on the CPU
-    """
-    model.eval()
-    input_calQ_list = []
-    output_calQ_list = []
-    with torch.no_grad():
-        for x in tqdm(test_loader):
-            output = model(x.cpu())
-            input_calQ = model.map_to_calq(x)
-            output_calQ_fr = model.map_to_calq(output)
-            input_calQ = torch.stack(
-                [input_calQ[i] * model.val_sum[i] for i in range(len(input_calQ))]
-            )  # shape = (batch_size, 48)
-            output_calQ = unnormalize(
-                torch.clone(output_calQ_fr), model.val_sum
-            )  # ae_out
-            input_calQ_list.append(input_calQ)
-            output_calQ_list.append(output_calQ)
-    input_calQ = np.concatenate([i_calQ.cpu() for i_calQ in input_calQ_list], axis=0)
-    output_calQ = np.concatenate([o_calQ.cpu() for o_calQ in output_calQ_list], axis=0)
-    start_time = time.time()
-    with multiprocessing.Pool() as pool:
-        emd_list = pool.starmap(emd, zip(input_calQ, output_calQ))
-    print(f"EMD computation time: {time.time() - start_time} seconds")
-    average_emd = np.mean(np.array(emd_list))
-    print(f"Average EMD: {average_emd}")
-    return average_emd
 
 
 def main(args):

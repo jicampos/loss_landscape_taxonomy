@@ -19,17 +19,20 @@ class Gradient(Metric):
         for _, param in self.model.encoder.named_parameters():
             if param.requires_grad and type(param.grad) == torch.Tensor:
                 gradient_traces.append(param.grad.mean())
-        return np.array(gradient_traces)
+        return np.array(gradient_traces).mean()
         
     def compute(self):
         print("Computing the gradients...")
         gradient_traces = []
         for batch, target in self.data_loader:
             outputs = self.model(batch)
-            loss = self.loss(outputs, target.float()) 
+            target = target.to(outputs.device)    # both tensors on the same device
+            loss = self.loss(outputs, target.float(), self.model.device) 
             loss.backward()
             gradient_traces.append(self._get_batch_gradients())
-        self.results.append(np.array(gradient_traces).mean())
+        self.results.append(gradient_traces)
+        
+        return self.results
         
         
 if __name__ == '__main__':
